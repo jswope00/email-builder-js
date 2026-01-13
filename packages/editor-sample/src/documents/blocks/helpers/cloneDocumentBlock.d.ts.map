@@ -1,0 +1,1 @@
+{"version":3,"file":"cloneDocumentBlock.d.ts","sourceRoot":"","sources":["cloneDocumentBlock.ts"],"names":[],"mappings":"AAAA,OAAO,EAAgB,oBAAoB,EAAE,MAAM,mBAAmB,CAAC;AAEvE,KAAK,OAAO,GAAG;IACb,QAAQ,EAAE,oBAAoB,CAAC;IAC/B,OAAO,EAAE,MAAM,CAAC;CACjB,CAAC;AAwCF,MAAM,CAAC,OAAO,UAAU,kBAAkB,CAAC,gBAAgB,EAAE,oBAAoB,EAAE,eAAe,EAAE,MAAM,GAAG,OAAO,CAQnH"}

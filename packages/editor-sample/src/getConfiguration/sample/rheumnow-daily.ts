@@ -1,0 +1,95 @@
+import { TEditorConfiguration } from '../../documents/editor/core';
+
+const RHEUMNOW_DAILY: TEditorConfiguration = {
+  "root": {
+    "type": "EmailLayout",
+    "data": {
+      "backdropColor": "#F5F5F5",
+      "borderRadius": 0,
+      "canvasColor": "#FFFFFF",
+      "textColor": "#262626",
+      "fontFamily": "MODERN_SANS",
+      "childrenIds": [
+        "block-1768334945842",
+        "block-1768335038626",
+        "block-1768335072847",
+        "block-1768334883321"
+      ]
+    }
+  },
+  "block-1768334883321": {
+    "type": "Text",
+    "data": {
+      "style": {
+        "fontWeight": "normal",
+        "padding": {
+          "top": 16,
+          "bottom": 16,
+          "right": 24,
+          "left": 24
+        }
+      },
+      "props": {
+        "text": "Hi I'm John"
+      }
+    }
+  },
+  "block-1768334945842": {
+    "type": "Image",
+    "data": {
+      "style": {
+        "padding": {
+          "top": 16,
+          "bottom": 16,
+          "right": 24,
+          "left": 24
+        },
+        "textAlign": "center"
+      },
+      "props": {
+        "url": "https://rheumnow.com/sites/default/files/rheumnow_logo_white_0_0.png",
+        "alt": "RheumNow Logo",
+        "linkHref": "https://rheumnow.com",
+        "contentAlignment": "middle"
+      }
+    }
+  },
+  "block-1768335038626": {
+    "type": "Heading",
+    "data": {
+      "props": {
+        "text": "[Email Title]"
+      },
+      "style": {
+        "textAlign": "center",
+        "padding": {
+          "top": 16,
+          "bottom": 16,
+          "right": 24,
+          "left": 24
+        }
+      }
+    }
+  },
+  "block-1768335072847": {
+    "type": "Image",
+    "data": {
+      "style": {
+        "padding": {
+          "top": 16,
+          "bottom": 16,
+          "right": 24,
+          "left": 24
+        }
+      },
+      "props": {
+        "url": "https://rheumnow.com/sites/default/files/2025-12/7SAN_KEVL_Kevzara_RHM_PMR%20HCP_FirstandOnly_LRNMR_STA_728x90_NA_EN.png",
+        "alt": "Sample product",
+        "linkHref": null,
+        "contentAlignment": "middle"
+      }
+    }
+  }
+}
+
+export default RHEUMNOW_DAILY;

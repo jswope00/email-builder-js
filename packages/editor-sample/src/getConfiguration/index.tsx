@@ -2,6 +2,7 @@ import EMPTY_EMAIL_MESSAGE from './sample/empty-email-message';
 import ONE_TIME_PASSCODE from './sample/one-time-passcode';
 import ORDER_ECOMMERCE from './sample/order-ecommerce';
 import POST_METRICS_REPORT from './sample/post-metrics-report';
+import RHEUMNOW_DAILY from './sample/rheumnow-daily';
 import RESERVATION_REMINDER from './sample/reservation-reminder';
 import RESET_PASSWORD from './sample/reset-password';
 import RESPOND_TO_MESSAGE from './sample/respond-to-message';
@@ -18,6 +19,8 @@ export default function getConfiguration(template: string) {
         return ONE_TIME_PASSCODE;
       case 'order-ecomerce':
         return ORDER_ECOMMERCE;
+      case 'rheumnow-daily':
+        return RHEUMNOW_DAILY;
       case 'post-metrics-report':
         return POST_METRICS_REPORT;
       case 'reservation-reminder':
