@@ -8,6 +8,7 @@ import {
   HtmlOutlined,
   ImageOutlined,
   LibraryAddOutlined,
+  MedicalServicesOutlined,
   NotesOutlined,
   OndemandVideoOutlined,
   SmartButtonOutlined,
@@ -135,6 +136,34 @@ export const BUTTONS: TButtonProps[] = [
     icon: <OndemandVideoOutlined />,
     block: () => ({
       type: 'VideoXml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
+          url: '',
+          numberOfItems: 3,
+        },
+      },
+    }),
+  },
+  {
+    label: 'Therapeutic Update XML',
+    icon: <MedicalServicesOutlined />,
+    block: () => ({
+      type: 'TherapeuticUpdateXml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
+          url: '',
+          numberOfItems: 3,
+        },
+      },
+    }),
+  },
+  {
+    label: 'Featured Story XML',
+    icon: <LibraryAddOutlined />,
+    block: () => ({
+      type: 'FeaturedStoryXml',
       data: {
         style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
         props: {

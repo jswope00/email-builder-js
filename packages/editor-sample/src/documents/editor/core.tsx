@@ -9,6 +9,8 @@ import { Html, HtmlPropsSchema } from '@usewaypoint/block-html';
 import { Image, ImagePropsSchema } from '@usewaypoint/block-image';
 import { Spacer, SpacerPropsSchema } from '@usewaypoint/block-spacer';
 import { Text, TextPropsSchema } from '@usewaypoint/block-text';
+import { FeaturedStoryXml, FeaturedStoryXmlPropsSchema } from '@usewaypoint/block-featured-story-xml';
+import { TherapeuticUpdateXml, TherapeuticUpdateXmlPropsSchema } from '@usewaypoint/block-therapeutic-update-xml';
 import { VideoXml, VideoXmlPropsSchema } from '@usewaypoint/block-video-xml';
 import {
   buildBlockComponent,
@@ -123,6 +125,22 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     Component: (props) => (
       <EditorBlockWrapper>
         <VideoXml {...props} />
+      </EditorBlockWrapper>
+    ),
+  },
+  TherapeuticUpdateXml: {
+    schema: TherapeuticUpdateXmlPropsSchema,
+    Component: (props) => (
+      <EditorBlockWrapper>
+        <TherapeuticUpdateXml {...props} />
+      </EditorBlockWrapper>
+    ),
+  },
+  FeaturedStoryXml: {
+    schema: FeaturedStoryXmlPropsSchema,
+    Component: (props) => (
+      <EditorBlockWrapper>
+        <FeaturedStoryXml {...props} />
       </EditorBlockWrapper>
     ),
   },

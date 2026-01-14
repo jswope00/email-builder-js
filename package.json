@@ -18,7 +18,9 @@
     "packages/block-image",
     "packages/block-spacer",
     "packages/block-text",
+    "packages/block-therapeutic-update-xml",
     "packages/block-video-xml",
+    "packages/block-featured-story-xml",
     "packages/document-core",
     "packages/email-builder",
     "packages/editor-sample"

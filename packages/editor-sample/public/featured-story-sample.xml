@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<response>
+<item key="0">
+<view_node>http://localhost:9001/news/rheumatology-supply-and-demand-2009-2024</view_node>
+<title>Rheumatology Supply and Demand (2009 - 2024)</title>
+<field_article_type>News</field_article_type>
+<field_author_attribution>Jack Cush, MD </field_author_attribution>
+<created>
+<![CDATA[ <time datetime="2025-11-18T18:39:17-05:00">Nov 18, 2025</time> ]]>
+</created>
+<field_show_author>1</field_show_author>
+<type>Article</type>
+<field_additional_authors/>
+<field_media_image>http://localhost:9001/sites/default/files/styles/rheumnow_featured_image_16_9/public/2022-09/US.states.map_.jpg</field_media_image>
+<body>A retrospective review of US rheumatology manpower and training between 2009 and 2024 shows that US rheumatology training has become competitive with an increasing surplus of applicants compared to available training positions, which have also increased over time. </body>
+<field_media_video_embed_field/>
+<field_captions/>
+</item>
+</response>
