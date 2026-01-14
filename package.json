@@ -18,6 +18,7 @@
     "packages/block-image",
     "packages/block-spacer",
     "packages/block-text",
+    "packages/block-video-xml",
     "packages/document-core",
     "packages/email-builder",
     "packages/editor-sample"

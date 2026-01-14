@@ -9,6 +9,7 @@ import {
   ImageOutlined,
   LibraryAddOutlined,
   NotesOutlined,
+  OndemandVideoOutlined,
   SmartButtonOutlined,
   ViewColumnOutlined,
 } from '@mui/icons-material';
@@ -125,6 +126,20 @@ export const BUTTONS: TButtonProps[] = [
           fontSize: 16,
           textAlign: null,
           padding: { top: 16, bottom: 16, left: 24, right: 24 },
+        },
+      },
+    }),
+  },
+  {
+    label: 'Video XML',
+    icon: <OndemandVideoOutlined />,
+    block: () => ({
+      type: 'VideoXml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
+          url: '',
+          numberOfItems: 3,
         },
       },
     }),

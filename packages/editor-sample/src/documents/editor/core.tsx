@@ -9,6 +9,7 @@ import { Html, HtmlPropsSchema } from '@usewaypoint/block-html';
 import { Image, ImagePropsSchema } from '@usewaypoint/block-image';
 import { Spacer, SpacerPropsSchema } from '@usewaypoint/block-spacer';
 import { Text, TextPropsSchema } from '@usewaypoint/block-text';
+import { VideoXml, VideoXmlPropsSchema } from '@usewaypoint/block-video-xml';
 import {
   buildBlockComponent,
   buildBlockConfigurationDictionary,
@@ -114,6 +115,14 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     Component: (props) => (
       <EditorBlockWrapper>
         <Divider {...props} />
+      </EditorBlockWrapper>
+    ),
+  },
+  VideoXml: {
+    schema: VideoXmlPropsSchema,
+    Component: (props) => (
+      <EditorBlockWrapper>
+        <VideoXml {...props} />
       </EditorBlockWrapper>
     ),
   },
