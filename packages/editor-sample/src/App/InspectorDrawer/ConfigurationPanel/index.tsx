@@ -17,6 +17,7 @@ import ImageSidebarPanel from './input-panels/ImageSidebarPanel';
 import SpacerSidebarPanel from './input-panels/SpacerSidebarPanel';
 import TextSidebarPanel from './input-panels/TextSidebarPanel';
 import FeaturedStoryXmlSidebarPanel from './input-panels/FeaturedStoryXmlSidebarPanel';
+import NewsPanelXmlSidebarPanel from './input-panels/NewsPanelXmlSidebarPanel';
 import TherapeuticUpdateXmlSidebarPanel from './input-panels/TherapeuticUpdateXmlSidebarPanel';
 import VideoXmlSidebarPanel from './input-panels/VideoXmlSidebarPanel';
 
@@ -76,6 +77,10 @@ export default function ConfigurationPanel() {
     case 'FeaturedStoryXml':
       return (
         <FeaturedStoryXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
+      );
+    case 'NewsPanelXml':
+      return (
+        <NewsPanelXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
       );
     default:
       return <pre>{JSON.stringify(block, null, '  ')}</pre>;

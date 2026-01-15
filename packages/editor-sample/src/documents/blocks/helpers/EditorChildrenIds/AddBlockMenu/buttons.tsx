@@ -174,6 +174,16 @@ export const BUTTONS: TButtonProps[] = [
     }),
   },
   {
+    label: 'News Panel XML',
+    icon: <LibraryAddOutlined />,
+    block: () => ({
+      type: 'NewsPanelXml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+      },
+    }),
+  },
+  {
     label: 'Columns',
     icon: <ViewColumnOutlined />,
     block: () => ({

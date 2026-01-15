@@ -114,7 +114,8 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         "columns": [
           {
             "childrenIds": [
-              "block-1768403411244"
+              "block-1768403411244",
+              "block-1768407011577"
             ]
           },
           {
@@ -180,6 +181,23 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
       "props": {
         "url": "/email-builder-js/featured-story-sample.xml",
         "numberOfItems": 3
+      }
+    }
+  },
+  "block-1768407011577": {
+    "type": "NewsPanelXml",
+    "data": {
+      "style": {
+        "padding": {
+          "top": 16,
+          "bottom": 16,
+          "right": 24,
+          "left": 24
+        }
+      },
+      "props": {
+        "url": "/email-builder-js/news-panel-sample.xml",
+        "numberOfItems": 7
       }
     }
   }
