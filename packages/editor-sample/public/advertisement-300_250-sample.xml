@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<response>
+<item key="0">
+<title>APP Campaign - Sanofi</title>
+<field_ad_image>http://localhost:9001/sites/default/files/2025-11/Static-300x250.png</field_ad_image>
+<field_ad_image_1>Sanofi Ad Alt text</field_ad_image_1>
+<field_destination_url>https://www.kevzara.com/hcp/pmr</field_destination_url>
+<field_tracking_code/>
+<nothing>
+<![CDATA[ <div> <a target="_blank" href="https://www.kevzara.com/hcp/pmr"> <img src="http://localhost:9001/sites/default/files/2025-11/Static-300x250.png" alt="Sanofi Ad Alt text" /> </a> <div class="tracking-code"></div> </div> <div><span class="text-align-center">Advertisement</span></div> ]]>
+</nothing>
+<field_topics>Psoriatic arthritis</field_topics>
+</item>
+</response>

@@ -214,6 +214,20 @@ export const BUTTONS: TButtonProps[] = [
     }),
   },
   {
+    label: 'Advertisement 300x250 XML',
+    icon: <CampaignOutlined />,
+    block: () => ({
+      type: 'Advertisement300250Xml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
+          url: '',
+          numberOfItems: 3,
+        },
+      },
+    }),
+  },
+  {
     label: 'Columns',
     icon: <ViewColumnOutlined />,
     block: () => ({
