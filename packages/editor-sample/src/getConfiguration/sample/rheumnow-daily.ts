@@ -12,7 +12,7 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
       "childrenIds": [
         "block-1768334945842",
         "block-1768335038626",
-        "block-1768335072847",
+        "block-1768490815464",
         "block-1768351919257",
         "block-1768334883321"
       ]
@@ -69,25 +69,6 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
           "right": 24,
           "left": 24
         }
-      }
-    }
-  },
-  "block-1768335072847": {
-    "type": "Image",
-    "data": {
-      "style": {
-        "padding": {
-          "top": 16,
-          "bottom": 16,
-          "right": 24,
-          "left": 24
-        }
-      },
-      "props": {
-        "url": "https://rheumnow.com/sites/default/files/2025-12/7SAN_KEVL_Kevzara_RHM_PMR%20HCP_FirstandOnly_LRNMR_STA_728x90_NA_EN.png",
-        "alt": "Sample product",
-        "linkHref": null,
-        "contentAlignment": "middle"
       }
     }
   },
@@ -216,6 +197,23 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
       "props": {
         "url": "/email-builder-js/blog-sample.xml",
         "title": "Blogs",
+        "numberOfItems": 3
+      }
+    }
+  },
+  "block-1768490815464": {
+    "type": "Advertisement72890Xml",
+    "data": {
+      "style": {
+        "padding": {
+          "top": 16,
+          "bottom": 16,
+          "right": 24,
+          "left": 24
+        }
+      },
+      "props": {
+        "url": "/email-builder-js/advertisement-728_90-sample.xml",
         "numberOfItems": 3
       }
     }

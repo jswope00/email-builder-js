@@ -5,6 +5,7 @@ import { Box, Typography } from '@mui/material';
 import { TEditorBlock } from '../../../documents/editor/core';
 import { setDocument, useDocument, useSelectedBlockId } from '../../../documents/editor/EditorContext';
 
+import Advertisement72890XmlSidebarPanel from './input-panels/Advertisement72890XmlSidebarPanel';
 import AvatarSidebarPanel from './input-panels/AvatarSidebarPanel';
 import BlogXmlSidebarPanel from './input-panels/BlogXmlSidebarPanel';
 import ButtonSidebarPanel from './input-panels/ButtonSidebarPanel';
@@ -86,6 +87,10 @@ export default function ConfigurationPanel() {
     case 'BlogXml':
       return (
         <BlogXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
+      );
+    case 'Advertisement72890Xml':
+      return (
+        <Advertisement72890XmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
       );
     default:
       return <pre>{JSON.stringify(block, null, '  ')}</pre>;

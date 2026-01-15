@@ -23,6 +23,7 @@
     "packages/block-featured-story-xml",
     "packages/block-news-panel-xml",
     "packages/block-blog-xml",
+    "packages/block-advertisement-728-90-xml",
     "packages/document-core",
     "packages/email-builder",
     "packages/editor-sample"
