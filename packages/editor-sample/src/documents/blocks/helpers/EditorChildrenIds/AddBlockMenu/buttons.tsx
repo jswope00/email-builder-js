@@ -2,6 +2,7 @@ import React from 'react';
 
 import {
   AccountCircleOutlined,
+  ArticleOutlined,
   Crop32Outlined,
   HMobiledataOutlined,
   HorizontalRuleOutlined,
@@ -180,6 +181,20 @@ export const BUTTONS: TButtonProps[] = [
       type: 'NewsPanelXml',
       data: {
         style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+      },
+    }),
+  },
+  {
+    label: 'Blog XML',
+    icon: <ArticleOutlined />,
+    block: () => ({
+      type: 'BlogXml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
+          url: '',
+          numberOfItems: 3,
+        },
       },
     }),
   },

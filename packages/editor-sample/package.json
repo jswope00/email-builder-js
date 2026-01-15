@@ -27,6 +27,7 @@
     "@usewaypoint/block-video-xml": "*",
     "@usewaypoint/block-featured-story-xml": "*",
     "@usewaypoint/block-news-panel-xml": "*",
+    "@usewaypoint/block-blog-xml": "*",
     "@usewaypoint/document-core": "^0.0.6",
     "@usewaypoint/email-builder": "^0.0.9",
     "highlight.js": "^11.9.0",

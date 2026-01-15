@@ -2,6 +2,7 @@ import React from 'react';
 import { z } from 'zod';
 
 import { Avatar, AvatarPropsSchema } from '@usewaypoint/block-avatar';
+import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
 import { Button, ButtonPropsSchema } from '@usewaypoint/block-button';
 import { Divider, DividerPropsSchema } from '@usewaypoint/block-divider';
 import { Heading, HeadingPropsSchema } from '@usewaypoint/block-heading';
@@ -150,6 +151,14 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     Component: (props) => (
       <EditorBlockWrapper>
         <NewsPanelXml {...props} />
+      </EditorBlockWrapper>
+    ),
+  },
+  BlogXml: {
+    schema: BlogXmlPropsSchema,
+    Component: (props) => (
+      <EditorBlockWrapper>
+        <BlogXml {...props} />
       </EditorBlockWrapper>
     ),
   },

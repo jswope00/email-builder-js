@@ -121,6 +121,7 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
           {
             "childrenIds": [
               "block-1768354210296",
+              "block-1768489425507",
               "block-1768351929839"
             ]
           },
@@ -198,6 +199,24 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
       "props": {
         "url": "/email-builder-js/news-panel-sample.xml",
         "numberOfItems": 7
+      }
+    }
+  },
+  "block-1768489425507": {
+    "type": "BlogXml",
+    "data": {
+      "style": {
+        "padding": {
+          "top": 16,
+          "bottom": 16,
+          "right": 24,
+          "left": 24
+        }
+      },
+      "props": {
+        "url": "/email-builder-js/blog-sample.xml",
+        "title": "Blogs",
+        "numberOfItems": 3
       }
     }
   }

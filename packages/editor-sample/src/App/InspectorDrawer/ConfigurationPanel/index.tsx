@@ -6,6 +6,7 @@ import { TEditorBlock } from '../../../documents/editor/core';
 import { setDocument, useDocument, useSelectedBlockId } from '../../../documents/editor/EditorContext';
 
 import AvatarSidebarPanel from './input-panels/AvatarSidebarPanel';
+import BlogXmlSidebarPanel from './input-panels/BlogXmlSidebarPanel';
 import ButtonSidebarPanel from './input-panels/ButtonSidebarPanel';
 import ColumnsContainerSidebarPanel from './input-panels/ColumnsContainerSidebarPanel';
 import ContainerSidebarPanel from './input-panels/ContainerSidebarPanel';
@@ -81,6 +82,10 @@ export default function ConfigurationPanel() {
     case 'NewsPanelXml':
       return (
         <NewsPanelXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
+      );
+    case 'BlogXml':
+      return (
+        <BlogXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
       );
     default:
       return <pre>{JSON.stringify(block, null, '  ')}</pre>;

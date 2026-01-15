@@ -22,6 +22,7 @@
     "packages/block-video-xml",
     "packages/block-featured-story-xml",
     "packages/block-news-panel-xml",
+    "packages/block-blog-xml",
     "packages/document-core",
     "packages/email-builder",
     "packages/editor-sample"
