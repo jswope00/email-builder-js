@@ -9,6 +9,7 @@ import Advertisement300250XmlSidebarPanel from './input-panels/Advertisement3002
 import Advertisement72890XmlSidebarPanel from './input-panels/Advertisement72890XmlSidebarPanel';
 import AvatarSidebarPanel from './input-panels/AvatarSidebarPanel';
 import BlogXmlSidebarPanel from './input-panels/BlogXmlSidebarPanel';
+import DailyDownloadXmlSidebarPanel from './input-panels/DailyDownloadXmlSidebarPanel';
 import ButtonSidebarPanel from './input-panels/ButtonSidebarPanel';
 import ColumnsContainerSidebarPanel from './input-panels/ColumnsContainerSidebarPanel';
 import ContainerSidebarPanel from './input-panels/ContainerSidebarPanel';
@@ -96,6 +97,10 @@ export default function ConfigurationPanel() {
     case 'Advertisement300250Xml':
       return (
         <Advertisement300250XmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
+      );
+    case 'DailyDownloadXml':
+      return (
+        <DailyDownloadXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
       );
     default:
       return <pre>{JSON.stringify(block, null, '  ')}</pre>;

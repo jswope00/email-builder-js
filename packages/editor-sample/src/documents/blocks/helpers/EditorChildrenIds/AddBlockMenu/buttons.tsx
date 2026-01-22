@@ -5,6 +5,7 @@ import {
   ArticleOutlined,
   CampaignOutlined,
   Crop32Outlined,
+  DownloadOutlined,
   HMobiledataOutlined,
   HorizontalRuleOutlined,
   HtmlOutlined,
@@ -218,6 +219,20 @@ export const BUTTONS: TButtonProps[] = [
     icon: <CampaignOutlined />,
     block: () => ({
       type: 'Advertisement300250Xml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
+          url: '',
+          numberOfItems: 3,
+        },
+      },
+    }),
+  },
+  {
+    label: 'Daily Download XML',
+    icon: <DownloadOutlined />,
+    block: () => ({
+      type: 'DailyDownloadXml',
       data: {
         style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
         props: {

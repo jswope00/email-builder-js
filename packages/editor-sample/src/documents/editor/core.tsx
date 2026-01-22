@@ -5,6 +5,7 @@ import { Advertisement300250Xml, Advertisement300250XmlPropsSchema } from '@usew
 import { Advertisement72890Xml, Advertisement72890XmlPropsSchema } from '@usewaypoint/block-advertisement-728-90-xml';
 import { Avatar, AvatarPropsSchema } from '@usewaypoint/block-avatar';
 import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
+import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
 import { Button, ButtonPropsSchema } from '@usewaypoint/block-button';
 import { Divider, DividerPropsSchema } from '@usewaypoint/block-divider';
 import { Heading, HeadingPropsSchema } from '@usewaypoint/block-heading';
@@ -177,6 +178,14 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     Component: (props) => (
       <EditorBlockWrapper>
         <Advertisement300250Xml {...props} />
+      </EditorBlockWrapper>
+    ),
+  },
+  DailyDownloadXml: {
+    schema: DailyDownloadXmlPropsSchema,
+    Component: (props) => (
+      <EditorBlockWrapper>
+        <DailyDownloadXml {...props} />
       </EditorBlockWrapper>
     ),
   },

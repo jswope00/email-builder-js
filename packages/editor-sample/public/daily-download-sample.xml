@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<response>
+<item key="0">
+<view_node>http://localhost:9001/resource/icymi-head-head-clinical-trials</view_node>
+<title>ICYMI: Head-to-Head Clinical Trials</title>
+<nid>47856</nid>
+<field_primary_topic>General Rheumatology</field_primary_topic>
+<field_secondary_topics>Anti-Rheumatic Rx, Autoinflammatory, Drug Safety, Education/ACR/EULAR, Fibromyalgia/Pain, Gout, Lupus, Novel Rx, Psoriatic arthritis, Rheumatoid Arthritis, Spondyloarthritis, TNF inhibitor</field_secondary_topics>
+<field_dashboard_tags/>
+<thumbnail__target_id>http://localhost:9001/sites/default/files/styles/rheumnow_featured_image_16_9/public/2025-01/Screen%20Shot%202025-01-20%20at%205.49.41%20PM.png?h=c62cee99</thumbnail__target_id>
+</item>
+</response>
