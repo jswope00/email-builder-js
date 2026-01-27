@@ -181,7 +181,7 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/news-panel-sample.xml",
+        "url": "https://rheumnow.com/admin/daily_news_xml",
         "numberOfItems": 7
       }
     }
