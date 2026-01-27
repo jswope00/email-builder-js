@@ -1,6 +1,6 @@
 import { TEditorConfiguration } from '../../documents/editor/core';
 
-const RHEUMNOW_DAILY: TEditorConfiguration = {
+const RHEUMNOW_DAILY_LOCAL: TEditorConfiguration = {
   "root": {
     "type": "EmailLayout",
     "data": {
@@ -276,4 +276,4 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
   }
 }
 
-export default RHEUMNOW_DAILY;
+export default RHEUMNOW_DAILY_LOCAL;

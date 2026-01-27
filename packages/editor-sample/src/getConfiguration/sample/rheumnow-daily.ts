@@ -164,7 +164,7 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/featured-story-sample.xml",
+        "url": "https://rheumnow.com/admin/featured-story-xml",
         "numberOfItems": 3
       }
     }
@@ -198,7 +198,7 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/blog-sample.xml",
+        "url": "https://rheumnow.com/admin/blogs_xml",
         "title": "Blogs",
         "numberOfItems": 3
       }
@@ -216,7 +216,7 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/advertisement-728_90-sample.xml",
+        "url": "https://rheumnow.com/admin/email_ad_728_90_xml",
         "numberOfItems": 3
       }
     }
@@ -233,7 +233,7 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/advertisement-300_250-sample.xml",
+        "url": "https://rheumnow.com/admin/email_ad_300_250_xml",
         "numberOfItems": 3
       }
     }

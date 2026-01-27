@@ -1,1 +1,1 @@
-{"version":3,"file":"rheumnow-daily.d.ts","sourceRoot":"","sources":["rheumnow-daily.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,oBAAoB,EAAE,MAAM,6BAA6B,CAAC;AAEnE,QAAA,MAAM,oBAAoB,EAAE,oBAg0C3B,CAAC;AAEF,eAAe,oBAAoB,CAAC"}
+{"version":3,"file":"rheumnow-daily-local.d.ts","sourceRoot":"","sources":["rheumnow-daily-local.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,oBAAoB,EAAE,MAAM,6BAA6B,CAAC;AAEnE,QAAA,MAAM,oBAAoB,EAAE,oBAg0C3B,CAAC;AAEF,eAAe,oBAAoB,CAAC"}

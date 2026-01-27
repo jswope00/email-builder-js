@@ -30,7 +30,7 @@ export default function SamplesDrawer() {
           <Stack alignItems="flex-start">
             <SidebarButton href="#">Empty</SidebarButton>
             <SidebarButton href="#sample/rheumnow-daily">Rheumnow daily</SidebarButton>
-            <SidebarButton href="#sample/rheumnow-daily">Rheumnow daily (local)</SidebarButton>
+            <SidebarButton href="#sample/rheumnow-daily-local">Rheumnow daily (local)</SidebarButton>
           </Stack>
 
           <Divider />
