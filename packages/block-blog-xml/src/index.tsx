@@ -74,7 +74,7 @@ function parseBlogXml(xmlText: string, numberOfItems: number): BlogItem[] {
 
       if (Array.isArray(obj)) {
         const first = obj[0];
-        if (first && (first.title || first.thumbnail__target_id || first.nid || first.view_node)) {
+        if (first && (first.title || first.field_media_image || first.nid || first.view_node)) {
           foundItems = obj;
           return;
         }
@@ -100,7 +100,7 @@ function parseBlogXml(xmlText: string, numberOfItems: number): BlogItem[] {
 
     const mappedItems: BlogItem[] = foundItems.map((item: any) => {
       const createdDate = extractDate(item.created || '');
-      const image = item.field_media_image || item.thumbnail__target_id || '';
+      const image = item.field_media_image || item.field_media_image || '';
       const showAuthor = item.field_show_author == 1 || item.field_show_author === '1';
 
       return {
