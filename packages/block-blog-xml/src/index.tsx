@@ -58,16 +58,106 @@ const getBrandingImageUrl = (articleType: string): string | null => {
   return null;
 };
 
+// Helper function to parse XML and extract blog items
+function parseBlogXml(xmlText: string, numberOfItems: number): BlogItem[] {
+  try {
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: '@_',
+    });
+    const result = parser.parse(xmlText);
+
+    let foundItems: any[] = [];
+
+    const findItems = (obj: any) => {
+      if (foundItems.length > 0) return;
+
+      if (Array.isArray(obj)) {
+        const first = obj[0];
+        if (first && (first.title || first.thumbnail__target_id || first.nid || first.view_node)) {
+          foundItems = obj;
+          return;
+        }
+        for (const item of obj) {
+          findItems(item);
+        }
+      } else if (typeof obj === 'object' && obj !== null) {
+        if (obj.item && Array.isArray(obj.item)) {
+          foundItems = obj.item;
+          return;
+        }
+        if (obj.item && typeof obj.item === 'object') {
+          foundItems = [obj.item];
+          return;
+        }
+        for (const key in obj) {
+          findItems(obj[key]);
+        }
+      }
+    };
+
+    findItems(result);
+
+    const mappedItems: BlogItem[] = foundItems.map((item: any) => {
+      const createdDate = extractDate(item.created || '');
+      const image = item.field_media_image || item.thumbnail__target_id || '';
+      const showAuthor = item.field_show_author == 1 || item.field_show_author === '1';
+
+      return {
+        title: item.title || '',
+        author: item.field_author_attribution || '',
+        createdDate: createdDate,
+        image: image,
+        body: item.body || '',
+        viewNode: item.view_node || '',
+        showAuthor: showAuthor,
+        articleType: item.field_article_type || '',
+      };
+    });
+
+    return mappedItems.slice(0, numberOfItems);
+  } catch (err) {
+    console.error('Error parsing blog XML:', err);
+    return [];
+  }
+}
+
 export function BlogXml({ style, props }: BlogXmlProps) {
   const url = props?.url ?? BlogXmlPropsDefaults.url;
   const title = props?.title ?? BlogXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? BlogXmlPropsDefaults.numberOfItems;
 
-  const [items, setItems] = useState<BlogItem[]>([]);
+  // Try to get pre-fetched XML data from context (for SSR)
+  // The context should be provided by email-builder's XmlDataProvider
+  // We'll use a workaround to access it without importing the package
+  let preFetchedXmlText: string | null = null;
+  try {
+    // Try to access the context via React's context system
+    // Since we can't import the context directly, we'll use a symbol-based lookup
+    if (url && typeof window === 'undefined') {
+      // In SSR, check if context data is available via a global
+      // The renderToStaticMarkup function will set this up
+      const contextData = (global as any).__XML_DATA_CONTEXT__;
+      if (contextData && contextData[url]) {
+        preFetchedXmlText = contextData[url];
+      }
+    }
+  } catch {
+    // Context not available, will use useEffect fallback
+  }
+  
+  // Parse pre-fetched data synchronously if available
+  const preFetchedItems = preFetchedXmlText ? parseBlogXml(preFetchedXmlText, numberOfItems) : null;
+
+  const [items, setItems] = useState<BlogItem[]>(preFetchedItems || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Skip fetching if we already have pre-fetched data
+    if (preFetchedItems) {
+      return;
+    }
     if (!url) {
         setItems([]);
         return;
@@ -83,61 +173,8 @@ export function BlogXml({ style, props }: BlogXmlProps) {
         }
         const text = await response.text();
         
-        const parser = new XMLParser({
-            ignoreAttributes: false,
-            attributeNamePrefix : "@_"
-        });
-        const result = parser.parse(text);
-        
-        let foundItems: any[] = [];
-        
-        const findItems = (obj: any) => {
-             if (foundItems.length > 0) return;
-             
-             if (Array.isArray(obj)) {
-                 const first = obj[0];
-                 if (first && (first.title || first.thumbnail__target_id || first.nid || first.view_node)) {
-                     foundItems = obj;
-                     return;
-                 }
-                 for (const item of obj) {
-                     findItems(item);
-                 }
-             } else if (typeof obj === 'object' && obj !== null) {
-                 if (obj.item && Array.isArray(obj.item)) {
-                     foundItems = obj.item;
-                     return;
-                 }
-                 if (obj.item && typeof obj.item === 'object') {
-                     foundItems = [obj.item];
-                     return;
-                 }
-                 for (const key in obj) {
-                     findItems(obj[key]);
-                 }
-             }
-        };
-
-        findItems(result);
-
-        const mappedItems: BlogItem[] = foundItems.map((item: any) => {
-            const createdDate = extractDate(item.created || '');
-            const image = item.field_media_image || item.thumbnail__target_id || '';
-            const showAuthor = item.field_show_author == 1 || item.field_show_author === '1';
-
-            return {
-                title: item.title || '',
-                author: item.field_author_attribution || '',
-                createdDate: createdDate,
-                image: image,
-                body: item.body || '',
-                viewNode: item.view_node || '',
-                showAuthor: showAuthor,
-                articleType: item.field_article_type || '',
-            };
-        });
-
-        setItems(mappedItems.slice(0, numberOfItems));
+        const parsedItems = parseBlogXml(text, numberOfItems);
+        setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
         console.error(err);
@@ -147,7 +184,7 @@ export function BlogXml({ style, props }: BlogXmlProps) {
     };
 
     fetchData();
-  }, [url, numberOfItems]);
+  }, [url, numberOfItems, preFetchedItems]);
 
   const padding = style?.padding;
   const wrapperStyle = {

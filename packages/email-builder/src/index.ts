@@ -1,4 +1,5 @@
 export { default as renderToStaticMarkup } from './renderers/renderToStaticMarkup';
+export { useXmlData, XmlDataProvider, type XmlDataMap } from './Reader/XmlDataContext';
 
 export {
   ReaderBlockSchema,
