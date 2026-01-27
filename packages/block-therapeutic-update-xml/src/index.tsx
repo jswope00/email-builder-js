@@ -32,6 +32,7 @@ type UpdateItem = {
   authorAttribution: string;
   image: string;
   body: string;
+  viewNode: string;
   isSponsored: boolean;
   showAuthor: boolean;
 };
@@ -126,6 +127,7 @@ export function TherapeuticUpdateXml({ style, props }: TherapeuticUpdateXmlProps
                 authorAttribution: authorAttribution,
                 image: item.field_media_image || '',
                 body: item.body || '',
+                viewNode: item.view_node || '',
                 isSponsored: item.field_rxu_is_sponsored === 'On',
                 showAuthor: item.field_show_author == 1 || item.field_show_author === '1',
             };
@@ -177,7 +179,13 @@ export function TherapeuticUpdateXml({ style, props }: TherapeuticUpdateXmlProps
       )}
       {items.map((item, index) => (
         <div key={index} style={{ marginBottom: 24, paddingBottom: 16, borderBottom: index < items.length - 1 ? '1px solid #eee' : 'none' }}>
-            <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4' }}>{item.title}</h3>
+            {item.viewNode ? (
+              <a href={item.viewNode} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4', color: '#333' }}>{item.title}</h3>
+              </a>
+            ) : (
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4' }}>{item.title}</h3>
+            )}
             
             <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
                 {item.showAuthor && item.authorAttribution && (
@@ -192,8 +200,18 @@ export function TherapeuticUpdateXml({ style, props }: TherapeuticUpdateXmlProps
                 </div>
             </div>
 
-            {item.image && (
-                <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 }} />
+            {item.viewNode ? (
+              <a href={item.viewNode} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                {item.image && (
+                  <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 }} />
+                )}
+              </a>
+            ) : (
+              <>
+                {item.image && (
+                  <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 }} />
+                )}
+              </>
             )}
 
             {item.body && (
