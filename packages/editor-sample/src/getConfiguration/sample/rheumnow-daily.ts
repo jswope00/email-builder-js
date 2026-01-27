@@ -250,7 +250,7 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/daily-download-sample.xml",
+        "url": "https://rheumnow.com/admin/daily_download_xml",
         "title": "Daily Download",
         "numberOfItems": 3
       }
