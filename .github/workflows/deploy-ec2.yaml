@@ -1,0 +1,125 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: ['main']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: 'ec2-deploy'
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Force reinstall optional dependencies
+        run: npm install --force --no-save rollup @swc/core
+
+      - name: Build all packages
+        run: npm run build --workspaces
+
+      - name: Create deployment archive
+        run: |
+          mkdir -p deploy
+          cp -r packages/editor-sample/dist deploy/frontend
+          cp -r packages/email-builder-api/dist deploy/api
+          cp packages/email-builder-api/package.json deploy/api/
+          cp package-lock.json deploy/
+          tar -czf deploy.tar.gz deploy/
+
+      - name: Deploy to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_DEPLOY_PATH: ${{ secrets.EC2_DEPLOY_PATH }}
+        run: |
+          # Setup SSH
+          mkdir -p ~/.ssh
+          echo "$EC2_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts 2>/dev/null || true
+          
+          # Copy deployment archive to EC2
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no deploy.tar.gz $EC2_USER@$EC2_HOST:$EC2_DEPLOY_PATH/
+          
+          # Extract and deploy on EC2
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST bash << EOF
+            set -e
+            DEPLOY_PATH="$EC2_DEPLOY_PATH"
+            cd "\$DEPLOY_PATH"
+            
+            # Backup current deployment
+            if [ -d "current" ]; then
+              mv current "backup-\$(date +%Y%m%d-%H%M%S)"
+            fi
+            
+            # Extract new deployment
+            tar -xzf deploy.tar.gz
+            mv deploy current
+            
+            # Preserve .env file if it exists from previous deployment
+            if [ -f "\$DEPLOY_PATH/backup-"*"/api/.env" ]; then
+              ENV_FILE=\$(ls -t "\$DEPLOY_PATH/backup-"*/api/.env 2>/dev/null | head -1)
+              if [ -n "\$ENV_FILE" ] && [ -f "\$ENV_FILE" ]; then
+                cp "\$ENV_FILE" current/api/.env
+                echo "✅ Preserved .env file from previous deployment"
+              fi
+            fi
+            
+            # Install API dependencies
+            cd current/api
+            npm ci --production
+            
+            # Restart services (adjust based on your setup)
+            cd "\$DEPLOY_PATH"
+            
+            # Option 1: PM2 (recommended)
+            if command -v pm2 &> /dev/null; then
+              if pm2 list | grep -q "email-builder-api"; then
+                pm2 restart email-builder-api --update-env
+              else
+                pm2 start ecosystem.config.js
+              fi
+              pm2 save
+            fi
+            
+            # Option 2: systemd (uncomment if using systemd)
+            # sudo systemctl restart email-builder-api || true
+            
+            # Option 3: Direct node (uncomment if using direct node)
+            # pkill -f "node.*email-builder-api" || true
+            # nohup node current/api/dist/index.js > logs/api.log 2>&1 &
+            
+            # Cleanup old backups (keep last 5)
+            ls -dt backup-* 2>/dev/null | tail -n +6 | xargs rm -rf || true
+            
+            # Cleanup deployment archive
+            rm -f deploy.tar.gz
+            
+            echo "✅ Deployment completed successfully"
+          EOF
+
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f deploy.tar.gz
+          rm -rf deploy
