@@ -40,7 +40,9 @@ jobs:
         run: |
           mkdir -p deploy
           cp -r packages/editor-sample/dist deploy/frontend
-          cp -r packages/email-builder-api/dist deploy/api
+          # Copy dist contents to api directory (preserve dist structure)
+          mkdir -p deploy/api
+          cp -r packages/email-builder-api/dist/* deploy/api/ 2>/dev/null || cp -r packages/email-builder-api/dist deploy/api/dist
           cp packages/email-builder-api/package.json deploy/api/
           tar -czf deploy.tar.gz deploy/
 
@@ -89,15 +91,72 @@ jobs:
             # Use npm install for monorepo subdirectory deployment
             npm install --production --legacy-peer-deps
             
+            # Verify built files exist (they may be in dist/ or directly in api/)
+            echo "Checking for built files..."
+            
+            # Find the entry point file (check both dist/ and current directory)
+            ENTRY_FILE=""
+            if [ -f "dist/index.js" ]; then
+              ENTRY_FILE="dist/index.js"
+            elif [ -f "index.js" ]; then
+              ENTRY_FILE="index.js"
+            elif [ -f "dist/index.cjs" ]; then
+              ENTRY_FILE="dist/index.cjs"
+            elif [ -f "index.cjs" ]; then
+              ENTRY_FILE="index.cjs"
+            elif [ -f "dist/index.mjs" ]; then
+              ENTRY_FILE="dist/index.mjs"
+            elif [ -f "index.mjs" ]; then
+              ENTRY_FILE="index.mjs"
+            else
+              echo "❌ Error: No entry file found"
+              echo "Current directory: \$(pwd)"
+              echo "Files in current directory:"
+              ls -la
+              if [ -d "dist" ]; then
+                echo "Files in dist directory:"
+                ls -la dist/
+              fi
+              exit 1
+            fi
+            
+            echo "✅ Found entry file: \$ENTRY_FILE"
+            
             # Restart services (adjust based on your setup)
             cd "\$DEPLOY_PATH"
             
             # Option 1: PM2 (recommended)
             if command -v pm2 &> /dev/null; then
+              # Verify the file exists before starting PM2
+              ENTRY_PATH="current/api/\$ENTRY_FILE"
+              if [ ! -f "\$ENTRY_PATH" ]; then
+                echo "❌ Error: Entry file not found at \$ENTRY_PATH"
+                echo "Current directory: \$(pwd)"
+                echo "Looking for: \$ENTRY_PATH"
+                ls -la current/api/dist/ || echo "dist directory listing failed"
+                exit 1
+              fi
+              
+              # Update ecosystem.config.js with correct entry file path if it exists
+              if [ -f "ecosystem.config.js" ]; then
+                # Update the script path in ecosystem.config.js to match actual file location
+                sed -i "s|script:.*|script: './current/api/\$ENTRY_FILE',|" ecosystem.config.js
+                echo "Updated ecosystem.config.js with entry file: ./current/api/\$ENTRY_FILE"
+              fi
+              
               if pm2 list | grep -q "email-builder-api"; then
+                echo "Restarting existing PM2 process..."
                 pm2 restart email-builder-api --update-env
               else
-                pm2 start ecosystem.config.js
+                echo "Starting new PM2 process..."
+                # Try using ecosystem config first, fallback to direct start
+                if [ -f "ecosystem.config.js" ]; then
+                  pm2 start ecosystem.config.js
+                else
+                  # Use absolute path - PM2 will use script's directory as cwd
+                  ABS_ENTRY_PATH="\$(pwd)/\$ENTRY_PATH"
+                  pm2 start "\$ABS_ENTRY_PATH" --name email-builder-api
+                fi
               fi
               pm2 save
             fi

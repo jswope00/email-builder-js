@@ -54,7 +54,7 @@ cat > "$DEPLOY_PATH/ecosystem.config.js" << 'EOF'
 module.exports = {
   apps: [{
     name: 'email-builder-api',
-    script: './current/api/dist/index.js',
+    script: './current/api/index.js',
     cwd: '/var/www/email-builder',
     instances: 1,
     exec_mode: 'fork',
