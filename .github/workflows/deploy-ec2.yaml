@@ -42,7 +42,6 @@ jobs:
           cp -r packages/editor-sample/dist deploy/frontend
           cp -r packages/email-builder-api/dist deploy/api
           cp packages/email-builder-api/package.json deploy/api/
-          cp package-lock.json deploy/
           tar -czf deploy.tar.gz deploy/
 
       - name: Deploy to EC2
@@ -87,7 +86,8 @@ jobs:
             
             # Install API dependencies
             cd current/api
-            npm ci --production
+            # Use npm install for monorepo subdirectory deployment
+            npm install --production --legacy-peer-deps
             
             # Restart services (adjust based on your setup)
             cd "\$DEPLOY_PATH"
