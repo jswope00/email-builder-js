@@ -29,6 +29,7 @@
     "packages/block-daily-download-xml",
     "packages/document-core",
     "packages/email-builder",
+    "packages/email-builder-api",
     "packages/editor-sample"
   ],
   "scripts": {

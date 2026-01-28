@@ -1,0 +1,9 @@
+# Ignore any local database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Keep schema and migration files
+!schema.sql
+!migrations/
+!README.md

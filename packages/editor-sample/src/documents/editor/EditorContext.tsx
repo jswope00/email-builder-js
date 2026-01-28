@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 
-import getConfiguration from '../../getConfiguration';
+import getConfiguration, { getConfigurationAsync } from '../../getConfiguration';
 
 import { TEditorConfiguration } from './core';
 
 type TValue = {
   document: TEditorConfiguration;
+  isLoading: boolean;
+  loadError: string | null;
 
   selectedBlockId: string | null;
   selectedSidebarTab: 'block-configuration' | 'styles';
@@ -18,6 +20,8 @@ type TValue = {
 
 const editorStateStore = create<TValue>(() => ({
   document: getConfiguration(window.location.hash),
+  isLoading: false,
+  loadError: null,
   selectedBlockId: null,
   selectedSidebarTab: 'styles',
   selectedMainTab: 'editor',
@@ -26,6 +30,22 @@ const editorStateStore = create<TValue>(() => ({
   inspectorDrawerOpen: true,
   samplesDrawerOpen: true,
 }));
+
+// Load template from API if needed
+const hash = window.location.hash;
+if (hash.startsWith('#template/')) {
+  editorStateStore.setState({ isLoading: true });
+  getConfigurationAsync(hash)
+    .then((config) => {
+      editorStateStore.setState({ document: config, isLoading: false, loadError: null });
+    })
+    .catch((error) => {
+      editorStateStore.setState({
+        isLoading: false,
+        loadError: error.message || 'Failed to load template',
+      });
+    });
+}
 
 export function useDocument() {
   return editorStateStore((s) => s.document);
@@ -106,4 +126,25 @@ export function toggleSamplesDrawerOpen() {
 
 export function setSelectedScreenSize(selectedScreenSize: TValue['selectedScreenSize']) {
   return editorStateStore.setState({ selectedScreenSize });
+}
+
+export function useIsLoading() {
+  return editorStateStore((s) => s.isLoading);
+}
+
+export function useLoadError() {
+  return editorStateStore((s) => s.loadError);
+}
+
+export async function loadTemplateFromHash(hash: string) {
+  editorStateStore.setState({ isLoading: true, loadError: null });
+  try {
+    const config = await getConfigurationAsync(hash);
+    editorStateStore.setState({ document: config, isLoading: false, loadError: null });
+  } catch (error) {
+    editorStateStore.setState({
+      isLoading: false,
+      loadError: error instanceof Error ? error.message : 'Failed to load template',
+    });
+  }
 }

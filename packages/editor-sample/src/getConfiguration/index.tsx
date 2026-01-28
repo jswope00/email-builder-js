@@ -1,16 +1,16 @@
 import EMPTY_EMAIL_MESSAGE from './sample/empty-email-message';
-import RHEUMNOW_DAILY from './sample/rheumnow-daily';
-import RHEUMNOW_DAILY_LOCAL from './sample/rheumnow-daily-local';
+import { fetchTemplate } from '../api/templates';
+import type { TEditorConfiguration } from '../documents/editor/core';
 
-export default function getConfiguration(template: string) {
-  if (template.startsWith('#sample/')) {
-    const sampleName = template.replace('#sample/', '');
-    switch (sampleName) {
-      case 'rheumnow-daily':
-        return RHEUMNOW_DAILY;
-      case 'rheumnow-daily-local':
-        return RHEUMNOW_DAILY_LOCAL;
-    }
+/**
+ * Synchronous configuration loader (for backward compatibility)
+ * For API templates, use getConfigurationAsync instead
+ */
+export default function getConfiguration(template: string): TEditorConfiguration {
+  if (template.startsWith('#template/')) {
+    // API templates require async loading - return empty for now
+    // The actual loading will be handled by getConfigurationAsync
+    return EMPTY_EMAIL_MESSAGE;
   }
 
   if (template.startsWith('#code/')) {
@@ -24,4 +24,23 @@ export default function getConfiguration(template: string) {
   }
 
   return EMPTY_EMAIL_MESSAGE;
+}
+
+/**
+ * Async configuration loader (for API templates)
+ */
+export async function getConfigurationAsync(template: string): Promise<TEditorConfiguration> {
+  if (template.startsWith('#template/')) {
+    const slug = template.replace('#template/', '');
+    try {
+      const response = await fetchTemplate(slug);
+      return response.configuration;
+    } catch (error) {
+      console.error(`Failed to load template "${slug}":`, error);
+      return EMPTY_EMAIL_MESSAGE;
+    }
+  }
+
+  // For non-API templates, return synchronously
+  return getConfiguration(template);
 }
