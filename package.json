@@ -25,6 +25,7 @@
     "packages/block-blog-xml",
     "packages/block-advertisement-728-90-xml",
     "packages/block-advertisement-300-250-xml",
+    "packages/block-conference-advertisement-300-250-xml",
     "packages/block-daily-download-xml",
     "packages/document-core",
     "packages/email-builder",

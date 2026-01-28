@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { XmlDataProvider } from './XmlDataContext';
 
 import { Advertisement300250Xml, Advertisement300250XmlPropsSchema } from '@usewaypoint/block-advertisement-300-250-xml';
+import { ConferenceAdvertisement300250Xml, ConferenceAdvertisement300250XmlPropsSchema } from '@usewaypoint/block-conference-advertisement-300-250-xml';
 import { Advertisement72890Xml, Advertisement72890XmlPropsSchema } from '@usewaypoint/block-advertisement-728-90-xml';
 import { Avatar, AvatarPropsSchema } from '@usewaypoint/block-avatar';
 import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
@@ -111,6 +112,10 @@ const READER_DICTIONARY = buildBlockConfigurationDictionary({
   Advertisement300250Xml: {
     schema: Advertisement300250XmlPropsSchema,
     Component: Advertisement300250Xml,
+  },
+  ConferenceAdvertisement300250Xml: {
+    schema: ConferenceAdvertisement300250XmlPropsSchema,
+    Component: ConferenceAdvertisement300250Xml,
   },
   DailyDownloadXml: {
     schema: DailyDownloadXmlPropsSchema,

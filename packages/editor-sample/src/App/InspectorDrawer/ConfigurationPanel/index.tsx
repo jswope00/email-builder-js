@@ -6,6 +6,7 @@ import { TEditorBlock } from '../../../documents/editor/core';
 import { setDocument, useDocument, useSelectedBlockId } from '../../../documents/editor/EditorContext';
 
 import Advertisement300250XmlSidebarPanel from './input-panels/Advertisement300250XmlSidebarPanel';
+import ConferenceAdvertisement300250XmlSidebarPanel from './input-panels/ConferenceAdvertisement300250XmlSidebarPanel';
 import Advertisement72890XmlSidebarPanel from './input-panels/Advertisement72890XmlSidebarPanel';
 import AvatarSidebarPanel from './input-panels/AvatarSidebarPanel';
 import BlogXmlSidebarPanel from './input-panels/BlogXmlSidebarPanel';
@@ -97,6 +98,10 @@ export default function ConfigurationPanel() {
     case 'Advertisement300250Xml':
       return (
         <Advertisement300250XmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
+      );
+    case 'ConferenceAdvertisement300250Xml':
+      return (
+        <ConferenceAdvertisement300250XmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
       );
     case 'DailyDownloadXml':
       return (
