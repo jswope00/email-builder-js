@@ -37,19 +37,117 @@ type UpdateItem = {
   showAuthor: boolean;
 };
 
+// Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client)
+function parseTherapeuticUpdateXml(xmlText: string, numberOfItems: number): UpdateItem[] {
+  try {
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: "@_"
+    });
+    const result = parser.parse(xmlText);
+    
+    let foundItems: any[] = [];
+    
+    const findItems = (obj: any) => {
+      if (foundItems.length > 0) return;
+      
+      if (Array.isArray(obj)) {
+        const first = obj[0];
+        if (first && (first.title || first.field_media_image || first.nid)) {
+          foundItems = obj;
+          return;
+        }
+        for (const item of obj) {
+          findItems(item);
+        }
+      } else if (typeof obj === 'object' && obj !== null) {
+        if (obj.item && Array.isArray(obj.item)) {
+          foundItems = obj.item;
+          return;
+        }
+        if (obj.item && typeof obj.item === 'object') {
+          foundItems = [obj.item];
+          return;
+        }
+        for (const key in obj) {
+          findItems(obj[key]);
+        }
+      }
+    };
+
+    findItems(result);
+
+    const mappedItems = foundItems.map((item: any) => {
+      let createdDate = '';
+      if (item.created) {
+        const match = item.created.match(/>([^<]+)<\/time>/);
+        if (match && match[1]) {
+          createdDate = match[1];
+        } else {
+          createdDate = item.created;
+        }
+      }
+      
+      let authorAttribution = '';
+      if (item.field_author_attribution) {
+        const text = item.field_author_attribution.replace(/<[^>]*>?/gm, '');
+        authorAttribution = text.trim();
+      }
+
+      return {
+        title: item.title || '',
+        createdDate: createdDate,
+        authorAttribution: authorAttribution,
+        image: item.field_media_image || '',
+        body: item.body || '',
+        viewNode: item.view_node || '',
+        isSponsored: item.field_rxu_is_sponsored === 'On',
+        showAuthor: item.field_show_author == 1 || item.field_show_author === '1',
+      };
+    });
+
+    return mappedItems.slice(0, numberOfItems);
+  } catch (err) {
+    console.error('Failed to parse therapeutic update XML:', err);
+    return [];
+  }
+}
+
 export function TherapeuticUpdateXml({ style, props }: TherapeuticUpdateXmlProps) {
   const url = props?.url ?? TherapeuticUpdateXmlPropsDefaults.url;
   const title = props?.title ?? TherapeuticUpdateXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? TherapeuticUpdateXmlPropsDefaults.numberOfItems;
 
-  const [items, setItems] = useState<UpdateItem[]>([]);
+  // Try to get pre-fetched XML data from context (for SSR)
+  // The renderToStaticMarkup function fetches XML data server-side and makes it available globally
+  let preFetchedXmlText: string | null = null;
+  try {
+    if (url && typeof window === 'undefined') {
+      // In SSR, check if context data is available via the global
+      const contextData = (global as any).__XML_DATA_CONTEXT__;
+      if (contextData && contextData[url]) {
+        preFetchedXmlText = contextData[url];
+      }
+    }
+  } catch {
+    // Context not available, will use useEffect fallback
+  }
+  
+  // Parse pre-fetched data synchronously if available
+  const preFetchedItems = preFetchedXmlText ? parseTherapeuticUpdateXml(preFetchedXmlText, numberOfItems) : null;
+
+  const [items, setItems] = useState<UpdateItem[]>(preFetchedItems || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Skip fetching if we already have pre-fetched data
+    if (preFetchedItems) {
+      return;
+    }
     if (!url) {
-        setItems([]);
-        return;
+      setItems([]);
+      return;
     }
 
     const fetchData = async () => {
@@ -58,82 +156,12 @@ export function TherapeuticUpdateXml({ style, props }: TherapeuticUpdateXmlProps
       try {
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`Status: ${response.status}`);
+          throw new Error(`Status: ${response.status}`);
         }
         const text = await response.text();
         
-        const parser = new XMLParser({
-            ignoreAttributes: false,
-            attributeNamePrefix : "@_"
-        });
-        const result = parser.parse(text);
-        
-        let foundItems: any[] = [];
-        
-        const findItems = (obj: any) => {
-             if (foundItems.length > 0) return;
-             
-             if (Array.isArray(obj)) {
-                 const first = obj[0];
-                 if (first && (first.title || first.field_media_image || first.nid)) {
-                     foundItems = obj;
-                     return;
-                 }
-                 for (const item of obj) {
-                     findItems(item);
-                 }
-             } else if (typeof obj === 'object' && obj !== null) {
-                 if (obj.item && Array.isArray(obj.item)) {
-                     foundItems = obj.item;
-                     return;
-                 }
-                 if (obj.item && typeof obj.item === 'object') {
-                     foundItems = [obj.item];
-                     return;
-                 }
-                 for (const key in obj) {
-                     findItems(obj[key]);
-                 }
-             }
-        };
-
-        findItems(result);
-
-        const mappedItems = foundItems.map((item: any) => {
-            // Extract created date: <created><![CDATA[ <time ...>Dec 17, 2025</time> ]]></created>
-            // We need to parse this string to get the text inside <time>...</time> or just use a regex
-            let createdDate = '';
-            if (item.created) {
-                const match = item.created.match(/>([^<]+)<\/time>/);
-                if (match && match[1]) {
-                    createdDate = match[1];
-                } else {
-                    createdDate = item.created; // Fallback
-                }
-            }
-            
-            // Extract author attribution: <field_author_attribution><![CDATA[ <span ...>Sponsored by ...</span> ]]></field_author_attribution>
-            let authorAttribution = '';
-            if (item.field_author_attribution) {
-                // remove HTML tags if present, or keep them if we render html
-                // For simplicity, let's strip HTML tags for now or keep text
-                const text = item.field_author_attribution.replace(/<[^>]*>?/gm, '');
-                authorAttribution = text.trim();
-            }
-
-            return {
-                title: item.title || '',
-                createdDate: createdDate,
-                authorAttribution: authorAttribution,
-                image: item.field_media_image || '',
-                body: item.body || '',
-                viewNode: item.view_node || '',
-                isSponsored: item.field_rxu_is_sponsored === 'On',
-                showAuthor: item.field_show_author == 1 || item.field_show_author === '1',
-            };
-        });
-
-        setItems(mappedItems.slice(0, numberOfItems));
+        const parsedItems = parseTherapeuticUpdateXml(text, numberOfItems);
+        setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
         console.error(err);
@@ -143,7 +171,7 @@ export function TherapeuticUpdateXml({ style, props }: TherapeuticUpdateXmlProps
     };
 
     fetchData();
-  }, [url, numberOfItems]);
+  }, [url, numberOfItems, preFetchedItems]);
 
   const padding = style?.padding;
   const wrapperStyle = {

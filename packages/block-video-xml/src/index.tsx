@@ -64,19 +64,97 @@ const PlayIcon = () => (
   </div>
 );
 
+// Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client)
+function parseVideoXml(xmlText: string, numberOfItems: number): VideoItem[] {
+  try {
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: "@_"
+    });
+    const result = parser.parse(xmlText);
+    
+    let foundItems: any[] = [];
+    
+    const findItems = (obj: any) => {
+      if (foundItems.length > 0) return;
+      
+      if (Array.isArray(obj)) {
+        const first = obj[0];
+        if (first && (first.title || first.field_media_image)) {
+          foundItems = obj;
+          return;
+        }
+        for (const item of obj) {
+          findItems(item);
+        }
+      } else if (typeof obj === 'object' && obj !== null) {
+        if (obj.item && Array.isArray(obj.item)) {
+          foundItems = obj.item;
+          return;
+        }
+        if (obj.item && typeof obj.item === 'object') {
+          foundItems = [obj.item];
+          return;
+        }
+        for (const key in obj) {
+          findItems(obj[key]);
+        }
+      }
+    };
+
+    findItems(result);
+
+    const mappedItems = foundItems.map((item: any) => {
+      return {
+        title: item.title || '',
+        image: item.field_media_image || '',
+        caption: item.field_captions || '',
+        link: item.field_media_video_embed_field || '',
+      };
+    });
+
+    return mappedItems.slice(0, numberOfItems);
+  } catch (err) {
+    console.error('Failed to parse video XML:', err);
+    return [];
+  }
+}
+
 export function VideoXml({ style, props }: VideoXmlProps) {
   const url = props?.url ?? VideoXmlPropsDefaults.url;
   const title = props?.title ?? VideoXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? VideoXmlPropsDefaults.numberOfItems;
 
-  const [items, setItems] = useState<VideoItem[]>([]);
+  // Try to get pre-fetched XML data from context (for SSR)
+  // The renderToStaticMarkup function fetches XML data server-side and makes it available globally
+  let preFetchedXmlText: string | null = null;
+  try {
+    if (url && typeof window === 'undefined') {
+      // In SSR, check if context data is available via the global
+      const contextData = (global as any).__XML_DATA_CONTEXT__;
+      if (contextData && contextData[url]) {
+        preFetchedXmlText = contextData[url];
+      }
+    }
+  } catch {
+    // Context not available, will use useEffect fallback
+  }
+  
+  // Parse pre-fetched data synchronously if available
+  const preFetchedItems = preFetchedXmlText ? parseVideoXml(preFetchedXmlText, numberOfItems) : null;
+
+  const [items, setItems] = useState<VideoItem[]>(preFetchedItems || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Skip fetching if we already have pre-fetched data
+    if (preFetchedItems) {
+      return;
+    }
     if (!url) {
-        setItems([]);
-        return;
+      setItems([]);
+      return;
     }
 
     const fetchData = async () => {
@@ -85,73 +163,12 @@ export function VideoXml({ style, props }: VideoXmlProps) {
       try {
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`Status: ${response.status}`);
+          throw new Error(`Status: ${response.status}`);
         }
         const text = await response.text();
         
-        const parser = new XMLParser({
-            ignoreAttributes: false,
-            attributeNamePrefix : "@_"
-        });
-        const result = parser.parse(text);
-        
-        // Helper to find items in the parsed object
-        let foundItems: any[] = [];
-        
-        // Recursive search for an array of items or a specific structure
-        // Based on snippet: <item> is the key. 
-        // fast-xml-parser usually returns { item: [...] } or { root: { item: [...] } }
-        
-        const findItems = (obj: any) => {
-             if (foundItems.length > 0) return;
-             
-             if (Array.isArray(obj)) {
-                 // Check if elements look like items
-                 const first = obj[0];
-                 if (first && (first.title || first.field_media_image)) {
-                     foundItems = obj;
-                     return;
-                 }
-                 for (const item of obj) {
-                     findItems(item);
-                 }
-             } else if (typeof obj === 'object' && obj !== null) {
-                 if (obj.item && Array.isArray(obj.item)) {
-                     foundItems = obj.item;
-                     return;
-                 }
-                 // Single item?
-                 if (obj.item && typeof obj.item === 'object') {
-                     foundItems = [obj.item];
-                     return;
-                 }
-                 
-                 // Fallback: iterate keys
-                 for (const key in obj) {
-                     findItems(obj[key]);
-                 }
-             }
-        };
-
-        findItems(result);
-
-        const mappedItems = foundItems.map((item: any) => {
-            // Extract fields based on provided XML snippet
-            // Title: <title><![CDATA[ ... ]]></title> -> fast-xml-parser handles CDATA automatically usually? 
-            // If simple text: item.title
-            // field_media_image: item.field_media_image
-            // field_captions: item.field_captions
-            // field_media_video_embed_field: item.field_media_video_embed_field (link)
-            
-            return {
-                title: item.title || '',
-                image: item.field_media_image || '',
-                caption: item.field_captions || '',
-                link: item.field_media_video_embed_field || '',
-            };
-        });
-
-        setItems(mappedItems.slice(0, numberOfItems));
+        const parsedItems = parseVideoXml(text, numberOfItems);
+        setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
         console.error(err);
@@ -161,7 +178,7 @@ export function VideoXml({ style, props }: VideoXmlProps) {
     };
 
     fetchData();
-  }, [url, numberOfItems]);
+  }, [url, numberOfItems, preFetchedItems]);
 
   const padding = style?.padding;
   const wrapperStyle = {

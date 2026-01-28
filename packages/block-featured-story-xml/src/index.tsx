@@ -68,19 +68,117 @@ const PlayIcon = () => (
   </div>
 );
 
+// Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client)
+function parseFeaturedStoryXml(xmlText: string, numberOfItems: number): FeaturedStoryItem[] {
+  try {
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: "@_"
+    });
+    const result = parser.parse(xmlText);
+    
+    let foundItems: any[] = [];
+    
+    const findItems = (obj: any) => {
+      if (foundItems.length > 0) return;
+      
+      if (Array.isArray(obj)) {
+        const first = obj[0];
+        if (first && (first.title || first.field_media_image || first.nid)) {
+          foundItems = obj;
+          return;
+        }
+        for (const item of obj) {
+          findItems(item);
+        }
+      } else if (typeof obj === 'object' && obj !== null) {
+        if (obj.item && Array.isArray(obj.item)) {
+          foundItems = obj.item;
+          return;
+        }
+        if (obj.item && typeof obj.item === 'object') {
+          foundItems = [obj.item];
+          return;
+        }
+        for (const key in obj) {
+          findItems(obj[key]);
+        }
+      }
+    };
+
+    findItems(result);
+
+    const mappedItems = foundItems.map((item: any) => {
+      let createdDate = '';
+      if (item.created) {
+        const match = item.created.match(/>([^<]+)<\/time>/);
+        if (match && match[1]) {
+          createdDate = match[1];
+        } else {
+          createdDate = item.created;
+        }
+      }
+      
+      let authorAttribution = '';
+      if (item.field_author_attribution) {
+        const text = item.field_author_attribution.replace(/<[^>]*>?/gm, '');
+        authorAttribution = text.trim();
+      }
+
+      return {
+        title: item.title || '',
+        createdDate: createdDate,
+        authorAttribution: authorAttribution,
+        image: item.field_media_image || '',
+        body: item.body || '',
+        type: item.type || '',
+        showAuthor: item.field_show_author == 1 || item.field_show_author === '1',
+        viewNode: item.view_node || '',
+      };
+    });
+
+    return mappedItems.slice(0, numberOfItems);
+  } catch (err) {
+    console.error('Failed to parse featured story XML:', err);
+    return [];
+  }
+}
+
 export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
   const url = props?.url ?? FeaturedStoryXmlPropsDefaults.url;
   const title = props?.title ?? FeaturedStoryXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? FeaturedStoryXmlPropsDefaults.numberOfItems;
 
-  const [items, setItems] = useState<FeaturedStoryItem[]>([]);
+  // Try to get pre-fetched XML data from context (for SSR)
+  // The renderToStaticMarkup function fetches XML data server-side and makes it available globally
+  let preFetchedXmlText: string | null = null;
+  try {
+    if (url && typeof window === 'undefined') {
+      // In SSR, check if context data is available via the global
+      const contextData = (global as any).__XML_DATA_CONTEXT__;
+      if (contextData && contextData[url]) {
+        preFetchedXmlText = contextData[url];
+      }
+    }
+  } catch {
+    // Context not available, will use useEffect fallback
+  }
+  
+  // Parse pre-fetched data synchronously if available
+  const preFetchedItems = preFetchedXmlText ? parseFeaturedStoryXml(preFetchedXmlText, numberOfItems) : null;
+
+  const [items, setItems] = useState<FeaturedStoryItem[]>(preFetchedItems || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Skip fetching if we already have pre-fetched data
+    if (preFetchedItems) {
+      return;
+    }
     if (!url) {
-        setItems([]);
-        return;
+      setItems([]);
+      return;
     }
 
     const fetchData = async () => {
@@ -89,79 +187,12 @@ export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
       try {
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`Status: ${response.status}`);
+          throw new Error(`Status: ${response.status}`);
         }
         const text = await response.text();
         
-        const parser = new XMLParser({
-            ignoreAttributes: false,
-            attributeNamePrefix : "@_"
-        });
-        const result = parser.parse(text);
-        
-        let foundItems: any[] = [];
-        
-        const findItems = (obj: any) => {
-             if (foundItems.length > 0) return;
-             
-             if (Array.isArray(obj)) {
-                 const first = obj[0];
-                 if (first && (first.title || first.field_media_image || first.nid)) {
-                     foundItems = obj;
-                     return;
-                 }
-                 for (const item of obj) {
-                     findItems(item);
-                 }
-             } else if (typeof obj === 'object' && obj !== null) {
-                 if (obj.item && Array.isArray(obj.item)) {
-                     foundItems = obj.item;
-                     return;
-                 }
-                 if (obj.item && typeof obj.item === 'object') {
-                     foundItems = [obj.item];
-                     return;
-                 }
-                 for (const key in obj) {
-                     findItems(obj[key]);
-                 }
-             }
-        };
-
-        findItems(result);
-
-        const mappedItems = foundItems.map((item: any) => {
-            // Extract created date: <created><![CDATA[ <time ...>Dec 17, 2025</time> ]]></created>
-            let createdDate = '';
-            if (item.created) {
-                const match = item.created.match(/>([^<]+)<\/time>/);
-                if (match && match[1]) {
-                    createdDate = match[1];
-                } else {
-                    createdDate = item.created; // Fallback
-                }
-            }
-            
-            // Extract author attribution
-            let authorAttribution = '';
-            if (item.field_author_attribution) {
-                const text = item.field_author_attribution.replace(/<[^>]*>?/gm, '');
-                authorAttribution = text.trim();
-            }
-
-            return {
-                title: item.title || '',
-                createdDate: createdDate,
-                authorAttribution: authorAttribution,
-                image: item.field_media_image || '',
-                body: item.body || '',
-                type: item.type || '',
-                showAuthor: item.field_show_author == 1 || item.field_show_author === '1',
-                viewNode: item.view_node || '',
-            };
-        });
-
-        setItems(mappedItems.slice(0, numberOfItems));
+        const parsedItems = parseFeaturedStoryXml(text, numberOfItems);
+        setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
         console.error(err);
@@ -171,7 +202,7 @@ export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
     };
 
     fetchData();
-  }, [url, numberOfItems]);
+  }, [url, numberOfItems, preFetchedItems]);
 
   const padding = style?.padding;
   const wrapperStyle = {

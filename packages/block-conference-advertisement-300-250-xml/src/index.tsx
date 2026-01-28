@@ -33,19 +33,109 @@ type AdvertisementItem = {
   trackingCode: string;
 };
 
+// Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client)
+function parseAdvertisementXml(xmlText: string, numberOfItems: number): AdvertisementItem[] {
+  try {
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: "@_"
+    });
+    const result = parser.parse(xmlText);
+    
+    let foundItems: any[] = [];
+    
+    const findItems = (obj: any) => {
+      if (foundItems.length > 0) return;
+      
+      if (Array.isArray(obj)) {
+        const first = obj[0];
+        if (first && (first.field_ad_image || first.title)) {
+          foundItems = obj;
+          return;
+        }
+        for (const item of obj) {
+          findItems(item);
+        }
+      } else if (typeof obj === 'object' && obj !== null) {
+        if (obj.item && Array.isArray(obj.item)) {
+          foundItems = obj.item;
+          return;
+        }
+        if (obj.item && typeof obj.item === 'object') {
+          foundItems = [obj.item];
+          return;
+        }
+        for (const key in obj) {
+          findItems(obj[key]);
+        }
+      }
+    };
+
+    findItems(result);
+
+    const mappedItems: AdvertisementItem[] = foundItems.map((item: any) => {
+      // Extract alt text, stripping CDATA and HTML if present
+      let altText = item.field_ad_image_1 || '';
+      altText = altText.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>?/gm, '').trim();
+      
+      // Extract destination URL, stripping CDATA
+      let destinationUrl = item.field_destination_url || '';
+      destinationUrl = destinationUrl.replace(/<!\[CDATA\[|\]\]>/g, '').trim();
+      
+      // Extract tracking code as-is (may contain HTML)
+      let trackingCode = item.field_tracking_code || '';
+      trackingCode = trackingCode.replace(/<!\[CDATA\[|\]\]>/g, '').trim();
+
+      return {
+        image: item.field_ad_image || '',
+        altText: altText,
+        destinationUrl: destinationUrl,
+        trackingCode: trackingCode,
+      };
+    });
+
+    return mappedItems.slice(0, numberOfItems);
+  } catch (err) {
+    console.error('Failed to parse advertisement XML:', err);
+    return [];
+  }
+}
+
 export function ConferenceAdvertisement300250Xml({ style, props }: ConferenceAdvertisement300250XmlProps) {
   const url = props?.url ?? ConferenceAdvertisement300250XmlPropsDefaults.url;
   const title = props?.title ?? ConferenceAdvertisement300250XmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? ConferenceAdvertisement300250XmlPropsDefaults.numberOfItems;
 
-  const [items, setItems] = useState<AdvertisementItem[]>([]);
+  // Try to get pre-fetched XML data from context (for SSR)
+  // The renderToStaticMarkup function fetches XML data server-side and makes it available globally
+  let preFetchedXmlText: string | null = null;
+  try {
+    if (url && typeof window === 'undefined') {
+      // In SSR, check if context data is available via the global
+      const contextData = (global as any).__XML_DATA_CONTEXT__;
+      if (contextData && contextData[url]) {
+        preFetchedXmlText = contextData[url];
+      }
+    }
+  } catch {
+    // Context not available, will use useEffect fallback
+  }
+  
+  // Parse pre-fetched data synchronously if available
+  const preFetchedItems = preFetchedXmlText ? parseAdvertisementXml(preFetchedXmlText, numberOfItems) : null;
+
+  const [items, setItems] = useState<AdvertisementItem[]>(preFetchedItems || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Skip fetching if we already have pre-fetched data
+    if (preFetchedItems) {
+      return;
+    }
     if (!url) {
-        setItems([]);
-        return;
+      setItems([]);
+      return;
     }
 
     const fetchData = async () => {
@@ -54,69 +144,12 @@ export function ConferenceAdvertisement300250Xml({ style, props }: ConferenceAdv
       try {
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`Status: ${response.status}`);
+          throw new Error(`Status: ${response.status}`);
         }
         const text = await response.text();
         
-        const parser = new XMLParser({
-            ignoreAttributes: false,
-            attributeNamePrefix : "@_"
-        });
-        const result = parser.parse(text);
-        
-        let foundItems: any[] = [];
-        
-        const findItems = (obj: any) => {
-             if (foundItems.length > 0) return;
-             
-             if (Array.isArray(obj)) {
-                 const first = obj[0];
-                 if (first && (first.field_ad_image || first.title)) {
-                     foundItems = obj;
-                     return;
-                 }
-                 for (const item of obj) {
-                     findItems(item);
-                 }
-             } else if (typeof obj === 'object' && obj !== null) {
-                 if (obj.item && Array.isArray(obj.item)) {
-                     foundItems = obj.item;
-                     return;
-                 }
-                 if (obj.item && typeof obj.item === 'object') {
-                     foundItems = [obj.item];
-                     return;
-                 }
-                 for (const key in obj) {
-                     findItems(obj[key]);
-                 }
-             }
-        };
-
-        findItems(result);
-
-        const mappedItems: AdvertisementItem[] = foundItems.map((item: any) => {
-            // Extract alt text, stripping CDATA and HTML if present
-            let altText = item.field_ad_image_1 || '';
-            altText = altText.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>?/gm, '').trim();
-            
-            // Extract destination URL, stripping CDATA
-            let destinationUrl = item.field_destination_url || '';
-            destinationUrl = destinationUrl.replace(/<!\[CDATA\[|\]\]>/g, '').trim();
-            
-            // Extract tracking code as-is (may contain HTML)
-            let trackingCode = item.field_tracking_code || '';
-            trackingCode = trackingCode.replace(/<!\[CDATA\[|\]\]>/g, '').trim();
-
-            return {
-                image: item.field_ad_image || '',
-                altText: altText,
-                destinationUrl: destinationUrl,
-                trackingCode: trackingCode,
-            };
-        });
-
-        setItems(mappedItems.slice(0, numberOfItems));
+        const parsedItems = parseAdvertisementXml(text, numberOfItems);
+        setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
         console.error(err);
@@ -126,7 +159,7 @@ export function ConferenceAdvertisement300250Xml({ style, props }: ConferenceAdv
     };
 
     fetchData();
-  }, [url, numberOfItems]);
+  }, [url, numberOfItems, preFetchedItems]);
 
   const padding = style?.padding;
   const wrapperStyle = {
