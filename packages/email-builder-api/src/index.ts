@@ -1,7 +1,7 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { pool, testConnection, closePool } from './db/connection';
+import { testConnection, closePool } from './db/connection';
 import { errorHandler } from './utils/errors';
 import templatesRouter from './routes/templates';
 import healthRouter from './routes/health';
