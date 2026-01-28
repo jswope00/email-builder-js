@@ -128,7 +128,7 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/video-sample.xml",
+        "url": "https://rheumnow.com/admin/video-xml",
         "title": "Videos",
         "numberOfItems": 3
       }
@@ -146,7 +146,7 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/therapeutic-update-sample.xml",
+        "url": "https://rheumnow.com/admin/therapeutic_update_xml",
         "title": "Therapeutic Updates",
         "numberOfItems": 1
       }
