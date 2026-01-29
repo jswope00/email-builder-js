@@ -149,13 +149,15 @@ export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
   const title = props?.title ?? FeaturedStoryXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? FeaturedStoryXmlPropsDefaults.numberOfItems;
 
-  // Try to get pre-fetched XML data from context (for SSR)
-  // The renderToStaticMarkup function fetches XML data server-side and makes it available globally
+  // Try to get pre-fetched XML data from context
+  // The renderToStaticMarkup function fetches XML data and makes it available globally
+  // Supports both Node.js (global) and browser (window) environments
   let preFetchedXmlText: string | null = null;
   try {
-    if (url && typeof window === 'undefined') {
-      // In SSR, check if context data is available via the global
-      const contextData = (global as any).__XML_DATA_CONTEXT__;
+    if (url) {
+      // Check global (Node.js) first, then window (browser)
+      const contextData = (typeof global !== 'undefined' ? (global as any).__XML_DATA_CONTEXT__ : undefined) ||
+                         (typeof window !== 'undefined' ? (window as any).__XML_DATA_CONTEXT__ : undefined);
       if (contextData && contextData[url]) {
         preFetchedXmlText = contextData[url];
       }

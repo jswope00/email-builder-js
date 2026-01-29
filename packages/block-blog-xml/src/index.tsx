@@ -127,17 +127,15 @@ export function BlogXml({ style, props }: BlogXmlProps) {
   const title = props?.title ?? BlogXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? BlogXmlPropsDefaults.numberOfItems;
 
-  // Try to get pre-fetched XML data from context (for SSR)
-  // The context should be provided by email-builder's XmlDataProvider
-  // We'll use a workaround to access it without importing the package
+  // Try to get pre-fetched XML data from context
+  // The renderToStaticMarkup function fetches XML data and makes it available globally
+  // Supports both Node.js (global) and browser (window) environments
   let preFetchedXmlText: string | null = null;
   try {
-    // Try to access the context via React's context system
-    // Since we can't import the context directly, we'll use a symbol-based lookup
-    if (url && typeof window === 'undefined') {
-      // In SSR, check if context data is available via a global
-      // The renderToStaticMarkup function will set this up
-      const contextData = (global as any).__XML_DATA_CONTEXT__;
+    if (url) {
+      // Check global (Node.js) first, then window (browser)
+      const contextData = (typeof global !== 'undefined' ? (global as any).__XML_DATA_CONTEXT__ : undefined) ||
+                         (typeof window !== 'undefined' ? (window as any).__XML_DATA_CONTEXT__ : undefined);
       if (contextData && contextData[url]) {
         preFetchedXmlText = contextData[url];
       }

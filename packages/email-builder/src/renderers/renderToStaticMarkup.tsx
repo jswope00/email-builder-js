@@ -95,8 +95,12 @@ export default async function renderToStaticMarkup(
 
   // Make XML data available globally for components that can't import the context
   // This is a workaround for components in separate packages
+  // Support both Node.js (global) and browser (window) environments
   if (typeof global !== 'undefined') {
     (global as any).__XML_DATA_CONTEXT__ = xmlDataMap;
+  }
+  if (typeof window !== 'undefined') {
+    (window as any).__XML_DATA_CONTEXT__ = xmlDataMap;
   }
 
   const html = '<!DOCTYPE html>' +
@@ -111,6 +115,9 @@ export default async function renderToStaticMarkup(
   // Clean up global
   if (typeof global !== 'undefined') {
     delete (global as any).__XML_DATA_CONTEXT__;
+  }
+  if (typeof window !== 'undefined') {
+    delete (window as any).__XML_DATA_CONTEXT__;
   }
 
   return html;
