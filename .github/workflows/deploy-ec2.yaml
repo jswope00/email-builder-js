@@ -41,7 +41,19 @@ jobs:
           VITE_BASE_PATH: '/'
           VITE_API_URL: '/api'
         working-directory: packages/editor-sample
-        run: npm run build
+        run: |
+          echo "Building with VITE_BASE_PATH=$VITE_BASE_PATH"
+          echo "Building with VITE_API_URL=$VITE_API_URL"
+          npm run build
+          # Verify the base path was used
+          if grep -q '/email-builder-js/' dist/index.html 2>/dev/null; then
+            echo "⚠️  WARNING: index.html still contains /email-builder-js/ path!"
+            echo "First few lines of index.html:"
+            head -20 dist/index.html
+            exit 1
+          else
+            echo "✅ Base path correctly set to /"
+          fi
 
       - name: Create deployment archive
         run: |
