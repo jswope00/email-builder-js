@@ -87,6 +87,14 @@ jobs:
             DEPLOY_PATH="$EC2_DEPLOY_PATH"
             cd "\$DEPLOY_PATH"
             
+            # Preserve .env file before backup (if it exists)
+            ENV_BACKUP=""
+            if [ -f "current/api/.env" ]; then
+              ENV_BACKUP="\$(mktemp)"
+              cp "current/api/.env" "\$ENV_BACKUP"
+              echo "✅ Backed up .env file before deployment"
+            fi
+            
             # Backup current deployment
             if [ -d "current" ]; then
               mv current "backup-\$(date +%Y%m%d-%H%M%S)"
@@ -96,12 +104,19 @@ jobs:
             tar -xzf deploy.tar.gz
             mv deploy current
             
-            # Preserve .env file if it exists from previous deployment
-            if [ -f "\$DEPLOY_PATH/backup-"*"/api/.env" ]; then
-              ENV_FILE=\$(ls -t "\$DEPLOY_PATH/backup-"*/api/.env 2>/dev/null | head -1)
-              if [ -n "\$ENV_FILE" ] && [ -f "\$ENV_FILE" ]; then
-                cp "\$ENV_FILE" current/api/.env
-                echo "✅ Preserved .env file from previous deployment"
+            # Restore .env file if it was backed up
+            if [ -n "\$ENV_BACKUP" ] && [ -f "\$ENV_BACKUP" ]; then
+              cp "\$ENV_BACKUP" "current/api/.env"
+              rm "\$ENV_BACKUP"
+              echo "✅ Restored .env file to new deployment"
+            else
+              # Fallback: try to find .env in most recent backup
+              LATEST_BACKUP=\$(ls -dt backup-* 2>/dev/null | head -1)
+              if [ -n "\$LATEST_BACKUP" ] && [ -f "\$LATEST_BACKUP/api/.env" ]; then
+                cp "\$LATEST_BACKUP/api/.env" "current/api/.env"
+                echo "✅ Restored .env file from latest backup"
+              else
+                echo "⚠️  Warning: No .env file found. You may need to create one manually."
               fi
             fi
             

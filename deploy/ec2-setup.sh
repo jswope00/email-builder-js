@@ -58,6 +58,7 @@ module.exports = {
     cwd: '/var/www/email-builder',
     instances: 1,
     exec_mode: 'fork',
+    env_file: './current/api/.env',
     env: {
       NODE_ENV: 'production'
     },
