@@ -34,6 +34,8 @@ jobs:
         run: npm install --force --no-save rollup @swc/core
 
       - name: Build all packages
+        env:
+          VITE_BASE_PATH: '/'
         run: npm run build --workspaces
 
       - name: Create deployment archive

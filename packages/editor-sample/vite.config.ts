@@ -6,9 +6,13 @@ import react from '@vitejs/plugin-react-swc';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// Allow base path to be configured via environment variable
+// Default to '/email-builder-js/' for GitHub Pages, use '/' for root domain deployment
+const basePath = process.env.VITE_BASE_PATH || '/email-builder-js/';
+
 export default defineConfig({
   plugins: [react()],
-  base: '/email-builder-js/',
+  base: basePath,
   resolve: {
     alias: [
       {
