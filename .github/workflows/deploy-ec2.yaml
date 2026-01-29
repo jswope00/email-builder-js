@@ -33,10 +33,15 @@ jobs:
       - name: Force reinstall optional dependencies
         run: npm install --force --no-save rollup @swc/core
 
-      - name: Build all packages
+      - name: Build all packages (except frontend)
+        run: npm run build --workspaces --if-present
+      
+      - name: Build frontend with root base path for EC2
         env:
           VITE_BASE_PATH: '/'
-        run: npm run build --workspaces
+          VITE_API_URL: '/api'
+        working-directory: packages/editor-sample
+        run: npm run build
 
       - name: Create deployment archive
         run: |
