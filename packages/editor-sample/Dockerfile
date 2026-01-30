@@ -1,5 +1,6 @@
 # Frontend Editor Dockerfile
-FROM node:20-alpine AS base
+# Using Debian-based image instead of Alpine to avoid Rollup native module issues
+FROM node:20 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
