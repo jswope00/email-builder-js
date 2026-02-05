@@ -296,12 +296,17 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
                       
                       <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
                         {item.showAuthor && item.author && (
-                          <span style={{ fontWeight: 'bold' }}>{item.author}</span>
+                          <>
+                            <span style={{ fontWeight: 'bold' }}>{item.author}</span>
+                            {item.createdDate && (
+                              <>
+                                <span style={{ margin: '0 8px' }}>•</span>
+                                <span>{item.createdDate}</span>
+                              </>
+                            )}
+                          </>
                         )}
-                        {item.showAuthor && item.author && item.createdDate && (
-                          <span style={{ margin: '0 8px' }}>•</span>
-                        )}
-                        {item.createdDate && (
+                        {!item.showAuthor && item.createdDate && (
                           <span>{item.createdDate}</span>
                         )}
                       </div>
@@ -375,12 +380,17 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
                           }} 
                         />
                         {item.authorName && (
-                          <span style={{ fontWeight: 'bold' }}>{item.authorName}</span>
+                          <>
+                            <span style={{ fontWeight: 'bold' }}>{item.authorName}</span>
+                            {item.createdDate && (
+                              <>
+                                <span style={{ margin: '0 8px' }}>•</span>
+                                <span>{item.createdDate}</span>
+                              </>
+                            )}
+                          </>
                         )}
-                        {item.authorName && item.createdDate && (
-                          <span style={{ margin: '0 8px' }}>•</span>
-                        )}
-                        {item.createdDate && (
+                        {!item.authorName && item.createdDate && (
                           <span>{item.createdDate}</span>
                         )}
                       </div>
