@@ -297,12 +297,8 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
                       <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
                         {item.showAuthor && item.author && (
                           <>
-                            <span style={{ fontWeight: 'bold' }}>{item.author}</span>
-                            {item.createdDate && (
-                              <>
-                                <span style={{ margin: '0 8px' }}>•</span>
-                                <span>{item.createdDate}</span>
-                              </>
+                            <span style={{ fontWeight: 'bold' }}>{item.author}</span>{item.createdDate && (
+                              <><span style={{ margin: '0 8px' }}>•</span><span>{item.createdDate}</span></>
                             )}
                           </>
                         )}
@@ -381,12 +377,8 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
                         />
                         {item.authorName && (
                           <>
-                            <span style={{ fontWeight: 'bold' }}>{item.authorName}</span>
-                            {item.createdDate && (
-                              <>
-                                <span style={{ margin: '0 8px' }}>•</span>
-                                <span>{item.createdDate}</span>
-                              </>
+                            <span style={{ fontWeight: 'bold' }}>{item.authorName}</span>{item.createdDate && (
+                              <><span style={{ margin: '0 8px' }}>•</span><span>{item.createdDate}</span></>
                             )}
                           </>
                         )}

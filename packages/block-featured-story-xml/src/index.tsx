@@ -254,12 +254,13 @@ export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
             
             <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
                 {item.showAuthor && item.authorAttribution && (
-                    <span style={{ fontWeight: 'bold' }}>{item.authorAttribution}</span>
+                    <>
+                        <span style={{ fontWeight: 'bold' }}>{item.authorAttribution}</span>{item.createdDate && (
+                            <><span style={{ margin: '0 8px' }}>•</span><span>{item.createdDate}</span></>
+                        )}
+                    </>
                 )}
-                {item.showAuthor && item.authorAttribution && item.createdDate && (
-                    <span style={{ margin: '0 8px' }}>•</span>
-                )}
-                {item.createdDate && (
+                {!item.showAuthor && item.createdDate && (
                     <span>{item.createdDate}</span>
                 )}
             </div>
