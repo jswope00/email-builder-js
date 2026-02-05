@@ -2,11 +2,12 @@ import React from 'react';
 
 import { Stack, useTheme } from '@mui/material';
 
-import { useInspectorDrawerOpen, useSamplesDrawerOpen } from '../documents/editor/EditorContext';
+import { useInspectorDrawerOpen, useSamplesDrawerOpen, useCurrentView } from '../documents/editor/EditorContext';
 
 import InspectorDrawer, { INSPECTOR_DRAWER_WIDTH } from './InspectorDrawer';
 import SamplesDrawer, { SAMPLES_DRAWER_WIDTH } from './SamplesDrawer';
 import TemplatePanel from './TemplatePanel';
+import MailchimpPage from './MailchimpPage';
 
 function useDrawerTransition(cssProperty: 'margin-left' | 'margin-right', open: boolean) {
   const { transitions } = useTheme();
@@ -19,6 +20,7 @@ function useDrawerTransition(cssProperty: 'margin-left' | 'margin-right', open: 
 export default function App() {
   const inspectorDrawerOpen = useInspectorDrawerOpen();
   const samplesDrawerOpen = useSamplesDrawerOpen();
+  const currentView = useCurrentView();
 
   const marginLeftTransition = useDrawerTransition('margin-left', samplesDrawerOpen);
   const marginRightTransition = useDrawerTransition('margin-right', inspectorDrawerOpen);
@@ -35,7 +37,7 @@ export default function App() {
           transition: [marginLeftTransition, marginRightTransition].join(', '),
         }}
       >
-        <TemplatePanel />
+        {currentView === 'mailchimp' ? <MailchimpPage /> : <TemplatePanel />}
       </Stack>
     </>
   );

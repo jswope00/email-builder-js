@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import { CircularProgress, Divider, Drawer, Stack, Typography } from '@mui/material';
+import { Button, CircularProgress, Divider, Drawer, Stack, Typography } from '@mui/material';
+import { MailOutline } from '@mui/icons-material';
 
-import { useSamplesDrawerOpen } from '../../documents/editor/EditorContext';
+import { useSamplesDrawerOpen, setCurrentView } from '../../documents/editor/EditorContext';
 import { fetchTemplates, type TemplateListItem } from '../../api/templates';
 
 import SidebarButton from './SidebarButton';
@@ -53,6 +54,14 @@ export default function SamplesDrawer() {
 
           <Stack alignItems="flex-start">
             <SidebarButton href="#">Empty</SidebarButton>
+            <Button
+              size="small"
+              startIcon={<MailOutline />}
+              onClick={() => setCurrentView('mailchimp')}
+              sx={{ width: '100%', justifyContent: 'flex-start' }}
+            >
+              Mailchimp
+            </Button>
             
             {isLoading && (
               <Stack direction="row" spacing={1} alignItems="center" sx={{ px: 1, py: 0.5 }}>

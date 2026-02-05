@@ -5,6 +5,7 @@ import { testConnection, closePool } from './db/connection';
 import { errorHandler } from './utils/errors';
 import templatesRouter from './routes/templates';
 import healthRouter from './routes/health';
+import mailchimpRouter from './routes/mailchimp';
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Routes
 app.use('/api/health', healthRouter);
 app.use('/api/templates', templatesRouter);
+app.use('/api/mailchimp', mailchimpRouter);
 
 // Root endpoint
 app.get('/', (req: Request, res: Response) => {
@@ -38,6 +40,7 @@ app.get('/', (req: Request, res: Response) => {
     endpoints: {
       health: '/api/health',
       templates: '/api/templates',
+      mailchimp: '/api/mailchimp',
     },
   });
 });
@@ -69,6 +72,7 @@ async function startServer() {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
       console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
       console.log(`📧 Templates API: http://localhost:${PORT}/api/templates`);
+      console.log(`📬 Mailchimp API: http://localhost:${PORT}/api/mailchimp`);
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
