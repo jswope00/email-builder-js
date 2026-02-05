@@ -33,36 +33,6 @@ type VideoItem = {
   link: string;
 };
 
-// Play icon component
-const PlayIcon = () => (
-  <div
-    style={{
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: '48px',
-      height: '48px',
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
-      borderRadius: '50%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      pointerEvents: 'none',
-    }}
-  >
-    <div
-      style={{
-        width: 0,
-        height: 0,
-        borderTop: '10px solid transparent',
-        borderBottom: '10px solid transparent',
-        borderLeft: '16px solid white',
-        marginLeft: '4px',
-      }}
-    />
-  </div>
-);
 
 // Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client)
 function parseVideoXml(xmlText: string, numberOfItems: number): VideoItem[] {
@@ -219,22 +189,26 @@ export function VideoXml({ style, props }: VideoXmlProps) {
             {item.link ? (
                 <a href={item.link} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                      {item.image && (
-                        <div style={{ position: 'relative', marginBottom: 12 }}>
+                        <div style={{ marginBottom: 12 }}>
                             <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
-                            <PlayIcon />
                         </div>
                     )}
-                    <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4', color: '#333' }}>{item.title}</h3>
+                    <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4', color: '#333' }}>
+                      <span style={{ marginRight: '6px', color: '#1585fe' }}>▶</span>
+                      {item.title}
+                    </h3>
                 </a>
             ) : (
                 <>
                     {item.image && (
-                        <div style={{ position: 'relative', marginBottom: 12 }}>
+                        <div style={{ marginBottom: 12 }}>
                             <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
-                            <PlayIcon />
                         </div>
                     )}
-                    <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4', color: '#333' }}>{item.title}</h3>
+                    <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4', color: '#333' }}>
+                      <span style={{ marginRight: '6px', color: '#1585fe' }}>▶</span>
+                      {item.title}
+                    </h3>
                 </>
             )}
             
