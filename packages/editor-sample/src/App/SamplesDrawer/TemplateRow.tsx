@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { MoreVert, Delete, ContentCopy, Edit } from '@mui/icons-material';
 import { Button, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Box } from '@mui/material';
 
-import { loadTemplateFromHash } from '../../documents/editor/EditorContext';
+import { loadTemplateFromHash, setCurrentView } from '../../documents/editor/EditorContext';
 import type { TemplateListItem } from '../../api/templates';
 
 import DuplicateTemplateDialog from './DuplicateTemplateDialog';
@@ -33,6 +33,7 @@ export default function TemplateRow({ template, onTemplateDeleted, onTemplateDup
   };
 
   const handleTemplateClick = () => {
+    setCurrentView('editor');
     const hash = `#template/${template.slug}`;
     window.location.hash = hash;
     loadTemplateFromHash(hash);

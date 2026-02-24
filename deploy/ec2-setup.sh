@@ -93,16 +93,34 @@ sudo tee /etc/nginx/sites-available/email-builder > /dev/null << 'EOF'
 # Frontend (editor-sample)
 server {
     listen 80;
-    server_name _;  # Replace with your domain
+    server_name _;  # Replace with your domain (e.g. emails.rheumnow.com)
 
     root /var/www/email-builder/current/frontend;
     index index.html;
 
+    # Redirect unauthenticated visitors to Drupal login
+    location @login_redirect {
+        return 302 https://rheumnow.com/user/login?destination=https://emails.rheumnow.com$request_uri;
+    }
+
+    # Internal auth sub-request forwarded to the Express API
+    location = /internal/auth-check {
+        internal;
+        proxy_pass http://127.0.0.1:3001/api/auth/check;
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+        proxy_set_header Cookie $http_cookie;
+        proxy_set_header X-Original-URI $request_uri;
+    }
+
+    # Serve the SPA — gate every HTML request behind auth
     location / {
+        auth_request /internal/auth-check;
+        error_page 401 = @login_redirect;
         try_files $uri $uri/ /index.html;
     }
 
-    # API proxy
+    # API proxy (Express handles its own auth middleware)
     location /api {
         proxy_pass http://localhost:3001;
         proxy_http_version 1.1;
@@ -115,7 +133,7 @@ server {
         proxy_cache_bypass $http_upgrade;
     }
 
-    # Static assets caching
+    # Static assets — no auth needed once the HTML shell is authenticated
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
         expires 1y;
         add_header Cache-Control "public, immutable";
