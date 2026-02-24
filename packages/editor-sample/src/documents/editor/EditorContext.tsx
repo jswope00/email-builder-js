@@ -16,6 +16,7 @@ type TValue = {
 
   inspectorDrawerOpen: boolean;
   samplesDrawerOpen: boolean;
+  currentView: 'editor' | 'mailchimp';
 };
 
 const editorStateStore = create<TValue>(() => ({
@@ -29,6 +30,7 @@ const editorStateStore = create<TValue>(() => ({
 
   inspectorDrawerOpen: true,
   samplesDrawerOpen: true,
+  currentView: 'editor',
 }));
 
 // Load template from API if needed
@@ -126,6 +128,14 @@ export function toggleSamplesDrawerOpen() {
 
 export function setSelectedScreenSize(selectedScreenSize: TValue['selectedScreenSize']) {
   return editorStateStore.setState({ selectedScreenSize });
+}
+
+export function useCurrentView() {
+  return editorStateStore((s) => s.currentView);
+}
+
+export function setCurrentView(currentView: TValue['currentView']) {
+  return editorStateStore.setState({ currentView });
 }
 
 export function useIsLoading() {
