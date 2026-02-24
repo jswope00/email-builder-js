@@ -44,13 +44,14 @@ router.get('/check', async (req: Request, res: Response) => {
       roles?: string[];
     };
 
-    if (!data.authenticated) {
-      res.status(401).json({ authenticated: false });
+    if (!data.authenticated || !data.roles?.includes('administrator')) {
+      res.status(401).json({ authenticated: data.authenticated ?? false, authorized: false });
       return;
     }
 
     res.status(200).json({
       authenticated: true,
+      authorized: true,
       uid: data.uid,
       name: data.name,
       roles: data.roles,

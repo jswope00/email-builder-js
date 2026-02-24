@@ -41,6 +41,11 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
       return;
     }
 
+    if (!data.roles?.includes('administrator')) {
+      res.status(403).json({ error: 'Forbidden', code: 'INSUFFICIENT_ROLE' });
+      return;
+    }
+
     // Attach user info to request for downstream handlers
     (req as Request & { user: typeof data }).user = data;
 

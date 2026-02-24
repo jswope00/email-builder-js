@@ -9,15 +9,21 @@ import theme from './theme';
 const API_URL = import.meta.env.VITE_API_URL ?? '/api';
 const LOGIN_URL = 'https://rheumnow.com/user/login';
 
+type AuthStatus = 'checking' | 'authenticated' | 'redirecting' | 'forbidden';
+
 function AuthGate({ children }: { children: React.ReactNode }) {
-  const [status, setStatus] = useState<'checking' | 'authenticated' | 'redirecting'>('checking');
+  const [status, setStatus] = useState<AuthStatus>('checking');
 
   useEffect(() => {
     fetch(`${API_URL}/auth/check`, { credentials: 'include' })
       .then((res) => {
         if (res.ok) {
           setStatus('authenticated');
+        } else if (res.status === 403) {
+          // Logged in but not an administrator
+          setStatus('forbidden');
         } else {
+          // Not logged in — send to Drupal login
           setStatus('redirecting');
           const destination = encodeURIComponent(window.location.href);
           window.location.href = `${LOGIN_URL}?destination=${destination}`;
@@ -32,6 +38,17 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
   if (status === 'authenticated') {
     return <>{children}</>;
+  }
+
+  if (status === 'forbidden') {
+    return (
+      <Stack alignItems="center" justifyContent="center" sx={{ height: '100vh', gap: 1 }}>
+        <Typography variant="h6">Access Denied</Typography>
+        <Typography variant="body2" color="text.secondary">
+          Your account does not have permission to use this tool.
+        </Typography>
+      </Stack>
+    );
   }
 
   return (
