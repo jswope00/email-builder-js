@@ -5,6 +5,8 @@ import { testConnection, closePool } from './db/connection';
 import { errorHandler } from './utils/errors';
 import templatesRouter from './routes/templates';
 import healthRouter from './routes/health';
+import authRouter from './routes/auth';
+import { requireAuth } from './middleware/auth';
 
 dotenv.config();
 
@@ -28,7 +30,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // Routes
 app.use('/api/health', healthRouter);
-app.use('/api/templates', templatesRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/templates', requireAuth, templatesRouter);
 
 // Root endpoint
 app.get('/', (req: Request, res: Response) => {
