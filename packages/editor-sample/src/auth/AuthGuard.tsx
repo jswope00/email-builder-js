@@ -25,7 +25,7 @@ export default function AuthGuard({ children, baseDomain }: AuthGuardProps) {
     if (!isAuthenticated) {
       // Use provided base domain or derive from current host (strip subdomain)
       const domain = baseDomain ?? getMainDomainOrigin();
-      const loginUrl = `${domain}/user/login?mailbuilder=1`;
+      const loginUrl = `https://dev.rheumnow.com/user/login?mailbuilder=1`;
 
       // Debug: redirect URL
       console.log('[AuthGuard] redirect debug:', { baseDomain, domain, loginUrl, isAuthenticated });
