@@ -14,6 +14,7 @@ import {
   MedicalServicesOutlined,
   NotesOutlined,
   OndemandVideoOutlined,
+  PollOutlined,
   SmartButtonOutlined,
   ViewColumnOutlined,
 } from '@mui/icons-material';
@@ -247,6 +248,20 @@ export const BUTTONS: TButtonProps[] = [
     icon: <DownloadOutlined />,
     block: () => ({
       type: 'DailyDownloadXml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
+          url: '',
+          numberOfItems: 3,
+        },
+      },
+    }),
+  },
+  {
+    label: 'Promoted Survey XML',
+    icon: <PollOutlined />,
+    block: () => ({
+      type: 'PromotedSurveyXml',
       data: {
         style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
         props: {

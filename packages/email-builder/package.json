@@ -44,6 +44,7 @@
     "@usewaypoint/block-text": "^0.0.7",
     "@usewaypoint/block-therapeutic-update-xml": "^0.0.1",
     "@usewaypoint/block-video-xml": "^0.0.1",
-    "@usewaypoint/document-core": "^0.0.6"
+    "@usewaypoint/document-core": "^0.0.6",
+    "@usewaypoint/block-email-survey-xml": "^0.0.1"
   }
 }

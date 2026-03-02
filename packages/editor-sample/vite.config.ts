@@ -69,6 +69,10 @@ export default defineConfig({
         find: '@usewaypoint/block-text',
         replacement: path.resolve(__dirname, '../block-text/src/index.tsx'),
       },
+      {
+        find: '@usewaypoint/block-email-survey-xml',
+        replacement: path.resolve(__dirname, '../block-email-survey-xml/src/index.tsx'),
+      },
     ],
   },
   optimizeDeps: {

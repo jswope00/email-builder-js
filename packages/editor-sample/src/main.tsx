@@ -26,13 +26,13 @@ function AuthGate({ children }: { children: React.ReactNode }) {
           // Not logged in — send to Drupal login
           setStatus('redirecting');
           const destination = encodeURIComponent(window.location.href);
-          window.location.href = `${LOGIN_URL}?destination=${destination}`;
+          window.location.href = `${LOGIN_URL}?mailbuilder=${destination}`;
         }
       })
       .catch(() => {
         setStatus('redirecting');
         const destination = encodeURIComponent(window.location.href);
-        window.location.href = `${LOGIN_URL}?destination=${destination}`;
+        window.location.href = `${LOGIN_URL}?mailbuilder=${destination}`;
       });
   }, []);
 
