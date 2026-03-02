@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --config vite.config.ts",
     "preview": "vite preview"
   },
   "private": true,
@@ -32,7 +32,7 @@
     "@usewaypoint/block-advertisement-300-250-xml": "*",
     "@usewaypoint/block-conference-advertisement-300-250-xml": "*",
     "@usewaypoint/block-daily-download-xml": "*",
-    "@usewaypoint/block-email-survey-xml": "*",
+    "@usewaypoint/block-email-survey-xml": "file:../block-email-survey-xml",
     "@usewaypoint/document-core": "^0.0.6",
     "@usewaypoint/email-builder": "^0.0.9",
     "highlight.js": "^11.9.0",
