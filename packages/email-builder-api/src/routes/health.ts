@@ -1,7 +1,7 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, type IRouter } from 'express';
 import { pool } from '../db/connection';
 
-const router = Router();
+const router: IRouter = Router();
 
 /**
  * GET /api/health

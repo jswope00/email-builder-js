@@ -1,14 +1,14 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, type IRouter } from 'express';
 
-const router = Router();
+const router: IRouter = Router();
 
 const DRUPAL_AUTH_URL = process.env.DRUPAL_AUTH_URL || 'https://rheumnow.com/api/auth/status';
-const AUTH_ENABLED = process.env.AUTH_ENABLED !== 'false';
+//const AUTH_ENABLED = process.env.AUTH_ENABLED !== 'false';
+const AUTH_ENABLED = false;
 
 /**
  * GET /api/auth/check
  * Forwards the incoming session cookie to Drupal and returns 200 if authenticated, 401 if not.
- * Used by Nginx auth_request and the React client-side guard.
  * Set AUTH_ENABLED=false to bypass for local development.
  */
 router.get('/check', async (req: Request, res: Response) => {

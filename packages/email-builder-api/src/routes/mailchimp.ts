@@ -1,9 +1,9 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction, type IRouter } from 'express';
 import { z } from 'zod';
 import { AppError, NotFoundError } from '../utils/errors';
 import { validateParams, validateBody } from '../middleware/validation';
 
-const router = Router();
+const router: IRouter = Router();
 
 // Params validation schemas
 const AudienceIdParamsSchema = z.object({

@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction, type IRouter } from 'express';
 import { z } from 'zod';
 import {
   getAllTemplates,
@@ -12,7 +12,7 @@ import { NotFoundError, ConflictError } from '../utils/errors';
 import { validateBody, validateParams } from '../middleware/validation';
 import { CreateTemplateSchema, UpdateTemplateSchema } from '../types/template';
 
-const router = Router();
+const router: IRouter = Router();
 
 // Params validation schemas
 const SlugParamsSchema = z.object({
