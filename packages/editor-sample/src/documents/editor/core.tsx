@@ -7,7 +7,7 @@ import { Advertisement72890Xml, Advertisement72890XmlPropsSchema } from '@useway
 import { Avatar, AvatarPropsSchema } from '@usewaypoint/block-avatar';
 import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
 import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
-import { PromotedSurveyXml, PromotedSurveyXmlPropsSchema } from '@usewaypoint/block-email-survey-xml';
+import { PromotedSurveyXml, PromotedSurveyXmlPropsSchema } from '@nattusia/block-email-survey-xml';
 import { Button, ButtonPropsSchema } from '@usewaypoint/block-button';
 import { Divider, DividerPropsSchema } from '@usewaypoint/block-divider';
 import { Heading, HeadingPropsSchema } from '@usewaypoint/block-heading';

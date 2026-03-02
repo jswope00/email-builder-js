@@ -4,7 +4,7 @@ import {
   PromotedSurveyXmlProps,
   PromotedSurveyXmlPropsDefaults,
   PromotedSurveyXmlPropsSchema,
-} from '@usewaypoint/block-email-survey-xml';
+} from '@nattusia/block-email-survey-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
 import TextInput from './helpers/inputs/TextInput';
@@ -20,6 +20,11 @@ export default function PromotedSurveyXmlSidebarPanel({
   setData,
 }: PromotedSurveyXmlSidebarPanelProps) {
   const [, setErrors] = useState<Zod.ZodError | null>(null);
+  // Normalize so we always have props (like VideoXmlSidebarPanel / DailyDownloadXmlSidebarPanel)
+  const safeData: PromotedSurveyXmlProps = {
+    style: data?.style ?? null,
+    props: data?.props ?? { url: PromotedSurveyXmlPropsDefaults.url, numberOfItems: PromotedSurveyXmlPropsDefaults.numberOfItems },
+  };
 
   const updateData = (d: unknown) => {
     const res = PromotedSurveyXmlPropsSchema.safeParse(d);
@@ -31,30 +36,31 @@ export default function PromotedSurveyXmlSidebarPanel({
     }
   };
 
-  const url = data.props?.url ?? PromotedSurveyXmlPropsDefaults.url;
-  const numberOfItems = data.props?.numberOfItems ?? PromotedSurveyXmlPropsDefaults.numberOfItems;
+  const url = safeData.props?.url ?? PromotedSurveyXmlPropsDefaults.url;
+  const numberOfItems = safeData.props?.numberOfItems ?? PromotedSurveyXmlPropsDefaults.numberOfItems;
 
   return (
     <BaseSidebarPanel title="Promoted Survey XML Block">
       <TextInput
         label="XML URL"
-        defaultValue={url}
-        onChange={(v) => updateData({ ...data, props: { ...data.props, url: v } })}
+        placeholder="https://example.com/survey.xml"
+        defaultValue={url ?? ''}
+        onChange={(v) => updateData({ ...safeData, props: { ...safeData.props, url: v } })}
       />
       <TextInput
         label="Number of items"
-        defaultValue={numberOfItems.toString()}
+        defaultValue={String(numberOfItems ?? PromotedSurveyXmlPropsDefaults.numberOfItems)}
         onChange={(v) => {
           const num = parseInt(v, 10);
           if (!isNaN(num)) {
-            updateData({ ...data, props: { ...data.props, numberOfItems: num } });
+            updateData({ ...safeData, props: { ...safeData.props, numberOfItems: num } });
           }
         }}
       />
       <MultiStylePropertyPanel
         names={['padding']}
-        value={data.style}
-        onChange={(style) => updateData({ ...data, style })}
+        value={safeData.style}
+        onChange={(style) => updateData({ ...safeData, style })}
       />
     </BaseSidebarPanel>
   );

@@ -70,7 +70,7 @@ export default defineConfig({
         replacement: path.resolve(__dirname, '../block-text/src/index.tsx'),
       },
       {
-        find: '@usewaypoint/block-email-survey-xml',
+        find: '@nattusia/block-email-survey-xml',
         replacement: path.resolve(__dirname, '../block-email-survey-xml/src/index.tsx'),
       },
     ],
@@ -89,6 +89,7 @@ export default defineConfig({
       '@usewaypoint/block-image',
       '@usewaypoint/block-spacer',
       '@usewaypoint/block-text',
+      '@nattusia/block-email-survey-xml',
     ],
   },
 });

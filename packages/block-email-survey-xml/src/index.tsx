@@ -39,6 +39,7 @@ type SurveyItem = {
   description: string;
 };
 
+/** Parses XML string into SurveyItem[] — looks for item arrays (e.g. o.item or root array) and maps title/link/description. */
 function parseSurveyXml(xmlText: string, numberOfItems: number): SurveyItem[] {
   try {
     const parser = new XMLParser({
@@ -46,6 +47,7 @@ function parseSurveyXml(xmlText: string, numberOfItems: number): SurveyItem[] {
       attributeNamePrefix: '@_',
     });
     const result = parser.parse(xmlText);
+    //console.log('[PromotedSurveyXml] parseSurveyXml — raw parser result:', result);
 
     let foundItems: Record<string, unknown>[] = [];
 
@@ -130,7 +132,11 @@ export function PromotedSurveyXml({ style, props: propsData }: PromotedSurveyXml
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Status: ${response.status}`);
         const text = await response.text();
-        setItems(parseSurveyXml(text, numberOfItems));
+        //console.log('[PromotedSurveyXml] Fetched raw response (length):', text.length, 'preview:', text.slice(0, 200));
+        // Parsing happens here — parseSurveyXml turns XML string into SurveyItem[]
+        const parsed = parseSurveyXml(text, numberOfItems);
+        //console.log('[PromotedSurveyXml] Parsed items after fetch:', parsed);
+        setItems(parsed);
       } catch (err) {
         setError('Failed to load data');
         console.error(err);
@@ -150,8 +156,8 @@ export function PromotedSurveyXml({ style, props: propsData }: PromotedSurveyXml
 
   if (!url) {
     return (
-      <div style={{ ...wrapperStyle, border: '1px dashed #ccc', textAlign: 'center', padding: '20px' }}>
-        Configure Promoted Survey XML URL
+      <div style={{ ...wrapperStyle, border: '1px dashed #ccc', textAlign: 'center', padding: '20px', color: '#666' }}>
+        Configure Promoted Survey XML URL — use the right panel to enter the XML feed URL.
       </div>
     );
   }

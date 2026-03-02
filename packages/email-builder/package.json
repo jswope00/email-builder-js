@@ -34,6 +34,7 @@
     "@usewaypoint/block-columns-container": "^0.0.3",
     "@usewaypoint/block-container": "^0.0.2",
     "@usewaypoint/block-daily-download-xml": "^0.0.1",
+    "@nattusia/block-email-survey-xml": "^0.0.1",
     "@usewaypoint/block-divider": "^0.0.4",
     "@usewaypoint/block-featured-story-xml": "^0.0.1",
     "@usewaypoint/block-heading": "^0.0.3",
