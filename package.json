@@ -27,6 +27,7 @@
     "packages/block-advertisement-300-250-xml",
     "packages/block-conference-advertisement-300-250-xml",
     "packages/block-daily-download-xml",
+    "packages/block-email-survey-xml",
     "packages/document-core",
     "packages/email-builder",
     "packages/email-builder-api",
