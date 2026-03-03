@@ -33,7 +33,7 @@
     "@usewaypoint/block-conference-advertisement-300-250-xml": "*",
     "@usewaypoint/block-daily-download-xml": "*",
     "@nattusia/block-email-survey-xml": "^0.0.1",
-    "@nattusia/block-xml-feed": "^0.0.1",
+    "@nattusia/block-xml-feed": "^0.0.2",
     "@usewaypoint/document-core": "^0.0.6",
     "@usewaypoint/email-builder": "^0.0.9",
     "highlight.js": "^11.9.0",
