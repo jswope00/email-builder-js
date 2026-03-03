@@ -21,25 +21,25 @@ declare const ContainerPropsSchema: z.ZodObject<{
             left: number;
         }>>>;
     }, "strip", z.ZodTypeAny, {
-        backgroundColor?: string | null | undefined;
-        borderColor?: string | null | undefined;
-        borderRadius?: number | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
+        borderRadius?: number | null | undefined;
+        borderColor?: string | null | undefined;
     }, {
-        backgroundColor?: string | null | undefined;
-        borderColor?: string | null | undefined;
-        borderRadius?: number | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
+        borderRadius?: number | null | undefined;
+        borderColor?: string | null | undefined;
     }>>>;
     props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
         childrenIds: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodString, "many">>>;
@@ -50,30 +50,30 @@ declare const ContainerPropsSchema: z.ZodObject<{
     }>>>;
 }, "strip", z.ZodTypeAny, {
     style?: {
-        backgroundColor?: string | null | undefined;
-        borderColor?: string | null | undefined;
-        borderRadius?: number | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
+        borderRadius?: number | null | undefined;
+        borderColor?: string | null | undefined;
     } | null | undefined;
     props?: {
         childrenIds?: string[] | null | undefined;
     } | null | undefined;
 }, {
     style?: {
-        backgroundColor?: string | null | undefined;
-        borderColor?: string | null | undefined;
-        borderRadius?: number | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
+        borderRadius?: number | null | undefined;
+        borderColor?: string | null | undefined;
     } | null | undefined;
     props?: {
         childrenIds?: string[] | null | undefined;

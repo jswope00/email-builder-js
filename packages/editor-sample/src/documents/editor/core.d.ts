@@ -21,21 +21,21 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
         }, {
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             size: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
@@ -43,47 +43,47 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
             imageUrl: z.ZodNullable<z.ZodOptional<z.ZodString>>;
             alt: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         }, "strip", z.ZodTypeAny, {
+            alt?: string | null | undefined;
             size?: number | null | undefined;
             shape?: "circle" | "square" | "rounded" | null | undefined;
             imageUrl?: string | null | undefined;
-            alt?: string | null | undefined;
         }, {
+            alt?: string | null | undefined;
             size?: number | null | undefined;
             shape?: "circle" | "square" | "rounded" | null | undefined;
             imageUrl?: string | null | undefined;
-            alt?: string | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
         } | null | undefined;
         props?: {
+            alt?: string | null | undefined;
             size?: number | null | undefined;
             shape?: "circle" | "square" | "rounded" | null | undefined;
             imageUrl?: string | null | undefined;
-            alt?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
         } | null | undefined;
         props?: {
+            alt?: string | null | undefined;
             size?: number | null | undefined;
             shape?: "circle" | "square" | "rounded" | null | undefined;
             imageUrl?: string | null | undefined;
-            alt?: string | null | undefined;
         } | null | undefined;
     }>;
     Button: z.ZodObject<{
@@ -110,29 +110,29 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }, {
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             buttonBackgroundColor: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -143,67 +143,67 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
             text: z.ZodNullable<z.ZodOptional<z.ZodString>>;
             url: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         }, "strip", z.ZodTypeAny, {
+            url?: string | null | undefined;
+            size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+            text?: string | null | undefined;
             buttonBackgroundColor?: string | null | undefined;
             buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
             buttonTextColor?: string | null | undefined;
             fullWidth?: boolean | null | undefined;
-            size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-            text?: string | null | undefined;
-            url?: string | null | undefined;
         }, {
+            url?: string | null | undefined;
+            size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+            text?: string | null | undefined;
             buttonBackgroundColor?: string | null | undefined;
             buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
             buttonTextColor?: string | null | undefined;
             fullWidth?: boolean | null | undefined;
-            size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-            text?: string | null | undefined;
-            url?: string | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
+            url?: string | null | undefined;
+            size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+            text?: string | null | undefined;
             buttonBackgroundColor?: string | null | undefined;
             buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
             buttonTextColor?: string | null | undefined;
             fullWidth?: boolean | null | undefined;
-            size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-            text?: string | null | undefined;
-            url?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
+            url?: string | null | undefined;
+            size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+            text?: string | null | undefined;
             buttonBackgroundColor?: string | null | undefined;
             buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
             buttonTextColor?: string | null | undefined;
             fullWidth?: boolean | null | undefined;
-            size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-            text?: string | null | undefined;
-            url?: string | null | undefined;
         } | null | undefined;
     }>;
     Container: z.ZodObject<{
@@ -228,25 +228,25 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            backgroundColor?: string | null | undefined;
-            borderColor?: string | null | undefined;
-            borderRadius?: number | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
+            borderRadius?: number | null | undefined;
+            borderColor?: string | null | undefined;
         }, {
-            backgroundColor?: string | null | undefined;
-            borderColor?: string | null | undefined;
-            borderRadius?: number | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
+            borderRadius?: number | null | undefined;
+            borderColor?: string | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             childrenIds: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodString, "many">>>;
@@ -257,30 +257,30 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            backgroundColor?: string | null | undefined;
-            borderColor?: string | null | undefined;
-            borderRadius?: number | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
+            borderRadius?: number | null | undefined;
+            borderColor?: string | null | undefined;
         } | null | undefined;
         props?: {
             childrenIds?: string[] | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            backgroundColor?: string | null | undefined;
-            borderColor?: string | null | undefined;
-            borderRadius?: number | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
+            borderRadius?: number | null | undefined;
+            borderColor?: string | null | undefined;
         } | null | undefined;
         props?: {
             childrenIds?: string[] | null | undefined;
@@ -306,21 +306,21 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         }, {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             columns: z.ZodTuple<[z.ZodObject<{
@@ -373,13 +373,13 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
             columns: [{
@@ -396,13 +396,13 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
         } | null | undefined;
     }, {
         style?: {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
             columns: [{
@@ -424,10 +424,10 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
             level: z.ZodNullable<z.ZodOptional<z.ZodEnum<["h1", "h2", "h3"]>>>;
         }, "strip", z.ZodTypeAny, {
             text?: string | null | undefined;
-            level?: "h1" | "h2" | "h3" | null | undefined;
+            level?: "h2" | "h1" | "h3" | null | undefined;
         }, {
             text?: string | null | undefined;
-            level?: "h1" | "h2" | "h3" | null | undefined;
+            level?: "h2" | "h1" | "h3" | null | undefined;
         }>>>;
         style: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             color: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -452,65 +452,65 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
-        props?: {
-            text?: string | null | undefined;
-            level?: "h1" | "h2" | "h3" | null | undefined;
-        } | null | undefined;
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
+        } | null | undefined;
+        props?: {
+            text?: string | null | undefined;
+            level?: "h2" | "h1" | "h3" | null | undefined;
         } | null | undefined;
     }, {
-        props?: {
-            text?: string | null | undefined;
-            level?: "h1" | "h2" | "h3" | null | undefined;
-        } | null | undefined;
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
+        } | null | undefined;
+        props?: {
+            text?: string | null | undefined;
+            level?: "h2" | "h1" | "h3" | null | undefined;
         } | null | undefined;
     }>;
     Html: z.ZodObject<{
@@ -537,29 +537,29 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontSize?: number | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontSize?: number | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             contents: z.ZodNullable<z.ZodOptional<z.ZodString>>;
@@ -570,34 +570,34 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontSize?: number | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
             contents?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontSize?: number | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
             contents?: string | null | undefined;
@@ -630,8 +630,8 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
                 right: number;
                 left: number;
             } | null | undefined;
-            backgroundColor?: string | null | undefined;
             textAlign?: "right" | "left" | "center" | null | undefined;
+            backgroundColor?: string | null | undefined;
         }, {
             padding?: {
                 top: number;
@@ -639,8 +639,8 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
                 right: number;
                 left: number;
             } | null | undefined;
-            backgroundColor?: string | null | undefined;
             textAlign?: "right" | "left" | "center" | null | undefined;
+            backgroundColor?: string | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             width: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
@@ -650,19 +650,19 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
             linkHref: z.ZodNullable<z.ZodOptional<z.ZodString>>;
             contentAlignment: z.ZodNullable<z.ZodOptional<z.ZodEnum<["top", "middle", "bottom"]>>>;
         }, "strip", z.ZodTypeAny, {
+            url?: string | null | undefined;
             width?: number | null | undefined;
             height?: number | null | undefined;
-            url?: string | null | undefined;
             alt?: string | null | undefined;
-            linkHref?: string | null | undefined;
             contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+            linkHref?: string | null | undefined;
         }, {
+            url?: string | null | undefined;
             width?: number | null | undefined;
             height?: number | null | undefined;
-            url?: string | null | undefined;
             alt?: string | null | undefined;
-            linkHref?: string | null | undefined;
             contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+            linkHref?: string | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
@@ -672,16 +672,16 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
                 right: number;
                 left: number;
             } | null | undefined;
-            backgroundColor?: string | null | undefined;
             textAlign?: "right" | "left" | "center" | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
+            url?: string | null | undefined;
             width?: number | null | undefined;
             height?: number | null | undefined;
-            url?: string | null | undefined;
             alt?: string | null | undefined;
-            linkHref?: string | null | undefined;
             contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+            linkHref?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
@@ -691,16 +691,16 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
                 right: number;
                 left: number;
             } | null | undefined;
-            backgroundColor?: string | null | undefined;
             textAlign?: "right" | "left" | "center" | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
+            url?: string | null | undefined;
             width?: number | null | undefined;
             height?: number | null | undefined;
-            url?: string | null | undefined;
             alt?: string | null | undefined;
-            linkHref?: string | null | undefined;
             contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+            linkHref?: string | null | undefined;
         } | null | undefined;
     }>;
     Text: z.ZodObject<{
@@ -728,79 +728,79 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             markdown: z.ZodNullable<z.ZodOptional<z.ZodBoolean>>;
             text: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         }, "strip", z.ZodTypeAny, {
-            markdown?: boolean | null | undefined;
             text?: string | null | undefined;
+            markdown?: boolean | null | undefined;
         }, {
-            markdown?: boolean | null | undefined;
             text?: string | null | undefined;
+            markdown?: boolean | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
-            markdown?: boolean | null | undefined;
             text?: string | null | undefined;
+            markdown?: boolean | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
-            markdown?: boolean | null | undefined;
             text?: string | null | undefined;
+            markdown?: boolean | null | undefined;
         } | null | undefined;
     }>;
     EmailLayout: z.ZodObject<{
@@ -865,59 +865,59 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         }, {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             lineColor: z.ZodOptional<z.ZodNullable<z.ZodString>>;
             lineHeight: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
         }, "strip", z.ZodTypeAny, {
-            lineColor?: string | null | undefined;
             lineHeight?: number | null | undefined;
+            lineColor?: string | null | undefined;
         }, {
-            lineColor?: string | null | undefined;
             lineHeight?: number | null | undefined;
+            lineColor?: string | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
-            lineColor?: string | null | undefined;
             lineHeight?: number | null | undefined;
+            lineColor?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
-            lineColor?: string | null | undefined;
             lineHeight?: number | null | undefined;
+            lineColor?: string | null | undefined;
         } | null | undefined;
     }>;
     VideoXml: z.ZodObject<{
@@ -1704,13 +1704,13 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
             fieldMapping: z.ZodNullable<z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>>;
             previewItems: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>, "many">>>;
         }, "strip", z.ZodTypeAny, {
-            blockType?: string | null | undefined;
             url?: string | null | undefined;
+            blockType?: string | null | undefined;
             fieldMapping?: Record<string, string> | null | undefined;
             previewItems?: Record<string, unknown>[] | null | undefined;
         }, {
-            blockType?: string | null | undefined;
             url?: string | null | undefined;
+            blockType?: string | null | undefined;
             fieldMapping?: Record<string, string> | null | undefined;
             previewItems?: Record<string, unknown>[] | null | undefined;
         }>>>;
@@ -1724,8 +1724,8 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
             } | null | undefined;
         } | null | undefined;
         props?: {
-            blockType?: string | null | undefined;
             url?: string | null | undefined;
+            blockType?: string | null | undefined;
             fieldMapping?: Record<string, string> | null | undefined;
             previewItems?: Record<string, unknown>[] | null | undefined;
         } | null | undefined;
@@ -1739,8 +1739,8 @@ export declare const EditorBlock: ({ type, data }: import("@usewaypoint/document
             } | null | undefined;
         } | null | undefined;
         props?: {
-            blockType?: string | null | undefined;
             url?: string | null | undefined;
+            blockType?: string | null | undefined;
             fieldMapping?: Record<string, string> | null | undefined;
             previewItems?: Record<string, unknown>[] | null | undefined;
         } | null | undefined;
@@ -1767,21 +1767,21 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
         }, {
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             size: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
@@ -1789,47 +1789,47 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
             imageUrl: z.ZodNullable<z.ZodOptional<z.ZodString>>;
             alt: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         }, "strip", z.ZodTypeAny, {
+            alt?: string | null | undefined;
             size?: number | null | undefined;
             shape?: "circle" | "square" | "rounded" | null | undefined;
             imageUrl?: string | null | undefined;
-            alt?: string | null | undefined;
         }, {
+            alt?: string | null | undefined;
             size?: number | null | undefined;
             shape?: "circle" | "square" | "rounded" | null | undefined;
             imageUrl?: string | null | undefined;
-            alt?: string | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
         } | null | undefined;
         props?: {
+            alt?: string | null | undefined;
             size?: number | null | undefined;
             shape?: "circle" | "square" | "rounded" | null | undefined;
             imageUrl?: string | null | undefined;
-            alt?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
         } | null | undefined;
         props?: {
+            alt?: string | null | undefined;
             size?: number | null | undefined;
             shape?: "circle" | "square" | "rounded" | null | undefined;
             imageUrl?: string | null | undefined;
-            alt?: string | null | undefined;
         } | null | undefined;
     }>;
     Button: z.ZodObject<{
@@ -1856,29 +1856,29 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }, {
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             buttonBackgroundColor: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -1889,67 +1889,67 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
             text: z.ZodNullable<z.ZodOptional<z.ZodString>>;
             url: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         }, "strip", z.ZodTypeAny, {
+            url?: string | null | undefined;
+            size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+            text?: string | null | undefined;
             buttonBackgroundColor?: string | null | undefined;
             buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
             buttonTextColor?: string | null | undefined;
             fullWidth?: boolean | null | undefined;
-            size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-            text?: string | null | undefined;
-            url?: string | null | undefined;
         }, {
+            url?: string | null | undefined;
+            size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+            text?: string | null | undefined;
             buttonBackgroundColor?: string | null | undefined;
             buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
             buttonTextColor?: string | null | undefined;
             fullWidth?: boolean | null | undefined;
-            size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-            text?: string | null | undefined;
-            url?: string | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
+            url?: string | null | undefined;
+            size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+            text?: string | null | undefined;
             buttonBackgroundColor?: string | null | undefined;
             buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
             buttonTextColor?: string | null | undefined;
             fullWidth?: boolean | null | undefined;
-            size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-            text?: string | null | undefined;
-            url?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
+            url?: string | null | undefined;
+            size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+            text?: string | null | undefined;
             buttonBackgroundColor?: string | null | undefined;
             buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
             buttonTextColor?: string | null | undefined;
             fullWidth?: boolean | null | undefined;
-            size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-            text?: string | null | undefined;
-            url?: string | null | undefined;
         } | null | undefined;
     }>;
     Container: z.ZodObject<{
@@ -1974,25 +1974,25 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            backgroundColor?: string | null | undefined;
-            borderColor?: string | null | undefined;
-            borderRadius?: number | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
+            borderRadius?: number | null | undefined;
+            borderColor?: string | null | undefined;
         }, {
-            backgroundColor?: string | null | undefined;
-            borderColor?: string | null | undefined;
-            borderRadius?: number | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
+            borderRadius?: number | null | undefined;
+            borderColor?: string | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             childrenIds: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodString, "many">>>;
@@ -2003,30 +2003,30 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            backgroundColor?: string | null | undefined;
-            borderColor?: string | null | undefined;
-            borderRadius?: number | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
+            borderRadius?: number | null | undefined;
+            borderColor?: string | null | undefined;
         } | null | undefined;
         props?: {
             childrenIds?: string[] | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            backgroundColor?: string | null | undefined;
-            borderColor?: string | null | undefined;
-            borderRadius?: number | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
+            borderRadius?: number | null | undefined;
+            borderColor?: string | null | undefined;
         } | null | undefined;
         props?: {
             childrenIds?: string[] | null | undefined;
@@ -2052,21 +2052,21 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         }, {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             columns: z.ZodTuple<[z.ZodObject<{
@@ -2119,13 +2119,13 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
             columns: [{
@@ -2142,13 +2142,13 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
         } | null | undefined;
     }, {
         style?: {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
             columns: [{
@@ -2170,10 +2170,10 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
             level: z.ZodNullable<z.ZodOptional<z.ZodEnum<["h1", "h2", "h3"]>>>;
         }, "strip", z.ZodTypeAny, {
             text?: string | null | undefined;
-            level?: "h1" | "h2" | "h3" | null | undefined;
+            level?: "h2" | "h1" | "h3" | null | undefined;
         }, {
             text?: string | null | undefined;
-            level?: "h1" | "h2" | "h3" | null | undefined;
+            level?: "h2" | "h1" | "h3" | null | undefined;
         }>>>;
         style: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             color: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -2198,65 +2198,65 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
-        props?: {
-            text?: string | null | undefined;
-            level?: "h1" | "h2" | "h3" | null | undefined;
-        } | null | undefined;
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
+        } | null | undefined;
+        props?: {
+            text?: string | null | undefined;
+            level?: "h2" | "h1" | "h3" | null | undefined;
         } | null | undefined;
     }, {
-        props?: {
-            text?: string | null | undefined;
-            level?: "h1" | "h2" | "h3" | null | undefined;
-        } | null | undefined;
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
+        } | null | undefined;
+        props?: {
+            text?: string | null | undefined;
+            level?: "h2" | "h1" | "h3" | null | undefined;
         } | null | undefined;
     }>;
     Html: z.ZodObject<{
@@ -2283,29 +2283,29 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontSize?: number | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontSize?: number | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             contents: z.ZodNullable<z.ZodOptional<z.ZodString>>;
@@ -2316,34 +2316,34 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontSize?: number | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
             contents?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontSize?: number | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
             contents?: string | null | undefined;
@@ -2376,8 +2376,8 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
                 right: number;
                 left: number;
             } | null | undefined;
-            backgroundColor?: string | null | undefined;
             textAlign?: "right" | "left" | "center" | null | undefined;
+            backgroundColor?: string | null | undefined;
         }, {
             padding?: {
                 top: number;
@@ -2385,8 +2385,8 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
                 right: number;
                 left: number;
             } | null | undefined;
-            backgroundColor?: string | null | undefined;
             textAlign?: "right" | "left" | "center" | null | undefined;
+            backgroundColor?: string | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             width: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
@@ -2396,19 +2396,19 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
             linkHref: z.ZodNullable<z.ZodOptional<z.ZodString>>;
             contentAlignment: z.ZodNullable<z.ZodOptional<z.ZodEnum<["top", "middle", "bottom"]>>>;
         }, "strip", z.ZodTypeAny, {
+            url?: string | null | undefined;
             width?: number | null | undefined;
             height?: number | null | undefined;
-            url?: string | null | undefined;
             alt?: string | null | undefined;
-            linkHref?: string | null | undefined;
             contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+            linkHref?: string | null | undefined;
         }, {
+            url?: string | null | undefined;
             width?: number | null | undefined;
             height?: number | null | undefined;
-            url?: string | null | undefined;
             alt?: string | null | undefined;
-            linkHref?: string | null | undefined;
             contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+            linkHref?: string | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
@@ -2418,16 +2418,16 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
                 right: number;
                 left: number;
             } | null | undefined;
-            backgroundColor?: string | null | undefined;
             textAlign?: "right" | "left" | "center" | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
+            url?: string | null | undefined;
             width?: number | null | undefined;
             height?: number | null | undefined;
-            url?: string | null | undefined;
             alt?: string | null | undefined;
-            linkHref?: string | null | undefined;
             contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+            linkHref?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
@@ -2437,16 +2437,16 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
                 right: number;
                 left: number;
             } | null | undefined;
-            backgroundColor?: string | null | undefined;
             textAlign?: "right" | "left" | "center" | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
+            url?: string | null | undefined;
             width?: number | null | undefined;
             height?: number | null | undefined;
-            url?: string | null | undefined;
             alt?: string | null | undefined;
-            linkHref?: string | null | undefined;
             contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+            linkHref?: string | null | undefined;
         } | null | undefined;
     }>;
     Text: z.ZodObject<{
@@ -2474,79 +2474,79 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             markdown: z.ZodNullable<z.ZodOptional<z.ZodBoolean>>;
             text: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         }, "strip", z.ZodTypeAny, {
-            markdown?: boolean | null | undefined;
             text?: string | null | undefined;
+            markdown?: boolean | null | undefined;
         }, {
-            markdown?: boolean | null | undefined;
             text?: string | null | undefined;
+            markdown?: boolean | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
-            markdown?: boolean | null | undefined;
             text?: string | null | undefined;
+            markdown?: boolean | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
-            markdown?: boolean | null | undefined;
             text?: string | null | undefined;
+            markdown?: boolean | null | undefined;
         } | null | undefined;
     }>;
     EmailLayout: z.ZodObject<{
@@ -2611,59 +2611,59 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         }, {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             lineColor: z.ZodOptional<z.ZodNullable<z.ZodString>>;
             lineHeight: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
         }, "strip", z.ZodTypeAny, {
-            lineColor?: string | null | undefined;
             lineHeight?: number | null | undefined;
+            lineColor?: string | null | undefined;
         }, {
-            lineColor?: string | null | undefined;
             lineHeight?: number | null | undefined;
+            lineColor?: string | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
-            lineColor?: string | null | undefined;
             lineHeight?: number | null | undefined;
+            lineColor?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
-            lineColor?: string | null | undefined;
             lineHeight?: number | null | undefined;
+            lineColor?: string | null | undefined;
         } | null | undefined;
     }>;
     VideoXml: z.ZodObject<{
@@ -3450,13 +3450,13 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
             fieldMapping: z.ZodNullable<z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>>;
             previewItems: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>, "many">>>;
         }, "strip", z.ZodTypeAny, {
-            blockType?: string | null | undefined;
             url?: string | null | undefined;
+            blockType?: string | null | undefined;
             fieldMapping?: Record<string, string> | null | undefined;
             previewItems?: Record<string, unknown>[] | null | undefined;
         }, {
-            blockType?: string | null | undefined;
             url?: string | null | undefined;
+            blockType?: string | null | undefined;
             fieldMapping?: Record<string, string> | null | undefined;
             previewItems?: Record<string, unknown>[] | null | undefined;
         }>>>;
@@ -3470,8 +3470,8 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
             } | null | undefined;
         } | null | undefined;
         props?: {
-            blockType?: string | null | undefined;
             url?: string | null | undefined;
+            blockType?: string | null | undefined;
             fieldMapping?: Record<string, string> | null | undefined;
             previewItems?: Record<string, unknown>[] | null | undefined;
         } | null | undefined;
@@ -3485,8 +3485,8 @@ export declare const EditorBlockSchema: z.ZodEffects<z.ZodDiscriminatedUnion<"ty
             } | null | undefined;
         } | null | undefined;
         props?: {
-            blockType?: string | null | undefined;
             url?: string | null | undefined;
+            blockType?: string | null | undefined;
             fieldMapping?: Record<string, string> | null | undefined;
             previewItems?: Record<string, unknown>[] | null | undefined;
         } | null | undefined;
@@ -3513,21 +3513,21 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
         }, {
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             size: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
@@ -3535,47 +3535,47 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
             imageUrl: z.ZodNullable<z.ZodOptional<z.ZodString>>;
             alt: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         }, "strip", z.ZodTypeAny, {
+            alt?: string | null | undefined;
             size?: number | null | undefined;
             shape?: "circle" | "square" | "rounded" | null | undefined;
             imageUrl?: string | null | undefined;
-            alt?: string | null | undefined;
         }, {
+            alt?: string | null | undefined;
             size?: number | null | undefined;
             shape?: "circle" | "square" | "rounded" | null | undefined;
             imageUrl?: string | null | undefined;
-            alt?: string | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
         } | null | undefined;
         props?: {
+            alt?: string | null | undefined;
             size?: number | null | undefined;
             shape?: "circle" | "square" | "rounded" | null | undefined;
             imageUrl?: string | null | undefined;
-            alt?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
         } | null | undefined;
         props?: {
+            alt?: string | null | undefined;
             size?: number | null | undefined;
             shape?: "circle" | "square" | "rounded" | null | undefined;
             imageUrl?: string | null | undefined;
-            alt?: string | null | undefined;
         } | null | undefined;
     }>;
     Button: z.ZodObject<{
@@ -3602,29 +3602,29 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }, {
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             buttonBackgroundColor: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -3635,67 +3635,67 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
             text: z.ZodNullable<z.ZodOptional<z.ZodString>>;
             url: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         }, "strip", z.ZodTypeAny, {
+            url?: string | null | undefined;
+            size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+            text?: string | null | undefined;
             buttonBackgroundColor?: string | null | undefined;
             buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
             buttonTextColor?: string | null | undefined;
             fullWidth?: boolean | null | undefined;
-            size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-            text?: string | null | undefined;
-            url?: string | null | undefined;
         }, {
+            url?: string | null | undefined;
+            size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+            text?: string | null | undefined;
             buttonBackgroundColor?: string | null | undefined;
             buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
             buttonTextColor?: string | null | undefined;
             fullWidth?: boolean | null | undefined;
-            size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-            text?: string | null | undefined;
-            url?: string | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
+            url?: string | null | undefined;
+            size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+            text?: string | null | undefined;
             buttonBackgroundColor?: string | null | undefined;
             buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
             buttonTextColor?: string | null | undefined;
             fullWidth?: boolean | null | undefined;
-            size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-            text?: string | null | undefined;
-            url?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
+            url?: string | null | undefined;
+            size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+            text?: string | null | undefined;
             buttonBackgroundColor?: string | null | undefined;
             buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
             buttonTextColor?: string | null | undefined;
             fullWidth?: boolean | null | undefined;
-            size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-            text?: string | null | undefined;
-            url?: string | null | undefined;
         } | null | undefined;
     }>;
     Container: z.ZodObject<{
@@ -3720,25 +3720,25 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            backgroundColor?: string | null | undefined;
-            borderColor?: string | null | undefined;
-            borderRadius?: number | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
+            borderRadius?: number | null | undefined;
+            borderColor?: string | null | undefined;
         }, {
-            backgroundColor?: string | null | undefined;
-            borderColor?: string | null | undefined;
-            borderRadius?: number | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
+            borderRadius?: number | null | undefined;
+            borderColor?: string | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             childrenIds: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodString, "many">>>;
@@ -3749,30 +3749,30 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            backgroundColor?: string | null | undefined;
-            borderColor?: string | null | undefined;
-            borderRadius?: number | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
+            borderRadius?: number | null | undefined;
+            borderColor?: string | null | undefined;
         } | null | undefined;
         props?: {
             childrenIds?: string[] | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            backgroundColor?: string | null | undefined;
-            borderColor?: string | null | undefined;
-            borderRadius?: number | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
+            borderRadius?: number | null | undefined;
+            borderColor?: string | null | undefined;
         } | null | undefined;
         props?: {
             childrenIds?: string[] | null | undefined;
@@ -3798,21 +3798,21 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         }, {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             columns: z.ZodTuple<[z.ZodObject<{
@@ -3865,13 +3865,13 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
             columns: [{
@@ -3888,13 +3888,13 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
         } | null | undefined;
     }, {
         style?: {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
             columns: [{
@@ -3916,10 +3916,10 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
             level: z.ZodNullable<z.ZodOptional<z.ZodEnum<["h1", "h2", "h3"]>>>;
         }, "strip", z.ZodTypeAny, {
             text?: string | null | undefined;
-            level?: "h1" | "h2" | "h3" | null | undefined;
+            level?: "h2" | "h1" | "h3" | null | undefined;
         }, {
             text?: string | null | undefined;
-            level?: "h1" | "h2" | "h3" | null | undefined;
+            level?: "h2" | "h1" | "h3" | null | undefined;
         }>>>;
         style: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             color: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -3944,65 +3944,65 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
-        props?: {
-            text?: string | null | undefined;
-            level?: "h1" | "h2" | "h3" | null | undefined;
-        } | null | undefined;
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
+        } | null | undefined;
+        props?: {
+            text?: string | null | undefined;
+            level?: "h2" | "h1" | "h3" | null | undefined;
         } | null | undefined;
     }, {
-        props?: {
-            text?: string | null | undefined;
-            level?: "h1" | "h2" | "h3" | null | undefined;
-        } | null | undefined;
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
+        } | null | undefined;
+        props?: {
+            text?: string | null | undefined;
+            level?: "h2" | "h1" | "h3" | null | undefined;
         } | null | undefined;
     }>;
     Html: z.ZodObject<{
@@ -4029,29 +4029,29 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontSize?: number | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontSize?: number | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             contents: z.ZodNullable<z.ZodOptional<z.ZodString>>;
@@ -4062,34 +4062,34 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontSize?: number | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
             contents?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontSize?: number | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
             contents?: string | null | undefined;
@@ -4122,8 +4122,8 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
                 right: number;
                 left: number;
             } | null | undefined;
-            backgroundColor?: string | null | undefined;
             textAlign?: "right" | "left" | "center" | null | undefined;
+            backgroundColor?: string | null | undefined;
         }, {
             padding?: {
                 top: number;
@@ -4131,8 +4131,8 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
                 right: number;
                 left: number;
             } | null | undefined;
-            backgroundColor?: string | null | undefined;
             textAlign?: "right" | "left" | "center" | null | undefined;
+            backgroundColor?: string | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             width: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
@@ -4142,19 +4142,19 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
             linkHref: z.ZodNullable<z.ZodOptional<z.ZodString>>;
             contentAlignment: z.ZodNullable<z.ZodOptional<z.ZodEnum<["top", "middle", "bottom"]>>>;
         }, "strip", z.ZodTypeAny, {
+            url?: string | null | undefined;
             width?: number | null | undefined;
             height?: number | null | undefined;
-            url?: string | null | undefined;
             alt?: string | null | undefined;
-            linkHref?: string | null | undefined;
             contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+            linkHref?: string | null | undefined;
         }, {
+            url?: string | null | undefined;
             width?: number | null | undefined;
             height?: number | null | undefined;
-            url?: string | null | undefined;
             alt?: string | null | undefined;
-            linkHref?: string | null | undefined;
             contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+            linkHref?: string | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
@@ -4164,16 +4164,16 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
                 right: number;
                 left: number;
             } | null | undefined;
-            backgroundColor?: string | null | undefined;
             textAlign?: "right" | "left" | "center" | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
+            url?: string | null | undefined;
             width?: number | null | undefined;
             height?: number | null | undefined;
-            url?: string | null | undefined;
             alt?: string | null | undefined;
-            linkHref?: string | null | undefined;
             contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+            linkHref?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
@@ -4183,16 +4183,16 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
                 right: number;
                 left: number;
             } | null | undefined;
-            backgroundColor?: string | null | undefined;
             textAlign?: "right" | "left" | "center" | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
+            url?: string | null | undefined;
             width?: number | null | undefined;
             height?: number | null | undefined;
-            url?: string | null | undefined;
             alt?: string | null | undefined;
-            linkHref?: string | null | undefined;
             contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+            linkHref?: string | null | undefined;
         } | null | undefined;
     }>;
     Text: z.ZodObject<{
@@ -4220,79 +4220,79 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }, {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             markdown: z.ZodNullable<z.ZodOptional<z.ZodBoolean>>;
             text: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         }, "strip", z.ZodTypeAny, {
-            markdown?: boolean | null | undefined;
             text?: string | null | undefined;
+            markdown?: boolean | null | undefined;
         }, {
-            markdown?: boolean | null | undefined;
             text?: string | null | undefined;
+            markdown?: boolean | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
-            markdown?: boolean | null | undefined;
             text?: string | null | undefined;
+            markdown?: boolean | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            color?: string | null | undefined;
-            backgroundColor?: string | null | undefined;
-            fontSize?: number | null | undefined;
-            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-            fontWeight?: "bold" | "normal" | null | undefined;
-            textAlign?: "right" | "left" | "center" | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            textAlign?: "right" | "left" | "center" | null | undefined;
+            color?: string | null | undefined;
+            fontSize?: number | null | undefined;
+            backgroundColor?: string | null | undefined;
+            fontWeight?: "bold" | "normal" | null | undefined;
+            fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
         } | null | undefined;
         props?: {
-            markdown?: boolean | null | undefined;
             text?: string | null | undefined;
+            markdown?: boolean | null | undefined;
         } | null | undefined;
     }>;
     EmailLayout: z.ZodObject<{
@@ -4357,59 +4357,59 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
                 left: number;
             }>>>;
         }, "strip", z.ZodTypeAny, {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         }, {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         }>>>;
         props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
             lineColor: z.ZodOptional<z.ZodNullable<z.ZodString>>;
             lineHeight: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
         }, "strip", z.ZodTypeAny, {
-            lineColor?: string | null | undefined;
             lineHeight?: number | null | undefined;
+            lineColor?: string | null | undefined;
         }, {
-            lineColor?: string | null | undefined;
             lineHeight?: number | null | undefined;
+            lineColor?: string | null | undefined;
         }>>>;
     }, "strip", z.ZodTypeAny, {
         style?: {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
-            lineColor?: string | null | undefined;
             lineHeight?: number | null | undefined;
+            lineColor?: string | null | undefined;
         } | null | undefined;
     }, {
         style?: {
-            backgroundColor?: string | null | undefined;
             padding?: {
                 top: number;
                 bottom: number;
                 right: number;
                 left: number;
             } | null | undefined;
+            backgroundColor?: string | null | undefined;
         } | null | undefined;
         props?: {
-            lineColor?: string | null | undefined;
             lineHeight?: number | null | undefined;
+            lineColor?: string | null | undefined;
         } | null | undefined;
     }>;
     VideoXml: z.ZodObject<{
@@ -5196,13 +5196,13 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
             fieldMapping: z.ZodNullable<z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>>;
             previewItems: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>, "many">>>;
         }, "strip", z.ZodTypeAny, {
-            blockType?: string | null | undefined;
             url?: string | null | undefined;
+            blockType?: string | null | undefined;
             fieldMapping?: Record<string, string> | null | undefined;
             previewItems?: Record<string, unknown>[] | null | undefined;
         }, {
-            blockType?: string | null | undefined;
             url?: string | null | undefined;
+            blockType?: string | null | undefined;
             fieldMapping?: Record<string, string> | null | undefined;
             previewItems?: Record<string, unknown>[] | null | undefined;
         }>>>;
@@ -5216,8 +5216,8 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
             } | null | undefined;
         } | null | undefined;
         props?: {
-            blockType?: string | null | undefined;
             url?: string | null | undefined;
+            blockType?: string | null | undefined;
             fieldMapping?: Record<string, string> | null | undefined;
             previewItems?: Record<string, unknown>[] | null | undefined;
         } | null | undefined;
@@ -5231,8 +5231,8 @@ export declare const EditorConfigurationSchema: z.ZodRecord<z.ZodString, z.ZodEf
             } | null | undefined;
         } | null | undefined;
         props?: {
-            blockType?: string | null | undefined;
             url?: string | null | undefined;
+            blockType?: string | null | undefined;
             fieldMapping?: Record<string, string> | null | undefined;
             previewItems?: Record<string, unknown>[] | null | undefined;
         } | null | undefined;

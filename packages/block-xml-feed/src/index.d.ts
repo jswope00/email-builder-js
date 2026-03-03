@@ -14,6 +14,12 @@ export declare const FIELD_TYPE_OPTIONS: readonly [{
 }, {
     readonly value: "number";
     readonly label: "Number";
+}, {
+    readonly value: "html";
+    readonly label: "HTML";
+}, {
+    readonly value: "doNotShow";
+    readonly label: "Do not show";
 }];
 export type FieldTypeValue = (typeof FIELD_TYPE_OPTIONS)[number]['value'];
 export declare const UniversalXmlFeedPropsSchema: z.ZodObject<{

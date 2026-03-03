@@ -1,6 +1,8 @@
 /** Human-readable block type labels for the XML block type select. Single source of truth. */
 export const BLOCK_TYPE_OPTIONS = [
     { value: 'VideoXml', label: 'Video XML' },
+    { value: 'VideoPosterBlock', label: 'Video Poster Block' },
+    { value: 'Gems', label: 'Gems' },
     { value: 'TherapeuticUpdateXml', label: 'Therapeutic Update XML' },
     { value: 'FeaturedStoryXml', label: 'Featured Story XML' },
     { value: 'NewsPanelXml', label: 'News Panel XML' },

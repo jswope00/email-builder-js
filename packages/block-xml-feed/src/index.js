@@ -9,6 +9,8 @@ export const FIELD_TYPE_OPTIONS = [
     { value: 'link', label: 'Link' },
     { value: 'image', label: 'Image' },
     { value: 'number', label: 'Number' },
+    { value: 'html', label: 'HTML' },
+    { value: 'doNotShow', label: 'Do not show' },
 ];
 export const UniversalXmlFeedPropsSchema = z.object({
     style: z
@@ -148,6 +150,14 @@ function stringValue(val) {
         return String(val);
     return String(val);
 }
+function escapeHtml(s) {
+    return s
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
 export function UniversalXmlFeed({ style, props: propsData }) {
     var _a, _b, _c, _d, _e;
     const url = (_a = propsData === null || propsData === void 0 ? void 0 : propsData.url) !== null && _a !== void 0 ? _a : UniversalXmlFeedPropsDefaults.url;
@@ -175,37 +185,26 @@ export function UniversalXmlFeed({ style, props: propsData }) {
                     borderBottom: index < previewItems.length - 1 ? '1px solid #eee' : 'none',
                     paddingBottom: 16,
                 } }, Object.keys(fieldMapping).length === 0
-                ? Object.entries(item).map(([k, v]) => (React.createElement("div", { key: k, style: { marginBottom: 4 } },
-                    React.createElement("strong", null,
-                        k,
-                        ":"),
-                    " ",
-                    stringValue(v))))
-                : Object.entries(fieldMapping).map(([fieldName, fieldType]) => {
+                ? Object.entries(item).map(([k, v]) => (React.createElement("div", { key: k, style: { marginBottom: 4 } }, escapeHtml(stringValue(v)))))
+                : Object.entries(fieldMapping)
+                    .filter(([, fieldType]) => fieldType !== 'doNotShow')
+                    .map(([fieldName, fieldType]) => {
                     const raw = item[fieldName];
                     const val = stringValue(raw);
-                    if (fieldType === 'link' && val) {
+                    if (fieldType === 'doNotShow' || !val)
+                        return null;
+                    if (fieldType === 'link') {
                         return (React.createElement("div", { key: fieldName, style: { marginBottom: 4 } },
-                            React.createElement("strong", null,
-                                fieldName,
-                                ":"),
-                            ' ',
-                            React.createElement("a", { href: val, target: "_blank", rel: "noopener noreferrer", style: { color: '#1585fe' } }, val)));
+                            React.createElement("a", { href: val, target: "_blank", rel: "noopener noreferrer", style: { color: '#1585fe' } }, escapeHtml(val))));
                     }
-                    if (fieldType === 'image' && val) {
+                    if (fieldType === 'image') {
                         return (React.createElement("div", { key: fieldName, style: { marginBottom: 4 } },
-                            React.createElement("strong", null,
-                                fieldName,
-                                ":"),
-                            ' ',
                             React.createElement("img", { src: val, alt: "", style: { maxWidth: '100%', height: 'auto', display: 'block' } })));
                     }
-                    return (React.createElement("div", { key: fieldName, style: { marginBottom: 4 } },
-                        React.createElement("strong", null,
-                            fieldName,
-                            ":"),
-                        " ",
-                        val));
+                    if (fieldType === 'html') {
+                        return (React.createElement("div", { key: fieldName, style: { marginBottom: 4 }, dangerouslySetInnerHTML: { __html: val } }));
+                    }
+                    return (React.createElement("div", { key: fieldName, style: { marginBottom: 4 } }, escapeHtml(val)));
                 }))))));
     }
     return (React.createElement("div", { style: Object.assign(Object.assign({}, wrapperStyle), { border: '1px solid #eee', borderRadius: 4, padding: 12 }) },

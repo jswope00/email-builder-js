@@ -3,6 +3,12 @@ export declare const BLOCK_TYPE_OPTIONS: readonly [{
     readonly value: "VideoXml";
     readonly label: "Video XML";
 }, {
+    readonly value: "VideoPosterBlock";
+    readonly label: "Video Poster Block";
+}, {
+    readonly value: "Gems";
+    readonly label: "Gems";
+}, {
     readonly value: "TherapeuticUpdateXml";
     readonly label: "Therapeutic Update XML";
 }, {

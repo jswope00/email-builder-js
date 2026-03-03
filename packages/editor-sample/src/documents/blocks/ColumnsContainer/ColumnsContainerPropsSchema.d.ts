@@ -19,21 +19,21 @@ declare const ColumnsContainerPropsSchema: z.ZodObject<{
             left: number;
         }>>>;
     }, "strip", z.ZodTypeAny, {
-        backgroundColor?: string | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
     }, {
-        backgroundColor?: string | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
     }>>>;
     props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
         columns: z.ZodTuple<[z.ZodObject<{
@@ -86,13 +86,13 @@ declare const ColumnsContainerPropsSchema: z.ZodObject<{
     }>>>;
 }, "strip", z.ZodTypeAny, {
     style?: {
-        backgroundColor?: string | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
     } | null | undefined;
     props?: {
         columns: [{
@@ -109,13 +109,13 @@ declare const ColumnsContainerPropsSchema: z.ZodObject<{
     } | null | undefined;
 }, {
     style?: {
-        backgroundColor?: string | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
     } | null | undefined;
     props?: {
         columns: [{
