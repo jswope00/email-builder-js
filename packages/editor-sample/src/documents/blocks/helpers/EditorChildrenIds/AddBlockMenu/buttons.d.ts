@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { TEditorBlock } from '../../../../editor/core';
 type TButtonProps = {
     label: string;

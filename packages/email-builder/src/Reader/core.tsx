@@ -11,6 +11,7 @@ import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
 import { Button, ButtonPropsSchema } from '@usewaypoint/block-button';
 import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
 import { PromotedSurveyXml, PromotedSurveyXmlPropsSchema } from '@nattusia/block-email-survey-xml';
+import { UniversalXmlFeed, UniversalXmlFeedPropsSchema } from '@nattusia/block-xml-feed';
 import { Divider, DividerPropsSchema } from '@usewaypoint/block-divider';
 import { FeaturedStoryXml, FeaturedStoryXmlPropsSchema } from '@usewaypoint/block-featured-story-xml';
 import { Heading, HeadingPropsSchema } from '@usewaypoint/block-heading';
@@ -125,6 +126,10 @@ const READER_DICTIONARY = buildBlockConfigurationDictionary({
   PromotedSurveyXml: {
     schema: PromotedSurveyXmlPropsSchema,
     Component: PromotedSurveyXml,
+  },
+  UniversalXmlFeed: {
+    schema: UniversalXmlFeedPropsSchema,
+    Component: UniversalXmlFeed,
   },
 });
 

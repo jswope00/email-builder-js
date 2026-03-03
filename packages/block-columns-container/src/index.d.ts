@@ -20,21 +20,21 @@ export declare const ColumnsContainerPropsSchema: z.ZodObject<{
             left: number;
         }>>>;
     }, "strip", z.ZodTypeAny, {
-        backgroundColor?: string | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
     }, {
-        backgroundColor?: string | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
     }>>>;
     props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
         fixedWidths: z.ZodNullable<z.ZodOptional<z.ZodTuple<[z.ZodOptional<z.ZodNullable<z.ZodNumber>>, z.ZodOptional<z.ZodNullable<z.ZodNumber>>, z.ZodOptional<z.ZodNullable<z.ZodNumber>>], null>>>;
@@ -54,13 +54,13 @@ export declare const ColumnsContainerPropsSchema: z.ZodObject<{
     }>>>;
 }, "strip", z.ZodTypeAny, {
     style?: {
-        backgroundColor?: string | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
     } | null | undefined;
     props?: {
         fixedWidths?: [number | null | undefined, number | null | undefined, number | null | undefined] | null | undefined;
@@ -70,13 +70,13 @@ export declare const ColumnsContainerPropsSchema: z.ZodObject<{
     } | null | undefined;
 }, {
     style?: {
-        backgroundColor?: string | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
     } | null | undefined;
     props?: {
         fixedWidths?: [number | null | undefined, number | null | undefined, number | null | undefined] | null | undefined;

@@ -25,79 +25,79 @@ export declare const TextPropsSchema: z.ZodObject<{
             left: number;
         }>>>;
     }, "strip", z.ZodTypeAny, {
-        color?: string | null | undefined;
-        backgroundColor?: string | null | undefined;
-        fontSize?: number | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontWeight?: "bold" | "normal" | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        color?: string | null | undefined;
+        fontSize?: number | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontWeight?: "bold" | "normal" | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     }, {
-        color?: string | null | undefined;
-        backgroundColor?: string | null | undefined;
-        fontSize?: number | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontWeight?: "bold" | "normal" | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        color?: string | null | undefined;
+        fontSize?: number | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontWeight?: "bold" | "normal" | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     }>>>;
     props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
         markdown: z.ZodNullable<z.ZodOptional<z.ZodBoolean>>;
         text: z.ZodNullable<z.ZodOptional<z.ZodString>>;
     }, "strip", z.ZodTypeAny, {
-        markdown?: boolean | null | undefined;
         text?: string | null | undefined;
+        markdown?: boolean | null | undefined;
     }, {
-        markdown?: boolean | null | undefined;
         text?: string | null | undefined;
+        markdown?: boolean | null | undefined;
     }>>>;
 }, "strip", z.ZodTypeAny, {
     style?: {
-        color?: string | null | undefined;
-        backgroundColor?: string | null | undefined;
-        fontSize?: number | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontWeight?: "bold" | "normal" | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        color?: string | null | undefined;
+        fontSize?: number | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontWeight?: "bold" | "normal" | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     } | null | undefined;
     props?: {
-        markdown?: boolean | null | undefined;
         text?: string | null | undefined;
+        markdown?: boolean | null | undefined;
     } | null | undefined;
 }, {
     style?: {
-        color?: string | null | undefined;
-        backgroundColor?: string | null | undefined;
-        fontSize?: number | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontWeight?: "bold" | "normal" | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        color?: string | null | undefined;
+        fontSize?: number | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontWeight?: "bold" | "normal" | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     } | null | undefined;
     props?: {
-        markdown?: boolean | null | undefined;
         text?: string | null | undefined;
+        markdown?: boolean | null | undefined;
     } | null | undefined;
 }>;
 export type TextProps = z.infer<typeof TextPropsSchema>;

@@ -22,49 +22,49 @@ export declare const ContainerPropsSchema: z.ZodObject<{
             left: number;
         }>>>;
     }, "strip", z.ZodTypeAny, {
-        backgroundColor?: string | null | undefined;
-        borderColor?: string | null | undefined;
-        borderRadius?: number | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
+        borderRadius?: number | null | undefined;
+        borderColor?: string | null | undefined;
     }, {
-        backgroundColor?: string | null | undefined;
-        borderColor?: string | null | undefined;
-        borderRadius?: number | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
+        borderRadius?: number | null | undefined;
+        borderColor?: string | null | undefined;
     }>>>;
 }, "strip", z.ZodTypeAny, {
     style?: {
-        backgroundColor?: string | null | undefined;
-        borderColor?: string | null | undefined;
-        borderRadius?: number | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
+        borderRadius?: number | null | undefined;
+        borderColor?: string | null | undefined;
     } | null | undefined;
 }, {
     style?: {
-        backgroundColor?: string | null | undefined;
-        borderColor?: string | null | undefined;
-        borderRadius?: number | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        backgroundColor?: string | null | undefined;
+        borderRadius?: number | null | undefined;
+        borderColor?: string | null | undefined;
     } | null | undefined;
 }>;
 export type ContainerProps = {

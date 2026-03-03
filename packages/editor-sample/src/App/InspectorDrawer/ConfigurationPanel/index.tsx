@@ -24,6 +24,7 @@ import TextSidebarPanel from './input-panels/TextSidebarPanel';
 import FeaturedStoryXmlSidebarPanel from './input-panels/FeaturedStoryXmlSidebarPanel';
 import NewsPanelXmlSidebarPanel from './input-panels/NewsPanelXmlSidebarPanel';
 import PromotedSurveyXmlSidebarPanel from './input-panels/PromotedSurveyXmlSidebarPanel';
+import UniversalXmlFeedSidebarPanel from './input-panels/UniversalXmlFeedSidebarPanel';
 import TherapeuticUpdateXmlSidebarPanel from './input-panels/TherapeuticUpdateXmlSidebarPanel';
 import VideoXmlSidebarPanel from './input-panels/VideoXmlSidebarPanel';
 
@@ -111,6 +112,10 @@ export default function ConfigurationPanel() {
     case 'PromotedSurveyXml':
       return (
         <PromotedSurveyXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
+      );
+    case 'UniversalXmlFeed':
+      return (
+        <UniversalXmlFeedSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
       );
     default:
       return <pre>{JSON.stringify(block, null, '  ')}</pre>;

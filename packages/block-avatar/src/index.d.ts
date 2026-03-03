@@ -20,21 +20,21 @@ export declare const AvatarPropsSchema: z.ZodObject<{
             left: number;
         }>>>;
     }, "strip", z.ZodTypeAny, {
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
     }, {
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
     }>>>;
     props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
         size: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
@@ -42,47 +42,47 @@ export declare const AvatarPropsSchema: z.ZodObject<{
         imageUrl: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         alt: z.ZodNullable<z.ZodOptional<z.ZodString>>;
     }, "strip", z.ZodTypeAny, {
+        alt?: string | null | undefined;
         size?: number | null | undefined;
         shape?: "circle" | "square" | "rounded" | null | undefined;
         imageUrl?: string | null | undefined;
-        alt?: string | null | undefined;
     }, {
+        alt?: string | null | undefined;
         size?: number | null | undefined;
         shape?: "circle" | "square" | "rounded" | null | undefined;
         imageUrl?: string | null | undefined;
-        alt?: string | null | undefined;
     }>>>;
 }, "strip", z.ZodTypeAny, {
     style?: {
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
     } | null | undefined;
     props?: {
+        alt?: string | null | undefined;
         size?: number | null | undefined;
         shape?: "circle" | "square" | "rounded" | null | undefined;
         imageUrl?: string | null | undefined;
-        alt?: string | null | undefined;
     } | null | undefined;
 }, {
     style?: {
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
     } | null | undefined;
     props?: {
+        alt?: string | null | undefined;
         size?: number | null | undefined;
         shape?: "circle" | "square" | "rounded" | null | undefined;
         imageUrl?: string | null | undefined;
-        alt?: string | null | undefined;
     } | null | undefined;
 }>;
 export type AvatarProps = z.infer<typeof AvatarPropsSchema>;

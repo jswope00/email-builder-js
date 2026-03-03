@@ -272,6 +272,21 @@ export const BUTTONS: TButtonProps[] = [
     }),
   },
   {
+    label: 'Universal XML Feed',
+    icon: <ArticleOutlined />,
+    block: () => ({
+      type: 'UniversalXmlFeed',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
+          blockType: 'PromotedSurveyXml',
+          url: '',
+          fieldMapping: {},
+        },
+      },
+    }),
+  },
+  {
     label: 'Columns',
     icon: <ViewColumnOutlined />,
     block: () => ({

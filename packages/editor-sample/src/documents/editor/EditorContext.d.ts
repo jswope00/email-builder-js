@@ -1,12 +1,15 @@
 import { TEditorConfiguration } from './core';
 type TValue = {
     document: TEditorConfiguration;
+    isLoading: boolean;
+    loadError: string | null;
     selectedBlockId: string | null;
     selectedSidebarTab: 'block-configuration' | 'styles';
     selectedMainTab: 'editor' | 'preview' | 'json' | 'html';
     selectedScreenSize: 'desktop' | 'mobile';
     inspectorDrawerOpen: boolean;
     samplesDrawerOpen: boolean;
+    currentView: 'editor' | 'mailchimp';
 };
 export declare function useDocument(): TEditorConfiguration;
 export declare function useSelectedBlockId(): string | null;
@@ -23,5 +26,10 @@ export declare function setDocument(document: TValue['document']): void;
 export declare function toggleInspectorDrawerOpen(): void;
 export declare function toggleSamplesDrawerOpen(): void;
 export declare function setSelectedScreenSize(selectedScreenSize: TValue['selectedScreenSize']): void;
+export declare function useCurrentView(): "editor" | "mailchimp";
+export declare function setCurrentView(currentView: TValue['currentView']): void;
+export declare function useIsLoading(): boolean;
+export declare function useLoadError(): string | null;
+export declare function loadTemplateFromHash(hash: string): Promise<void>;
 export {};
 //# sourceMappingURL=EditorContext.d.ts.map

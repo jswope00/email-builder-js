@@ -6,10 +6,10 @@ export declare const HeadingPropsSchema: z.ZodObject<{
         level: z.ZodNullable<z.ZodOptional<z.ZodEnum<["h1", "h2", "h3"]>>>;
     }, "strip", z.ZodTypeAny, {
         text?: string | null | undefined;
-        level?: "h1" | "h2" | "h3" | null | undefined;
+        level?: "h2" | "h1" | "h3" | null | undefined;
     }, {
         text?: string | null | undefined;
-        level?: "h1" | "h2" | "h3" | null | undefined;
+        level?: "h2" | "h1" | "h3" | null | undefined;
     }>>>;
     style: z.ZodNullable<z.ZodOptional<z.ZodObject<{
         color: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -34,65 +34,65 @@ export declare const HeadingPropsSchema: z.ZodObject<{
             left: number;
         }>>>;
     }, "strip", z.ZodTypeAny, {
-        color?: string | null | undefined;
-        backgroundColor?: string | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontWeight?: "bold" | "normal" | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        color?: string | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontWeight?: "bold" | "normal" | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     }, {
-        color?: string | null | undefined;
-        backgroundColor?: string | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontWeight?: "bold" | "normal" | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        color?: string | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontWeight?: "bold" | "normal" | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     }>>>;
 }, "strip", z.ZodTypeAny, {
-    props?: {
-        text?: string | null | undefined;
-        level?: "h1" | "h2" | "h3" | null | undefined;
-    } | null | undefined;
     style?: {
-        color?: string | null | undefined;
-        backgroundColor?: string | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontWeight?: "bold" | "normal" | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        color?: string | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontWeight?: "bold" | "normal" | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
+    } | null | undefined;
+    props?: {
+        text?: string | null | undefined;
+        level?: "h2" | "h1" | "h3" | null | undefined;
     } | null | undefined;
 }, {
-    props?: {
-        text?: string | null | undefined;
-        level?: "h1" | "h2" | "h3" | null | undefined;
-    } | null | undefined;
     style?: {
-        color?: string | null | undefined;
-        backgroundColor?: string | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontWeight?: "bold" | "normal" | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        color?: string | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontWeight?: "bold" | "normal" | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
+    } | null | undefined;
+    props?: {
+        text?: string | null | undefined;
+        level?: "h2" | "h1" | "h3" | null | undefined;
     } | null | undefined;
 }>;
 export type HeadingProps = z.infer<typeof HeadingPropsSchema>;

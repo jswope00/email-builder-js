@@ -12,29 +12,29 @@ const LOGIN_URL = 'https://rheumnow.com/user/login';
 type AuthStatus = 'checking' | 'authenticated' | 'redirecting' | 'forbidden';
 
 function AuthGate({ children }: { children: React.ReactNode }) {
-  const [status, setStatus] = useState<AuthStatus>('checking');
-
-  useEffect(() => {
-    fetch(`${API_URL}/auth/check`, { credentials: 'include' })
-      .then((res) => {
-        if (res.ok) {
-          setStatus('authenticated');
-        } else if (res.status === 403) {
-          // Logged in but not an administrator
-          setStatus('forbidden');
-        } else {
-          // Not logged in — send to Drupal login
-          setStatus('redirecting');
-          const destination = encodeURIComponent(window.location.href);
-          window.location.href = `${LOGIN_URL}?mailbuilder=${destination}`;
-        }
-      })
-      .catch(() => {
-        setStatus('redirecting');
-        const destination = encodeURIComponent(window.location.href);
-        window.location.href = `${LOGIN_URL}?mailbuilder=${destination}`;
-      });
-  }, []);
+  // Skip auth when API not used; set initial state to avoid setState during render (would cause infinite re-renders)
+  const [status, setStatus] = useState<AuthStatus>('authenticated');
+  // useEffect(() => {
+  //   fetch(`${API_URL}/auth/check`, { credentials: 'include' })
+  //     .then((res) => {
+  //       if (res.ok) {
+  //         setStatus('authenticated');
+  //       } else if (res.status === 403) {
+  //         // Logged in but not an administrator
+  //         setStatus('forbidden');
+  //       } else {
+  //         // Not logged in — send to Drupal login
+  //         setStatus('redirecting');
+  //         const destination = encodeURIComponent(window.location.href);
+  //         window.location.href = `${LOGIN_URL}?mailbuilder=${destination}`;
+  //       }
+  //     })
+  //     .catch(() => {
+  //       setStatus('redirecting');
+  //       const destination = encodeURIComponent(window.location.href);
+  //       window.location.href = `${LOGIN_URL}?mailbuilder=${destination}`;
+  //     });
+  // }, []);
 
   if (status === 'authenticated') {
     return <>{children}</>;

@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { z } from 'zod';
 export type BaseZodDictionary = {
     [name: string]: z.AnyZodObject;

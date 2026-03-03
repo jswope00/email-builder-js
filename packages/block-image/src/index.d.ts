@@ -27,8 +27,8 @@ export declare const ImagePropsSchema: z.ZodObject<{
             right: number;
             left: number;
         } | null | undefined;
-        backgroundColor?: string | null | undefined;
         textAlign?: "right" | "left" | "center" | null | undefined;
+        backgroundColor?: string | null | undefined;
     }, {
         padding?: {
             top: number;
@@ -36,8 +36,8 @@ export declare const ImagePropsSchema: z.ZodObject<{
             right: number;
             left: number;
         } | null | undefined;
-        backgroundColor?: string | null | undefined;
         textAlign?: "right" | "left" | "center" | null | undefined;
+        backgroundColor?: string | null | undefined;
     }>>>;
     props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
         width: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
@@ -47,19 +47,19 @@ export declare const ImagePropsSchema: z.ZodObject<{
         linkHref: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         contentAlignment: z.ZodNullable<z.ZodOptional<z.ZodEnum<["top", "middle", "bottom"]>>>;
     }, "strip", z.ZodTypeAny, {
+        url?: string | null | undefined;
         width?: number | null | undefined;
         height?: number | null | undefined;
-        url?: string | null | undefined;
         alt?: string | null | undefined;
-        linkHref?: string | null | undefined;
         contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+        linkHref?: string | null | undefined;
     }, {
+        url?: string | null | undefined;
         width?: number | null | undefined;
         height?: number | null | undefined;
-        url?: string | null | undefined;
         alt?: string | null | undefined;
-        linkHref?: string | null | undefined;
         contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+        linkHref?: string | null | undefined;
     }>>>;
 }, "strip", z.ZodTypeAny, {
     style?: {
@@ -69,16 +69,16 @@ export declare const ImagePropsSchema: z.ZodObject<{
             right: number;
             left: number;
         } | null | undefined;
-        backgroundColor?: string | null | undefined;
         textAlign?: "right" | "left" | "center" | null | undefined;
+        backgroundColor?: string | null | undefined;
     } | null | undefined;
     props?: {
+        url?: string | null | undefined;
         width?: number | null | undefined;
         height?: number | null | undefined;
-        url?: string | null | undefined;
         alt?: string | null | undefined;
-        linkHref?: string | null | undefined;
         contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+        linkHref?: string | null | undefined;
     } | null | undefined;
 }, {
     style?: {
@@ -88,16 +88,16 @@ export declare const ImagePropsSchema: z.ZodObject<{
             right: number;
             left: number;
         } | null | undefined;
-        backgroundColor?: string | null | undefined;
         textAlign?: "right" | "left" | "center" | null | undefined;
+        backgroundColor?: string | null | undefined;
     } | null | undefined;
     props?: {
+        url?: string | null | undefined;
         width?: number | null | undefined;
         height?: number | null | undefined;
-        url?: string | null | undefined;
         alt?: string | null | undefined;
-        linkHref?: string | null | undefined;
         contentAlignment?: "top" | "bottom" | "middle" | null | undefined;
+        linkHref?: string | null | undefined;
     } | null | undefined;
 }>;
 export type ImageProps = z.infer<typeof ImagePropsSchema>;

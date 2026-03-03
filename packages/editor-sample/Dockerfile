@@ -28,9 +28,10 @@ COPY --from=deps /app/package-lock.json* ./package-lock.json
 COPY packages ./packages
 COPY tsconfig.json* ./
 
-# Build the frontend
+# Build the frontend (base path '/' so assets are at /assets/...)
 WORKDIR /app/packages/editor-sample
 ENV VITE_API_URL=http://localhost:3001/api
+ENV VITE_BASE_PATH=/
 RUN npm run build
 
 # Production stage with nginx

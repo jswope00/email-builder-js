@@ -24,29 +24,29 @@ export declare const HtmlPropsSchema: z.ZodObject<{
             left: number;
         }>>>;
     }, "strip", z.ZodTypeAny, {
-        color?: string | null | undefined;
-        backgroundColor?: string | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontSize?: number | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        color?: string | null | undefined;
+        fontSize?: number | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     }, {
-        color?: string | null | undefined;
-        backgroundColor?: string | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontSize?: number | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        color?: string | null | undefined;
+        fontSize?: number | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     }>>>;
     props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
         contents: z.ZodNullable<z.ZodOptional<z.ZodString>>;
@@ -57,34 +57,34 @@ export declare const HtmlPropsSchema: z.ZodObject<{
     }>>>;
 }, "strip", z.ZodTypeAny, {
     style?: {
-        color?: string | null | undefined;
-        backgroundColor?: string | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontSize?: number | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        color?: string | null | undefined;
+        fontSize?: number | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     } | null | undefined;
     props?: {
         contents?: string | null | undefined;
     } | null | undefined;
 }, {
     style?: {
-        color?: string | null | undefined;
-        backgroundColor?: string | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontSize?: number | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        color?: string | null | undefined;
+        fontSize?: number | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     } | null | undefined;
     props?: {
         contents?: string | null | undefined;

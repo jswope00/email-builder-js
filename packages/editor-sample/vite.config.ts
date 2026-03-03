@@ -6,9 +6,14 @@ import react from '@vitejs/plugin-react-swc';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Allow base path to be configured via environment variable
-// Default to '/email-builder-js/' for GitHub Pages, use '/' for root domain deployment
-const basePath = process.env.VITE_BASE_PATH || '/email-builder-js/';
+// Resolve workspace packages from source so that editor-sample build never pulls in email-builder's dist
+const emailBuilderSource = path.resolve(__dirname, '../email-builder/src/index.ts');
+const blockEmailSurveyXmlSource = path.resolve(__dirname, '../block-email-survey-xml/src/index.tsx');
+const blockXmlFeedSource = path.resolve(__dirname, '../block-xml-feed/src/index.tsx');
+
+// Base path for assets. Use '/' for root (no redirect; scripts at /assets/).
+// Set VITE_BASE_PATH to e.g. '/email-builder-js/' if app is served under a subpath.
+const basePath = process.env.VITE_BASE_PATH || '/';
 
 // Debug: log the base path being used (only in CI/build environments)
 if (process.env.CI || process.env.GITHUB_ACTIONS) {
@@ -17,7 +22,30 @@ if (process.env.CI || process.env.GITHUB_ACTIONS) {
 }
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'resolve-workspace-from-source',
+      enforce: 'pre',
+      resolveId(id: string, _importer?: string) {
+        if (id === '@usewaypoint/email-builder' || id.startsWith('@usewaypoint/email-builder/')) {
+          return emailBuilderSource;
+        }
+        if (id === '@nattusia/block-email-survey-xml' || id.startsWith('@nattusia/block-email-survey-xml/')) {
+          return blockEmailSurveyXmlSource;
+        }
+        if (id === '@nattusia/block-xml-feed' || id.startsWith('@nattusia/block-xml-feed/')) {
+          return blockXmlFeedSource;
+        }
+        // Already resolved to dist path - redirect to source
+        const n = id.replace(/\\/g, '/');
+        if (n.includes('email-builder/dist/') || n.endsWith('email-builder/dist/index.mjs') || n.endsWith('email-builder/dist/index.js')) {
+          return emailBuilderSource;
+        }
+        return null;
+      },
+    },
+  ],
   base: basePath,
   resolve: {
     alias: [
@@ -73,6 +101,10 @@ export default defineConfig({
         find: '@nattusia/block-email-survey-xml',
         replacement: path.resolve(__dirname, '../block-email-survey-xml/src/index.tsx'),
       },
+      {
+        find: '@nattusia/block-xml-feed',
+        replacement: path.resolve(__dirname, '../block-xml-feed/src/index.tsx'),
+      },
     ],
   },
   optimizeDeps: {
@@ -90,6 +122,7 @@ export default defineConfig({
       '@usewaypoint/block-spacer',
       '@usewaypoint/block-text',
       '@nattusia/block-email-survey-xml',
+      '@nattusia/block-xml-feed',
     ],
   },
 });

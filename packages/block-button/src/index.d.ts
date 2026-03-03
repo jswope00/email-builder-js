@@ -24,29 +24,29 @@ export declare const ButtonPropsSchema: z.ZodObject<{
             left: number;
         }>>>;
     }, "strip", z.ZodTypeAny, {
-        backgroundColor?: string | null | undefined;
-        fontSize?: number | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontWeight?: "bold" | "normal" | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        fontSize?: number | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontWeight?: "bold" | "normal" | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     }, {
-        backgroundColor?: string | null | undefined;
-        fontSize?: number | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontWeight?: "bold" | "normal" | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        fontSize?: number | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontWeight?: "bold" | "normal" | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     }>>>;
     props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
         buttonBackgroundColor: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -57,67 +57,67 @@ export declare const ButtonPropsSchema: z.ZodObject<{
         text: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         url: z.ZodNullable<z.ZodOptional<z.ZodString>>;
     }, "strip", z.ZodTypeAny, {
+        url?: string | null | undefined;
+        size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+        text?: string | null | undefined;
         buttonBackgroundColor?: string | null | undefined;
         buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
         buttonTextColor?: string | null | undefined;
         fullWidth?: boolean | null | undefined;
-        size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-        text?: string | null | undefined;
-        url?: string | null | undefined;
     }, {
+        url?: string | null | undefined;
+        size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+        text?: string | null | undefined;
         buttonBackgroundColor?: string | null | undefined;
         buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
         buttonTextColor?: string | null | undefined;
         fullWidth?: boolean | null | undefined;
-        size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-        text?: string | null | undefined;
-        url?: string | null | undefined;
     }>>>;
 }, "strip", z.ZodTypeAny, {
     style?: {
-        backgroundColor?: string | null | undefined;
-        fontSize?: number | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontWeight?: "bold" | "normal" | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        fontSize?: number | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontWeight?: "bold" | "normal" | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     } | null | undefined;
     props?: {
+        url?: string | null | undefined;
+        size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+        text?: string | null | undefined;
         buttonBackgroundColor?: string | null | undefined;
         buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
         buttonTextColor?: string | null | undefined;
         fullWidth?: boolean | null | undefined;
-        size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-        text?: string | null | undefined;
-        url?: string | null | undefined;
     } | null | undefined;
 }, {
     style?: {
-        backgroundColor?: string | null | undefined;
-        fontSize?: number | null | undefined;
-        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
-        fontWeight?: "bold" | "normal" | null | undefined;
-        textAlign?: "right" | "left" | "center" | null | undefined;
         padding?: {
             top: number;
             bottom: number;
             right: number;
             left: number;
         } | null | undefined;
+        textAlign?: "right" | "left" | "center" | null | undefined;
+        fontSize?: number | null | undefined;
+        backgroundColor?: string | null | undefined;
+        fontWeight?: "bold" | "normal" | null | undefined;
+        fontFamily?: "MODERN_SANS" | "BOOK_SANS" | "ORGANIC_SANS" | "GEOMETRIC_SANS" | "HEAVY_SANS" | "ROUNDED_SANS" | "MODERN_SERIF" | "BOOK_SERIF" | "MONOSPACE" | null | undefined;
     } | null | undefined;
     props?: {
+        url?: string | null | undefined;
+        size?: "small" | "medium" | "large" | "x-small" | null | undefined;
+        text?: string | null | undefined;
         buttonBackgroundColor?: string | null | undefined;
         buttonStyle?: "rounded" | "rectangle" | "pill" | null | undefined;
         buttonTextColor?: string | null | undefined;
         fullWidth?: boolean | null | undefined;
-        size?: "small" | "medium" | "x-small" | "large" | null | undefined;
-        text?: string | null | undefined;
-        url?: string | null | undefined;
     } | null | undefined;
 }>;
 export type ButtonProps = z.infer<typeof ButtonPropsSchema>;

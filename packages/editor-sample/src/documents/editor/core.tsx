@@ -8,6 +8,7 @@ import { Avatar, AvatarPropsSchema } from '@usewaypoint/block-avatar';
 import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
 import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
 import { PromotedSurveyXml, PromotedSurveyXmlPropsSchema } from '@nattusia/block-email-survey-xml';
+import { UniversalXmlFeed, UniversalXmlFeedPropsSchema } from '@nattusia/block-xml-feed';
 import { Button, ButtonPropsSchema } from '@usewaypoint/block-button';
 import { Divider, DividerPropsSchema } from '@usewaypoint/block-divider';
 import { Heading, HeadingPropsSchema } from '@usewaypoint/block-heading';
@@ -204,6 +205,14 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     Component: (props) => (
       <EditorBlockWrapper>
         <PromotedSurveyXml {...props} />
+      </EditorBlockWrapper>
+    ),
+  },
+  UniversalXmlFeed: {
+    schema: UniversalXmlFeedPropsSchema,
+    Component: (props) => (
+      <EditorBlockWrapper>
+        <UniversalXmlFeed {...props} />
       </EditorBlockWrapper>
     ),
   },
