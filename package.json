@@ -28,6 +28,7 @@
     "packages/block-text",
     "packages/block-therapeutic-update-xml",
     "packages/block-video-xml",
+    "packages/block-xml-feed",
     "packages/document-core",
     "packages/editor-sample",
     "packages/email-builder",
