@@ -26,6 +26,15 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+          cache-dependency-path: './package-lock.json'
+
+      - name: Verify lock file contains workspace packages
+        run: |
+          if ! grep -q '"@nattusia/block-xml-feed"' package-lock.json; then
+            echo "::error::package-lock.json does not contain @nattusia/block-xml-feed. Run 'npm run sync-lock-to-repo' in project root, then commit and push package-lock.json from repo/"
+            exit 1
+          fi
+          echo "Lock file contains block-xml-feed and other workspace refs."
 
       - name: Install dependencies
         run: npm ci

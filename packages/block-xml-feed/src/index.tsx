@@ -2,12 +2,37 @@ import React from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
 
-// Re-export block type options (single source of truth for the list)
+// Re-export block type options; title helper is defined here so it works with compiled blockTypes.js
 export { BLOCK_TYPE_OPTIONS, type XmlBlockTypeValue } from './blockTypes';
+
+/** Default block header title by block type (used when blockTypes.js has no blockTitle). */
+const BLOCK_TITLE_BY_TYPE: Record<string, string> = {
+  VideoXml: 'Video XML',
+  VideoPosterBlock: 'Poster Hall',
+  Gems: 'Gems',
+  TherapeuticUpdateXml: 'Therapeutic Updates',
+  FeaturedStoryXml: 'Featured Story',
+  NewsPanelXml: 'News Panel',
+  BlogXml: 'Blogs',
+  Advertisement72890Xml: 'Advertisement 728x90',
+  Advertisement300250Xml: 'Advertisement 300x250',
+  ConferenceAdvertisement300250Xml: 'Conference Advertisement',
+  DailyDownloadXml: 'Daily Download',
+  PromotedSurveyXml: 'RheumNow Survey',
+};
+
+/** Default block header title for a given block type. */
+export function getBlockTitleByType(blockType: string | null | undefined): string {
+  if (!blockType) return '';
+  return BLOCK_TITLE_BY_TYPE[blockType] ?? '';
+}
 
 /** Field type options for the mapping table (second column). */
 export const FIELD_TYPE_OPTIONS = [
   { value: 'text', label: 'Text' },
+  { value: 'title', label: 'Title' },
+  { value: 'contentLink', label: 'Content link' },
+  { value: 'imageWithContentLink', label: 'Image with content link' },
   { value: 'link', label: 'Link' },
   { value: 'image', label: 'Image' },
   { value: 'number', label: 'Number' },
@@ -35,6 +60,7 @@ export const UniversalXmlFeedPropsSchema = z.object({
   props: z
     .object({
       blockType: z.string().optional().nullable(),
+      title: z.string().optional().nullable(),
       url: z.string().optional().nullable(),
       fieldMapping: z.record(z.string(), z.string()).optional().nullable(),
       previewItems: z.array(z.record(z.string(), z.unknown())).optional().nullable(),
@@ -47,6 +73,7 @@ export type UniversalXmlFeedProps = z.infer<typeof UniversalXmlFeedPropsSchema>;
 
 export const UniversalXmlFeedPropsDefaults = {
   blockType: 'PromotedSurveyXml',
+  title: null as string | null,
   url: '',
   fieldMapping: {} as Record<string, string>,
   previewItems: null as Record<string, unknown>[] | null,
@@ -170,6 +197,10 @@ function escapeHtml(s: string): string {
 export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedProps) {
   const url = propsData?.url ?? UniversalXmlFeedPropsDefaults.url;
   const blockType = propsData?.blockType ?? UniversalXmlFeedPropsDefaults.blockType;
+  const title =
+    propsData?.title != null && propsData.title !== ''
+      ? propsData.title
+      : getBlockTitleByType(blockType);
   const fieldMapping = propsData?.fieldMapping ?? UniversalXmlFeedPropsDefaults.fieldMapping;
   const previewItems = propsData?.previewItems ?? UniversalXmlFeedPropsDefaults.previewItems ?? [];
 
@@ -196,65 +227,145 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
   }
 
   if (previewItems.length > 0) {
+    const mappingEntries = Object.entries(fieldMapping).filter(([, t]) => t !== 'doNotShow');
+    const contentLinkField = mappingEntries.find(([, t]) => t === 'contentLink')?.[0];
+    const titleField = mappingEntries.find(([, t]) => t === 'title')?.[0];
+
     return (
       <div style={wrapperStyle}>
-        <div style={{ fontSize: 12, color: '#666', marginBottom: 12 }}>
-          XML feed ({blockType}) — {previewItems.length} item(s)
-        </div>
-        {previewItems.map((item, index) => (
-          <div
-            key={index}
+        {title && (
+          <h2
             style={{
-              marginBottom: 16,
-              borderBottom: index < previewItems.length - 1 ? '1px solid #eee' : 'none',
-              paddingBottom: 16,
+              fontSize: '18px',
+              marginBottom: '12px',
+              color: '#333',
+              textTransform: 'uppercase',
+              borderLeft: '4px solid #1585fe',
+              paddingLeft: '10px',
+              lineHeight: 1.2,
+              margin: '0 0 16px 0',
             }}
           >
-            {Object.keys(fieldMapping).length === 0
-              ? Object.entries(item).map(([k, v]) => (
+            {title}
+          </h2>
+        )}
+        {previewItems.map((item, index) => {
+          const record = item as Record<string, unknown>;
+          const linkUrl = contentLinkField ? stringValue(record[contentLinkField]) : '';
+          const titleVal = titleField ? stringValue(record[titleField]) : '';
+
+          const renderField = (fieldName: string, fieldType: string, val: string, key: string) => {
+            if (fieldType === 'doNotShow' || !val) return null;
+            if (fieldType === 'contentLink') return null;
+            if (fieldType === 'link') {
+              return (
+                <div key={key} style={{ marginBottom: 4 }}>
+                  <a href={val} target="_blank" rel="noopener noreferrer" style={{ color: '#1585fe' }}>
+                    {escapeHtml(val)}
+                  </a>
+                </div>
+              );
+            }
+            if (fieldType === 'title') {
+              const titleNode = (
+                <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: 1.4, color: '#333' }}>
+                  {escapeHtml(val)}
+                </h3>
+              );
+              if (linkUrl) {
+                return (
+                  <div key={key} style={{ marginBottom: 8 }}>
+                    <a
+                      href={linkUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+                    >
+                      {titleNode}
+                    </a>
+                  </div>
+                );
+              }
+              return (
+                <div key={key} style={{ marginBottom: 8 }}>
+                  {titleNode}
+                </div>
+              );
+            }
+            if (fieldType === 'image' || fieldType === 'imageWithContentLink') {
+              const img = (
+                <img
+                  src={val}
+                  alt={titleVal || ''}
+                  style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 }}
+                />
+              );
+              if (fieldType === 'imageWithContentLink' && linkUrl) {
+                return (
+                  <div key={key} style={{ marginBottom: 4 }}>
+                    <a
+                      href={linkUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+                    >
+                      {img}
+                    </a>
+                  </div>
+                );
+              }
+              return (
+                <div key={key} style={{ marginBottom: 4 }}>
+                  {img}
+                </div>
+              );
+            }
+            if (fieldType === 'html') {
+              return (
+                <div key={key} style={{ marginBottom: 4 }} dangerouslySetInnerHTML={{ __html: val }} />
+              );
+            }
+            return (
+              <div key={key} style={{ marginBottom: 4 }}>
+                {escapeHtml(val)}
+              </div>
+            );
+          };
+
+          if (Object.keys(fieldMapping).length === 0) {
+            return (
+              <div
+                key={index}
+                style={{
+                  marginBottom: 16,
+                  borderBottom: index < previewItems.length - 1 ? '1px solid #eee' : 'none',
+                  paddingBottom: 16,
+                }}
+              >
+                {Object.entries(item).map(([k, v]) => (
                   <div key={k} style={{ marginBottom: 4 }}>
                     {escapeHtml(stringValue(v))}
                   </div>
-                ))
-              : Object.entries(fieldMapping)
-                  .filter(([, fieldType]) => fieldType !== 'doNotShow')
-                  .map(([fieldName, fieldType]) => {
-                    const raw = item[fieldName];
-                    const val = stringValue(raw);
-                    if (fieldType === 'doNotShow' || !val) return null;
-                    if (fieldType === 'link') {
-                      return (
-                        <div key={fieldName} style={{ marginBottom: 4 }}>
-                          <a href={val} target="_blank" rel="noopener noreferrer" style={{ color: '#1585fe' }}>
-                            {escapeHtml(val)}
-                          </a>
-                        </div>
-                      );
-                    }
-                    if (fieldType === 'image') {
-                      return (
-                        <div key={fieldName} style={{ marginBottom: 4 }}>
-                          <img src={val} alt="" style={{ maxWidth: '100%', height: 'auto', display: 'block' }} />
-                        </div>
-                      );
-                    }
-                    if (fieldType === 'html') {
-                      return (
-                        <div
-                          key={fieldName}
-                          style={{ marginBottom: 4 }}
-                          dangerouslySetInnerHTML={{ __html: val }}
-                        />
-                      );
-                    }
-                    return (
-                      <div key={fieldName} style={{ marginBottom: 4 }}>
-                        {escapeHtml(val)}
-                      </div>
-                    );
-                  })}
-          </div>
-        ))}
+                ))}
+              </div>
+            );
+          }
+
+          return (
+            <div
+              key={index}
+              style={{
+                marginBottom: 24,
+                paddingBottom: 16,
+                borderBottom: index < previewItems.length - 1 ? '1px solid #eee' : 'none',
+              }}
+            >
+              {mappingEntries.map(([fieldName, fieldType]) =>
+                renderField(fieldName, fieldType, stringValue(item[fieldName]), fieldName),
+              )}
+            </div>
+          );
+        })}
       </div>
     );
   }

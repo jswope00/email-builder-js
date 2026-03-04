@@ -15,6 +15,7 @@ import {
 import {
   BLOCK_TYPE_OPTIONS,
   FIELD_TYPE_OPTIONS,
+  getBlockTitleByType,
   parseXmlToFieldNames,
   parseXmlToItems,
   UniversalXmlFeedProps,
@@ -130,9 +131,17 @@ export default function UniversalXmlFeedSidebarPanel({
         variant="standard"
         label="Block type"
         value={blockType ?? ''}
-        onChange={(ev) =>
-          updateData({ ...safeData, props: { ...safeData.props, blockType: ev.target.value } })
-        }
+        onChange={(ev) => {
+          const newBlockType = ev.target.value;
+          updateData({
+            ...safeData,
+            props: {
+              ...safeData.props,
+              blockType: newBlockType,
+              title: getBlockTitleByType(newBlockType) || undefined,
+            },
+          });
+        }}
       >
         {BLOCK_TYPE_OPTIONS.map((opt) => (
           <MenuItem key={opt.value} value={opt.value}>

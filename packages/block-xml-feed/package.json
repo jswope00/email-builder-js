@@ -1,6 +1,6 @@
 {
   "name": "@nattusia/block-xml-feed",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Universal XML feed block for EmailBuilder",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -15,7 +15,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup ./src/index.tsx --outDir dist --format cjs,esm --dts"
   },
