@@ -202,6 +202,19 @@ function escapeHtml(s: string): string {
     .replace(/'/g, '&#039;');
 }
 
+/** Strip HTML tags and decode entities so date/author show as plain text (e.g. "Mar 05, 2026"). */
+function stripHtmlToPlainText(s: string): string {
+  if (!s || typeof s !== 'string') return '';
+  const decoded = s
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&amp;/g, '&')
+    .replace(/&#39;/g, "'")
+    .replace(/&#039;/g, "'");
+  return decoded.replace(/<[^>]*>/g, '').trim();
+}
+
 export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedProps) {
   const url = propsData?.url ?? UniversalXmlFeedPropsDefaults.url;
   const blockType = propsData?.blockType ?? UniversalXmlFeedPropsDefaults.blockType;
@@ -423,53 +436,46 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
             );
           }
 
+          const authorDateStyle = isGems
+            ? { ...authorDateLineStyle, color: gemsTextColor }
+            : authorDateLineStyle;
+          const authorEntries = mappingEntries.filter(([, t]) => t === 'author');
+          const dateEntry = mappingEntries.find(([, t]) => t === 'date');
+          const authorLine = authorEntries
+            .map(([name]) => stripHtmlToPlainText(stringValue(record[name])))
+            .filter(Boolean)
+            .join(', ');
+          const dateText = dateEntry ? stripHtmlToPlainText(stringValue(record[dateEntry[0]])) : '';
+          const hasAuthorDateLine = !!(authorLine || dateText);
+
           const fieldNodes: React.ReactNode[] = [];
-          let skipNext = false;
+          let authorDateLineRendered = false;
           mappingEntries.forEach(([fieldName, fieldType], i) => {
-            if (skipNext) {
-              skipNext = false;
-              return;
-            }
-            const val = stringValue(record[fieldName]);
-            if (fieldType === 'author') {
-              const next = mappingEntries[i + 1];
-              const nextIsDate = next && next[1] === 'date';
-              const dateVal = nextIsDate ? stringValue(record[next[0]]) : '';
-              const authorDateStyle = isGems
-                ? { ...authorDateLineStyle, color: gemsTextColor }
-                : authorDateLineStyle;
-              fieldNodes.push(
-                <div key={`author-date-${fieldName}`} style={authorDateStyle}>
-                  {val && (
-                    <>
-                      <span style={{ fontWeight: 'bold' }}>{escapeHtml(val)}</span>
-                      {dateVal && (
-                        <>
-                          <span style={{ margin: '0 8px' }}>•</span>
-                          <span>{escapeHtml(dateVal)}</span>
-                        </>
-                      )}
-                    </>
-                  )}
-                  {!val && dateVal && <span>{escapeHtml(dateVal)}</span>}
-                </div>,
-              );
-              if (nextIsDate) skipNext = true;
-            } else if (fieldType === 'date') {
-              const authorDateStyle = isGems
-                ? { ...authorDateLineStyle, color: gemsTextColor }
-                : authorDateLineStyle;
-              if (val) {
+            if (fieldType === 'author' || fieldType === 'date') {
+              if (hasAuthorDateLine && !authorDateLineRendered) {
+                authorDateLineRendered = true;
                 fieldNodes.push(
-                  <div key={fieldName} style={authorDateStyle}>
-                    <span>{escapeHtml(val)}</span>
+                  <div key="author-date-line" style={authorDateStyle}>
+                    {authorLine && (
+                      <>
+                        <span style={{ fontWeight: 'bold' }}>{authorLine}</span>
+                        {dateText && (
+                          <>
+                            <span style={{ margin: '0 8px' }}>•</span>
+                            <span>{dateText}</span>
+                          </>
+                        )}
+                      </>
+                    )}
+                    {!authorLine && dateText && <span>{dateText}</span>}
                   </div>,
                 );
               }
-            } else {
-              const node = renderField(fieldName, fieldType, val, fieldName);
-              if (node != null) fieldNodes.push(<React.Fragment key={fieldName}>{node}</React.Fragment>);
+              return;
             }
+            const val = stringValue(record[fieldName]);
+            const node = renderField(fieldName, fieldType, val, fieldName);
+            if (node != null) fieldNodes.push(<React.Fragment key={fieldName}>{node}</React.Fragment>);
           });
 
           return (
