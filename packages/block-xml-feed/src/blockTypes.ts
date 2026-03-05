@@ -4,7 +4,7 @@ export const BLOCK_TYPE_OPTIONS = [
   { value: 'VideoPosterBlock', label: 'Video Poster Block', blockTitle: 'Poster Hall' },
   { value: 'Gems', label: 'Gems', blockTitle: 'Gems' },
   { value: 'TherapeuticUpdateXml', label: 'Therapeutic Update XML', blockTitle: 'Therapeutic Updates' },
-  { value: 'FeaturedStoryXml', label: 'Featured Story XML', blockTitle: 'Featured Story' },
+  { value: 'FeaturedStoryXml', label: 'Large Story Block', blockTitle: 'Featured Story' },
   { value: 'NewsPanelXml', label: 'News Panel XML', blockTitle: 'News Panel' },
   { value: 'BlogXml', label: 'Blog XML', blockTitle: 'Blogs' },
   { value: 'Advertisement72890Xml', label: 'Advertisement 728x90 XML', blockTitle: 'Advertisement 728x90' },

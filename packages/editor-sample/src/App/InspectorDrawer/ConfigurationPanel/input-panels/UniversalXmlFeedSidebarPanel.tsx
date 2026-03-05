@@ -3,6 +3,8 @@ import React, { useRef, useState } from 'react';
 import {
   Box,
   Button,
+  Checkbox,
+  FormControlLabel,
   MenuItem,
   Table,
   TableBody,
@@ -49,6 +51,7 @@ export default function UniversalXmlFeedSidebarPanel({
     props: data?.props ?? {
       blockType: UniversalXmlFeedPropsDefaults.blockType,
       url: UniversalXmlFeedPropsDefaults.url,
+      displayBlockTitle: UniversalXmlFeedPropsDefaults.displayBlockTitle,
       numberOfItems: UniversalXmlFeedPropsDefaults.numberOfItems,
       fieldOrder: UniversalXmlFeedPropsDefaults.fieldOrder,
       fieldMapping: UniversalXmlFeedPropsDefaults.fieldMapping,
@@ -67,6 +70,7 @@ export default function UniversalXmlFeedSidebarPanel({
 
   const blockType = safeData.props?.blockType ?? UniversalXmlFeedPropsDefaults.blockType;
   const url = safeData.props?.url ?? UniversalXmlFeedPropsDefaults.url;
+  const displayBlockTitle = safeData.props?.displayBlockTitle ?? UniversalXmlFeedPropsDefaults.displayBlockTitle;
   const numberOfItems = safeData.props?.numberOfItems ?? UniversalXmlFeedPropsDefaults.numberOfItems;
   const fieldMapping = safeData.props?.fieldMapping ?? UniversalXmlFeedPropsDefaults.fieldMapping;
 
@@ -157,6 +161,22 @@ export default function UniversalXmlFeedSidebarPanel({
           </MenuItem>
         ))}
       </TextField>
+
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={displayBlockTitle ?? true}
+            onChange={(e) => {
+              updateData({
+                ...safeData,
+                props: { ...safeData.props, displayBlockTitle: e.target.checked },
+              });
+            }}
+          />
+        }
+        label="Display Block Title"
+        sx={{ mb: 1 }}
+      />
 
       <TextField
         type="number"

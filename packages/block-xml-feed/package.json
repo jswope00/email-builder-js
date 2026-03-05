@@ -1,6 +1,6 @@
 {
   "name": "@nattusia/block-xml-feed",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "Universal XML feed block for EmailBuilder",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

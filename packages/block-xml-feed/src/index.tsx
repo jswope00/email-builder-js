@@ -61,6 +61,7 @@ export const UniversalXmlFeedPropsSchema = z.object({
     .object({
       blockType: z.string().optional().nullable(),
       title: z.string().optional().nullable(),
+      displayBlockTitle: z.boolean().optional().nullable(),
       url: z.string().optional().nullable(),
       numberOfItems: z.number().min(0).optional().nullable(),
       fieldOrder: z.array(z.string()).optional().nullable(),
@@ -76,6 +77,7 @@ export type UniversalXmlFeedProps = z.infer<typeof UniversalXmlFeedPropsSchema>;
 export const UniversalXmlFeedPropsDefaults = {
   blockType: 'PromotedSurveyXml',
   title: null as string | null,
+  displayBlockTitle: true,
   url: '',
   numberOfItems: 0,
   fieldOrder: null as string[] | null,
@@ -205,6 +207,7 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
     propsData?.title != null && propsData.title !== ''
       ? propsData.title
       : getBlockTitleByType(blockType);
+  const displayBlockTitle = propsData?.displayBlockTitle ?? UniversalXmlFeedPropsDefaults.displayBlockTitle;
   const fieldMapping = propsData?.fieldMapping ?? UniversalXmlFeedPropsDefaults.fieldMapping;
   const previewItems = propsData?.previewItems ?? UniversalXmlFeedPropsDefaults.previewItems ?? [];
 
@@ -304,7 +307,7 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
 
     return (
       <div style={wrapperStyle}>
-        {title && (
+        {displayBlockTitle && title && (
           <h2 style={blockTitleStyle}>
             {title}
           </h2>
