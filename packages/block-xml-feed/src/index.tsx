@@ -172,7 +172,7 @@ export function parseXmlToFieldNames(xmlText: string): string[] {
         keys.push(k);
       }
     }
-    return keys.sort();
+    return keys;
   } catch {
     return [];
   }
@@ -230,22 +230,63 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
     const mappingEntries = Object.entries(fieldMapping).filter(([, t]) => t !== 'doNotShow');
     const contentLinkField = mappingEntries.find(([, t]) => t === 'contentLink')?.[0];
     const titleField = mappingEntries.find(([, t]) => t === 'title')?.[0];
+    const showPlayIcon = blockType === 'VideoPosterBlock' || blockType === 'VideoXml';
+    const playIconSpan = showPlayIcon ? (
+      <span style={{ marginRight: '6px', color: '#1585fe' }}>▶</span>
+    ) : null;
+
+    const isGems = blockType === 'Gems';
+    const blockTitleStyle: React.CSSProperties = isGems
+      ? {
+          fontSize: '22px',
+          marginBottom: '14px',
+          color: '#4a3728',
+          textTransform: 'none',
+          borderLeft: '4px solid #c9b896',
+          paddingLeft: '12px',
+          lineHeight: 1.3,
+          margin: '0 0 20px 0',
+          fontStyle: 'italic',
+        }
+      : {
+          fontSize: '18px',
+          marginBottom: '12px',
+          color: '#333',
+          textTransform: 'uppercase',
+          borderLeft: '4px solid #1585fe',
+          paddingLeft: '10px',
+          lineHeight: 1.2,
+          margin: '0 0 16px 0',
+        };
+    const getItemWrapperStyle = (index: number): React.CSSProperties =>
+      isGems
+        ? {
+            marginBottom: 28,
+            paddingBottom: 20,
+            paddingLeft: 16,
+            borderLeft: '3px solid #e8dfd0',
+          }
+        : {
+            marginBottom: 24,
+            paddingBottom: 16,
+            borderBottom: index < previewItems.length - 1 ? '1px solid #eee' : 'none',
+          };
+    const gemsTitleFontSize = '22px';
+    const gemsBodyFontSize = '18px';
+    const titleStyle: React.CSSProperties = isGems
+      ? { margin: '0 0 10px 0', fontSize: gemsTitleFontSize, lineHeight: 1.45, color: '#4a3728', fontStyle: 'italic' }
+      : { margin: '0 0 8px 0', fontSize: '18px', lineHeight: 1.4, color: '#333' };
+    const textStyle: React.CSSProperties = isGems
+      ? { marginBottom: 6, fontSize: gemsBodyFontSize, lineHeight: 1.5, color: '#5c4a3a' }
+      : { marginBottom: 4 };
+    const blockStyle: React.CSSProperties = isGems
+      ? { marginBottom: 10 }
+      : { marginBottom: 8 };
 
     return (
       <div style={wrapperStyle}>
         {title && (
-          <h2
-            style={{
-              fontSize: '18px',
-              marginBottom: '12px',
-              color: '#333',
-              textTransform: 'uppercase',
-              borderLeft: '4px solid #1585fe',
-              paddingLeft: '10px',
-              lineHeight: 1.2,
-              margin: '0 0 16px 0',
-            }}
-          >
+          <h2 style={blockTitleStyle}>
             {title}
           </h2>
         )}
@@ -259,8 +300,8 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
             if (fieldType === 'contentLink') return null;
             if (fieldType === 'link') {
               return (
-                <div key={key} style={{ marginBottom: 4 }}>
-                  <a href={val} target="_blank" rel="noopener noreferrer" style={{ color: '#1585fe' }}>
+                <div key={key} style={textStyle}>
+                  <a href={val} target="_blank" rel="noopener noreferrer" style={{ color: isGems ? '#8b7355' : '#1585fe' }}>
                     {escapeHtml(val)}
                   </a>
                 </div>
@@ -268,13 +309,14 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
             }
             if (fieldType === 'title') {
               const titleNode = (
-                <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: 1.4, color: '#333' }}>
+                <h3 style={titleStyle}>
+                  {playIconSpan}
                   {escapeHtml(val)}
                 </h3>
               );
               if (linkUrl) {
                 return (
-                  <div key={key} style={{ marginBottom: 8 }}>
+                  <div key={key} style={blockStyle}>
                     <a
                       href={linkUrl}
                       target="_blank"
@@ -287,7 +329,7 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
                 );
               }
               return (
-                <div key={key} style={{ marginBottom: 8 }}>
+                <div key={key} style={blockStyle}>
                   {titleNode}
                 </div>
               );
@@ -302,7 +344,7 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
               );
               if (fieldType === 'imageWithContentLink' && linkUrl) {
                 return (
-                  <div key={key} style={{ marginBottom: 4 }}>
+                  <div key={key} style={textStyle}>
                     <a
                       href={linkUrl}
                       target="_blank"
@@ -315,18 +357,18 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
                 );
               }
               return (
-                <div key={key} style={{ marginBottom: 4 }}>
+                <div key={key} style={textStyle}>
                   {img}
                 </div>
               );
             }
             if (fieldType === 'html') {
               return (
-                <div key={key} style={{ marginBottom: 4 }} dangerouslySetInnerHTML={{ __html: val }} />
+                <div key={key} style={textStyle} dangerouslySetInnerHTML={{ __html: val }} />
               );
             }
             return (
-              <div key={key} style={{ marginBottom: 4 }}>
+              <div key={key} style={textStyle}>
                 {escapeHtml(val)}
               </div>
             );
@@ -352,14 +394,7 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
           }
 
           return (
-            <div
-              key={index}
-              style={{
-                marginBottom: 24,
-                paddingBottom: 16,
-                borderBottom: index < previewItems.length - 1 ? '1px solid #eee' : 'none',
-              }}
-            >
+            <div key={index} style={getItemWrapperStyle(index)}>
               {mappingEntries.map(([fieldName, fieldType]) =>
                 renderField(fieldName, fieldType, stringValue(item[fieldName]), fieldName),
               )}

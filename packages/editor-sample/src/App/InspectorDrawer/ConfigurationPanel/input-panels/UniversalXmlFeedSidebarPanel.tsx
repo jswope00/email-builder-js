@@ -83,10 +83,10 @@ export default function UniversalXmlFeedSidebarPanel({
       const text = await response.text();
       const names = parseXmlToFieldNames(text);
       setLoadedFieldNames(names);
-      // Initialize fieldMapping for new fields with default type "text"
-      const nextMapping = { ...fieldMapping } as Record<string, string>;
+      // Build mapping in XML order (names order), preserve existing types
+      const nextMapping = {} as Record<string, string>;
       names.forEach((name) => {
-        if (nextMapping[name] == null) nextMapping[name] = 'text';
+        nextMapping[name] = fieldMapping[name] ?? 'text';
       });
       updateData({ ...safeData, props: { ...safeData.props, fieldMapping: nextMapping } });
     } catch (err) {

@@ -36,7 +36,8 @@
   ],
   "scripts": {
     "build": "npx tsc",
-    "test": "npx jest"
+    "test": "npx jest",
+    "sync-lock-to-repo": "cp package-lock.json repo/package-lock.json"
   },
   "author": "carlos@usewaypoint.com",
   "license": "MIT",
