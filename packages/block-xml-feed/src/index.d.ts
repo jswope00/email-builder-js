@@ -1,10 +1,27 @@
 import React from 'react';
 import { z } from 'zod';
 export { BLOCK_TYPE_OPTIONS, type XmlBlockTypeValue } from './blockTypes';
+/** Default block header title for a given block type. */
+export declare function getBlockTitleByType(blockType: string | null | undefined): string;
 /** Field type options for the mapping table (second column). */
 export declare const FIELD_TYPE_OPTIONS: readonly [{
     readonly value: "text";
     readonly label: "Text";
+}, {
+    readonly value: "title";
+    readonly label: "Title";
+}, {
+    readonly value: "contentLink";
+    readonly label: "Content link";
+}, {
+    readonly value: "imageWithContentLink";
+    readonly label: "Image with content link";
+}, {
+    readonly value: "author";
+    readonly label: "Author";
+}, {
+    readonly value: "date";
+    readonly label: "Date";
 }, {
     readonly value: "link";
     readonly label: "Link";
@@ -57,17 +74,29 @@ export declare const UniversalXmlFeedPropsSchema: z.ZodObject<{
     }>>>;
     props: z.ZodNullable<z.ZodOptional<z.ZodObject<{
         blockType: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        title: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        displayBlockTitle: z.ZodNullable<z.ZodOptional<z.ZodBoolean>>;
         url: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        numberOfItems: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
+        fieldOrder: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodString, "many">>>;
         fieldMapping: z.ZodNullable<z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>>;
         previewItems: z.ZodNullable<z.ZodOptional<z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>, "many">>>;
     }, "strip", z.ZodTypeAny, {
         url?: string | null | undefined;
+        title?: string | null | undefined;
+        numberOfItems?: number | null | undefined;
         blockType?: string | null | undefined;
+        displayBlockTitle?: boolean | null | undefined;
+        fieldOrder?: string[] | null | undefined;
         fieldMapping?: Record<string, string> | null | undefined;
         previewItems?: Record<string, unknown>[] | null | undefined;
     }, {
         url?: string | null | undefined;
+        title?: string | null | undefined;
+        numberOfItems?: number | null | undefined;
         blockType?: string | null | undefined;
+        displayBlockTitle?: boolean | null | undefined;
+        fieldOrder?: string[] | null | undefined;
         fieldMapping?: Record<string, string> | null | undefined;
         previewItems?: Record<string, unknown>[] | null | undefined;
     }>>>;
@@ -82,7 +111,11 @@ export declare const UniversalXmlFeedPropsSchema: z.ZodObject<{
     } | null | undefined;
     props?: {
         url?: string | null | undefined;
+        title?: string | null | undefined;
+        numberOfItems?: number | null | undefined;
         blockType?: string | null | undefined;
+        displayBlockTitle?: boolean | null | undefined;
+        fieldOrder?: string[] | null | undefined;
         fieldMapping?: Record<string, string> | null | undefined;
         previewItems?: Record<string, unknown>[] | null | undefined;
     } | null | undefined;
@@ -97,7 +130,11 @@ export declare const UniversalXmlFeedPropsSchema: z.ZodObject<{
     } | null | undefined;
     props?: {
         url?: string | null | undefined;
+        title?: string | null | undefined;
+        numberOfItems?: number | null | undefined;
         blockType?: string | null | undefined;
+        displayBlockTitle?: boolean | null | undefined;
+        fieldOrder?: string[] | null | undefined;
         fieldMapping?: Record<string, string> | null | undefined;
         previewItems?: Record<string, unknown>[] | null | undefined;
     } | null | undefined;
@@ -105,7 +142,11 @@ export declare const UniversalXmlFeedPropsSchema: z.ZodObject<{
 export type UniversalXmlFeedProps = z.infer<typeof UniversalXmlFeedPropsSchema>;
 export declare const UniversalXmlFeedPropsDefaults: {
     readonly blockType: "PromotedSurveyXml";
+    readonly title: string | null;
+    readonly displayBlockTitle: true;
     readonly url: "";
+    readonly numberOfItems: 0;
+    readonly fieldOrder: string[] | null;
     readonly fieldMapping: Record<string, string>;
     readonly previewItems: Record<string, unknown>[] | null;
 };

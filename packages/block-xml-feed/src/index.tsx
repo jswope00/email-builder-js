@@ -33,6 +33,8 @@ export const FIELD_TYPE_OPTIONS = [
   { value: 'title', label: 'Title' },
   { value: 'contentLink', label: 'Content link' },
   { value: 'imageWithContentLink', label: 'Image with content link' },
+  { value: 'author', label: 'Author' },
+  { value: 'date', label: 'Date' },
   { value: 'link', label: 'Link' },
   { value: 'image', label: 'Image' },
   { value: 'number', label: 'Number' },
@@ -304,6 +306,12 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
     const blockStyle: React.CSSProperties = isGems
       ? { marginBottom: 10 }
       : { marginBottom: 8 };
+    /** Same as in block-featured-story-xml, block-blog-xml: author (bold) and date on one line with bullet. */
+    const authorDateLineStyle: React.CSSProperties = {
+      fontSize: '12px',
+      color: '#666',
+      marginBottom: '8px',
+    };
 
     return (
       <div style={wrapperStyle}>
@@ -415,11 +423,58 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
             );
           }
 
+          const fieldNodes: React.ReactNode[] = [];
+          let skipNext = false;
+          mappingEntries.forEach(([fieldName, fieldType], i) => {
+            if (skipNext) {
+              skipNext = false;
+              return;
+            }
+            const val = stringValue(record[fieldName]);
+            if (fieldType === 'author') {
+              const next = mappingEntries[i + 1];
+              const nextIsDate = next && next[1] === 'date';
+              const dateVal = nextIsDate ? stringValue(record[next[0]]) : '';
+              const authorDateStyle = isGems
+                ? { ...authorDateLineStyle, color: gemsTextColor }
+                : authorDateLineStyle;
+              fieldNodes.push(
+                <div key={`author-date-${fieldName}`} style={authorDateStyle}>
+                  {val && (
+                    <>
+                      <span style={{ fontWeight: 'bold' }}>{escapeHtml(val)}</span>
+                      {dateVal && (
+                        <>
+                          <span style={{ margin: '0 8px' }}>•</span>
+                          <span>{escapeHtml(dateVal)}</span>
+                        </>
+                      )}
+                    </>
+                  )}
+                  {!val && dateVal && <span>{escapeHtml(dateVal)}</span>}
+                </div>,
+              );
+              if (nextIsDate) skipNext = true;
+            } else if (fieldType === 'date') {
+              const authorDateStyle = isGems
+                ? { ...authorDateLineStyle, color: gemsTextColor }
+                : authorDateLineStyle;
+              if (val) {
+                fieldNodes.push(
+                  <div key={fieldName} style={authorDateStyle}>
+                    <span>{escapeHtml(val)}</span>
+                  </div>,
+                );
+              }
+            } else {
+              const node = renderField(fieldName, fieldType, val, fieldName);
+              if (node != null) fieldNodes.push(<React.Fragment key={fieldName}>{node}</React.Fragment>);
+            }
+          });
+
           return (
             <div key={index} style={getItemWrapperStyle(index)}>
-              {mappingEntries.map(([fieldName, fieldType]) =>
-                renderField(fieldName, fieldType, stringValue(item[fieldName]), fieldName),
-              )}
+              {fieldNodes}
             </div>
           );
         })}
