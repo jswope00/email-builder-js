@@ -49,6 +49,8 @@ export default function UniversalXmlFeedSidebarPanel({
     props: data?.props ?? {
       blockType: UniversalXmlFeedPropsDefaults.blockType,
       url: UniversalXmlFeedPropsDefaults.url,
+      numberOfItems: UniversalXmlFeedPropsDefaults.numberOfItems,
+      fieldOrder: UniversalXmlFeedPropsDefaults.fieldOrder,
       fieldMapping: UniversalXmlFeedPropsDefaults.fieldMapping,
     },
   };
@@ -65,6 +67,7 @@ export default function UniversalXmlFeedSidebarPanel({
 
   const blockType = safeData.props?.blockType ?? UniversalXmlFeedPropsDefaults.blockType;
   const url = safeData.props?.url ?? UniversalXmlFeedPropsDefaults.url;
+  const numberOfItems = safeData.props?.numberOfItems ?? UniversalXmlFeedPropsDefaults.numberOfItems;
   const fieldMapping = safeData.props?.fieldMapping ?? UniversalXmlFeedPropsDefaults.fieldMapping;
 
   urlInputRef.current = url ?? '';
@@ -88,7 +91,10 @@ export default function UniversalXmlFeedSidebarPanel({
       names.forEach((name) => {
         nextMapping[name] = fieldMapping[name] ?? 'text';
       });
-      updateData({ ...safeData, props: { ...safeData.props, fieldMapping: nextMapping } });
+      updateData({
+        ...safeData,
+        props: { ...safeData.props, fieldOrder: names, fieldMapping: nextMapping },
+      });
     } catch (err) {
       setLoadError(err instanceof Error ? err.message : 'Failed to load URL.');
     } finally {
@@ -108,10 +114,12 @@ export default function UniversalXmlFeedSidebarPanel({
       const response = await fetch(urlToFetch);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const text = await response.text();
-      const items = parseXmlToItems(text);
+      const allItems = parseXmlToItems(text);
+      const num = numberOfItems ?? 0;
+      const itemsToStore = num > 0 ? allItems.slice(0, num) : allItems;
       updateData({
         ...safeData,
-        props: { ...safeData.props, url: urlToFetch, previewItems: items },
+        props: { ...safeData.props, url: urlToFetch, previewItems: itemsToStore },
       });
     } catch (err) {
       setParseError(err instanceof Error ? err.message : 'Failed to parse XML.');
@@ -149,6 +157,22 @@ export default function UniversalXmlFeedSidebarPanel({
           </MenuItem>
         ))}
       </TextField>
+
+      <TextField
+        type="number"
+        label="Items"
+        fullWidth
+        size="small"
+        variant="standard"
+        value={numberOfItems ?? 0}
+        inputProps={{ min: 0, step: 1 }}
+        helperText="0 = show all"
+        onChange={(e) => {
+          const v = Math.max(0, parseInt(String(e.target.value), 10) || 0);
+          updateData({ ...safeData, props: { ...safeData.props, numberOfItems: v } });
+        }}
+        sx={{ mb: 2 }}
+      />
 
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
         <TextInput

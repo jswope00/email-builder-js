@@ -62,6 +62,8 @@ export const UniversalXmlFeedPropsSchema = z.object({
       blockType: z.string().optional().nullable(),
       title: z.string().optional().nullable(),
       url: z.string().optional().nullable(),
+      numberOfItems: z.number().min(0).optional().nullable(),
+      fieldOrder: z.array(z.string()).optional().nullable(),
       fieldMapping: z.record(z.string(), z.string()).optional().nullable(),
       previewItems: z.array(z.record(z.string(), z.unknown())).optional().nullable(),
     })
@@ -75,6 +77,8 @@ export const UniversalXmlFeedPropsDefaults = {
   blockType: 'PromotedSurveyXml',
   title: null as string | null,
   url: '',
+  numberOfItems: 0,
+  fieldOrder: null as string[] | null,
   fieldMapping: {} as Record<string, string>,
   previewItems: null as Record<string, unknown>[] | null,
 } as const;
@@ -227,7 +231,17 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
   }
 
   if (previewItems.length > 0) {
-    const mappingEntries = Object.entries(fieldMapping).filter(([, t]) => t !== 'doNotShow');
+    const fieldOrder = propsData?.fieldOrder ?? UniversalXmlFeedPropsDefaults.fieldOrder;
+    const mapping = fieldMapping ?? {};
+    const visible = (name: string) => mapping[name] && mapping[name] !== 'doNotShow';
+    const orderedNames =
+      fieldOrder && fieldOrder.length > 0
+        ? [
+            ...fieldOrder.filter((name) => visible(name)),
+            ...Object.keys(mapping).filter((name) => visible(name) && !fieldOrder.includes(name)),
+          ]
+        : Object.keys(mapping).filter((name) => visible(name));
+    const mappingEntries: [string, string][] = orderedNames.map((name) => [name, mapping[name]]);
     const contentLinkField = mappingEntries.find(([, t]) => t === 'contentLink')?.[0];
     const titleField = mappingEntries.find(([, t]) => t === 'title')?.[0];
     const showPlayIcon = blockType === 'VideoPosterBlock' || blockType === 'VideoXml';
@@ -236,13 +250,17 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
     ) : null;
 
     const isGems = blockType === 'Gems';
+    const gemsBorderColor = '#a8bed4';
+    const gemsBgColor = 'rgba(168, 190, 212, 0.3)';
+    const gemsTextColor = '#2c3e50';
+    const gemsAccentColor = '#4a6fa5';
     const blockTitleStyle: React.CSSProperties = isGems
       ? {
           fontSize: '22px',
           marginBottom: '14px',
-          color: '#4a3728',
+          color: gemsTextColor,
           textTransform: 'none',
-          borderLeft: '4px solid #c9b896',
+          borderLeft: `4px solid ${gemsBorderColor}`,
           paddingLeft: '12px',
           lineHeight: 1.3,
           margin: '0 0 20px 0',
@@ -262,9 +280,10 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
       isGems
         ? {
             marginBottom: 28,
-            paddingBottom: 20,
-            paddingLeft: 16,
-            borderLeft: '3px solid #e8dfd0',
+            padding: '18px 18px 20px 20px',
+            borderLeft: `3px solid ${gemsBorderColor}`,
+            backgroundColor: gemsBgColor,
+            borderRadius: '0 4px 4px 0',
           }
         : {
             marginBottom: 24,
@@ -274,10 +293,10 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
     const gemsTitleFontSize = '22px';
     const gemsBodyFontSize = '18px';
     const titleStyle: React.CSSProperties = isGems
-      ? { margin: '0 0 10px 0', fontSize: gemsTitleFontSize, lineHeight: 1.45, color: '#4a3728', fontStyle: 'italic' }
+      ? { margin: '0 0 10px 0', fontSize: gemsTitleFontSize, lineHeight: 1.45, color: gemsTextColor, fontStyle: 'italic' }
       : { margin: '0 0 8px 0', fontSize: '18px', lineHeight: 1.4, color: '#333' };
     const textStyle: React.CSSProperties = isGems
-      ? { marginBottom: 6, fontSize: gemsBodyFontSize, lineHeight: 1.5, color: '#5c4a3a' }
+      ? { marginBottom: 6, fontSize: gemsBodyFontSize, lineHeight: 1.5, color: gemsTextColor }
       : { marginBottom: 4 };
     const blockStyle: React.CSSProperties = isGems
       ? { marginBottom: 10 }
@@ -301,7 +320,7 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
             if (fieldType === 'link') {
               return (
                 <div key={key} style={textStyle}>
-                  <a href={val} target="_blank" rel="noopener noreferrer" style={{ color: isGems ? '#8b7355' : '#1585fe' }}>
+                  <a href={val} target="_blank" rel="noopener noreferrer" style={{ color: isGems ? gemsAccentColor : '#1585fe' }}>
                     {escapeHtml(val)}
                   </a>
                 </div>
