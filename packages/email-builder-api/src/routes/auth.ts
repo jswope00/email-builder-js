@@ -3,8 +3,8 @@ import { Router, Request, Response, type IRouter } from 'express';
 const router: IRouter = Router();
 
 const DRUPAL_AUTH_URL = process.env.DRUPAL_AUTH_URL || 'https://rheumnow.com/api/auth/status';
-//const AUTH_ENABLED = process.env.AUTH_ENABLED !== 'false';
-const AUTH_ENABLED = false;
+const AUTH_ENABLED = process.env.AUTH_ENABLED !== 'false';
+//const AUTH_ENABLED = false;
 
 /**
  * GET /api/auth/check
