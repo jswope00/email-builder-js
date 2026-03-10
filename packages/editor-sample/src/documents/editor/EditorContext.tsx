@@ -16,6 +16,7 @@ type TValue = {
 
   inspectorDrawerOpen: boolean;
   samplesDrawerOpen: boolean;
+  selectedSamplesDrawerTab: 'templates' | 'feed-sections';
   currentView: 'editor' | 'mailchimp';
 };
 
@@ -30,6 +31,7 @@ const editorStateStore = create<TValue>(() => ({
 
   inspectorDrawerOpen: true,
   samplesDrawerOpen: true,
+  selectedSamplesDrawerTab: 'templates',
   currentView: 'editor',
 }));
 
@@ -124,6 +126,14 @@ export function toggleInspectorDrawerOpen() {
 export function toggleSamplesDrawerOpen() {
   const samplesDrawerOpen = !editorStateStore.getState().samplesDrawerOpen;
   return editorStateStore.setState({ samplesDrawerOpen });
+}
+
+export function useSelectedSamplesDrawerTab() {
+  return editorStateStore((s) => s.selectedSamplesDrawerTab);
+}
+
+export function setSamplesDrawerTab(tab: TValue['selectedSamplesDrawerTab']) {
+  return editorStateStore.setState({ selectedSamplesDrawerTab: tab });
 }
 
 export function setSelectedScreenSize(selectedScreenSize: TValue['selectedScreenSize']) {

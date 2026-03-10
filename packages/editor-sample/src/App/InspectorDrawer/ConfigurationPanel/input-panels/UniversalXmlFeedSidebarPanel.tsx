@@ -1,6 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Checkbox,
@@ -13,11 +16,13 @@ import {
   TableRow,
   TextField,
 } from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
 
 import {
   BLOCK_TYPE_OPTIONS,
   FIELD_TYPE_OPTIONS,
   getBlockTitleByType,
+  getEndpointByType,
   parseXmlToFieldNames,
   parseXmlToItems,
   UniversalXmlFeedProps,
@@ -26,8 +31,47 @@ import {
 } from '@nattusia/block-xml-feed';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
-import TextInput from './helpers/inputs/TextInput';
 import MultiStylePropertyPanel from './helpers/style-inputs/MultiStylePropertyPanel';
+
+/** Default field type when loading fields from XML. All other fields default to 'html'. */
+const DEFAULT_FIELD_TYPE_BY_NAME: Record<string, string> = {
+  view_node: 'contentLink',
+  title: 'title',
+  field_media_image: 'imageWithContentLink',
+  created: 'date',
+  field_author_attribution: 'author',
+  field_addtional_authors: 'author',
+  type: 'doNotShow',
+  field_article_type: 'doNotShow',
+};
+
+function getDefaultFieldTypeForName(fieldName: string): string {
+  return DEFAULT_FIELD_TYPE_BY_NAME[fieldName] ?? 'html';
+}
+
+/** Endpoints for Campaign (conference) and Topic term lists. */
+const CAMPAIGN_TERMS_URL = 'https://rheumnow.com/admin/terms/dashboard_tags';
+const TOPIC_TERMS_URL = 'https://rheumnow.com/admin/terms/topic';
+
+type TermOption = { tid: string; name: string };
+
+/** Parse XML response with <item><tid>...</tid><name>...</name></item> into term options. */
+function parseTermsFromXml(xmlText: string): TermOption[] {
+  const options: TermOption[] = [];
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlText, 'text/xml');
+    const items = doc.querySelectorAll('item');
+    items.forEach((item) => {
+      const tid = item.querySelector('tid')?.textContent?.trim() ?? '';
+      const name = item.querySelector('name')?.textContent?.trim() ?? '';
+      if (tid) options.push({ tid, name: name || tid });
+    });
+  } catch {
+    // ignore
+  }
+  return options;
+}
 
 type UniversalXmlFeedSidebarPanelProps = {
   data: UniversalXmlFeedProps;
@@ -44,7 +88,32 @@ export default function UniversalXmlFeedSidebarPanel({
   const [loadError, setLoadError] = useState<string | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
   const [loadedFieldNames, setLoadedFieldNames] = useState<string[]>([]);
-  const urlInputRef = useRef('');
+  const [campaignOptions, setCampaignOptions] = useState<TermOption[]>([]);
+  const [topicOptions, setTopicOptions] = useState<TermOption[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const [campRes, topicRes] = await Promise.all([
+          fetch(CAMPAIGN_TERMS_URL),
+          fetch(TOPIC_TERMS_URL),
+        ]);
+        if (cancelled) return;
+        const campaignText = campRes.ok ? await campRes.text() : '';
+        const topicText = topicRes.ok ? await topicRes.text() : '';
+        if (cancelled) return;
+        setCampaignOptions(parseTermsFromXml(campaignText));
+        setTopicOptions(parseTermsFromXml(topicText));
+      } catch {
+        if (!cancelled) {
+          setCampaignOptions([]);
+          setTopicOptions([]);
+        }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const safeData: UniversalXmlFeedProps = {
     style: data?.style ?? null,
@@ -52,9 +121,13 @@ export default function UniversalXmlFeedSidebarPanel({
       blockType: UniversalXmlFeedPropsDefaults.blockType,
       url: UniversalXmlFeedPropsDefaults.url,
       displayBlockTitle: UniversalXmlFeedPropsDefaults.displayBlockTitle,
+      campaignTermIds: UniversalXmlFeedPropsDefaults.campaignTermIds,
+      topicTermIds: UniversalXmlFeedPropsDefaults.topicTermIds,
       numberOfItems: UniversalXmlFeedPropsDefaults.numberOfItems,
       fieldOrder: UniversalXmlFeedPropsDefaults.fieldOrder,
       fieldMapping: UniversalXmlFeedPropsDefaults.fieldMapping,
+      feedSlices: UniversalXmlFeedPropsDefaults.feedSlices,
+      activeSliceIndex: UniversalXmlFeedPropsDefaults.activeSliceIndex,
     },
   };
 
@@ -69,17 +142,68 @@ export default function UniversalXmlFeedSidebarPanel({
   };
 
   const blockType = safeData.props?.blockType ?? UniversalXmlFeedPropsDefaults.blockType;
-  const url = safeData.props?.url ?? UniversalXmlFeedPropsDefaults.url;
   const displayBlockTitle = safeData.props?.displayBlockTitle ?? UniversalXmlFeedPropsDefaults.displayBlockTitle;
+  const campaignTermIds = safeData.props?.campaignTermIds ?? UniversalXmlFeedPropsDefaults.campaignTermIds ?? [];
+  const topicTermIds = safeData.props?.topicTermIds ?? UniversalXmlFeedPropsDefaults.topicTermIds ?? [];
   const numberOfItems = safeData.props?.numberOfItems ?? UniversalXmlFeedPropsDefaults.numberOfItems;
   const fieldMapping = safeData.props?.fieldMapping ?? UniversalXmlFeedPropsDefaults.fieldMapping;
+  const endpoint = getEndpointByType(blockType);
 
-  urlInputRef.current = url ?? '';
+  /** Build one fetch URL with optional dashboard_tag and topic params. */
+  const buildFetchUrlForParams = (campaignTid: string | null, topicTid: string | null): string => {
+    const base = endpoint.trim();
+    if (!base) return '';
+    const params: string[] = [];
+    if (campaignTid) params.push(`dashboard_tag=${encodeURIComponent(campaignTid)}`);
+    if (topicTid) params.push(`topic=${encodeURIComponent(topicTid)}`);
+    return params.length > 0 ? `${base}?${params.join('&')}` : base;
+  };
+
+  /** Slice specs for multi-fetch: only when we have more than one slice (2+ terms or 2+ pairs). */
+  const getSliceSpecs = (): { label: string; url: string }[] => {
+    const base = endpoint.trim();
+    if (!base) return [];
+    const hasCampaign = campaignTermIds.length > 0;
+    const hasTopic = topicTermIds.length > 0;
+    if (hasCampaign && hasTopic) {
+      const pairs: { label: string; url: string }[] = [];
+      campaignTermIds.forEach((cid) => {
+        topicTermIds.forEach((tid) => {
+          const cName = campaignOptions.find((o) => o.tid === cid)?.name ?? cid;
+          const tName = topicOptions.find((o) => o.tid === tid)?.name ?? tid;
+          pairs.push({
+            label: `${cName} / ${tName}`,
+            url: buildFetchUrlForParams(cid, tid),
+          });
+        });
+      });
+      return pairs;
+    }
+    if (hasCampaign) {
+      return campaignTermIds.map((cid) => ({
+        label: campaignOptions.find((o) => o.tid === cid)?.name ?? cid,
+        url: buildFetchUrlForParams(cid, null),
+      }));
+    }
+    if (hasTopic) {
+      return topicTermIds.map((tid) => ({
+        label: topicOptions.find((o) => o.tid === tid)?.name ?? tid,
+        url: buildFetchUrlForParams(null, tid),
+      }));
+    }
+    return [{ label: '', url: base }];
+  };
+
+  /** Single URL for Load / single-slice Parse & show (first slice only). */
+  const buildFetchUrl = (): string => buildFetchUrlForParams(
+    campaignTermIds.length > 0 ? campaignTermIds[0] : null,
+    topicTermIds.length > 0 ? topicTermIds[0] : null,
+  );
 
   const handleLoad = async () => {
-    const urlToFetch = (urlInputRef.current || url || '').trim();
+    const urlToFetch = buildFetchUrl();
     if (!urlToFetch) {
-      setLoadError('Enter a URL first.');
+      setLoadError('No endpoint for this block type.');
       return;
     }
     setLoadError(null);
@@ -90,10 +214,10 @@ export default function UniversalXmlFeedSidebarPanel({
       const text = await response.text();
       const names = parseXmlToFieldNames(text);
       setLoadedFieldNames(names);
-      // Build mapping in XML order (names order), preserve existing types
+      // Build mapping in XML order (names order), use default types when loading
       const nextMapping = {} as Record<string, string>;
       names.forEach((name) => {
-        nextMapping[name] = fieldMapping[name] ?? 'text';
+        nextMapping[name] = fieldMapping[name] ?? getDefaultFieldTypeForName(name);
       });
       updateData({
         ...safeData,
@@ -107,24 +231,51 @@ export default function UniversalXmlFeedSidebarPanel({
   };
 
   const handleParseAndShow = async () => {
-    const urlToFetch = (urlInputRef.current || url || '').trim();
-    if (!urlToFetch) {
-      setParseError('Enter a URL first.');
+    const sliceSpecs = getSliceSpecs();
+    if (sliceSpecs.length === 0 || !sliceSpecs[0].url) {
+      setParseError('No endpoint for this block type.');
       return;
     }
     setParseError(null);
     setParseLoading(true);
     try {
-      const response = await fetch(urlToFetch);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const text = await response.text();
-      const allItems = parseXmlToItems(text);
       const num = numberOfItems ?? 0;
-      const itemsToStore = num > 0 ? allItems.slice(0, num) : allItems;
-      updateData({
-        ...safeData,
-        props: { ...safeData.props, url: urlToFetch, previewItems: itemsToStore },
-      });
+      if (sliceSpecs.length <= 1) {
+        const urlToFetch = sliceSpecs[0].url;
+        const response = await fetch(urlToFetch);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const text = await response.text();
+        const allItems = parseXmlToItems(text);
+        const itemsToStore = num > 0 ? allItems.slice(0, num) : allItems;
+        updateData({
+          ...safeData,
+          props: {
+            ...safeData.props,
+            url: urlToFetch,
+            previewItems: itemsToStore,
+            feedSlices: null,
+            activeSliceIndex: 0,
+          },
+        });
+      } else {
+        const responses = await Promise.all(sliceSpecs.map((s) => fetch(s.url)));
+        const texts = await Promise.all(responses.map((r) => (r.ok ? r.text() : Promise.reject(new Error(`HTTP ${r.status}`)))));
+        const allParsed = texts.map((text) => parseXmlToItems(text));
+        const feedSlices = sliceSpecs.map((spec, i) => {
+          const items = num > 0 ? allParsed[i].slice(0, num) : allParsed[i];
+          return { label: spec.label || `Section ${i + 1}`, items };
+        });
+        updateData({
+          ...safeData,
+          props: {
+            ...safeData.props,
+            url: sliceSpecs[0].url,
+            previewItems: feedSlices[0].items,
+            feedSlices,
+            activeSliceIndex: 0,
+          },
+        });
+      }
     } catch (err) {
       setParseError(err instanceof Error ? err.message : 'Failed to parse XML.');
     } finally {
@@ -133,7 +284,7 @@ export default function UniversalXmlFeedSidebarPanel({
   };
 
   const tableRows = loadedFieldNames.length > 0 ? loadedFieldNames : Object.keys(fieldMapping ?? {});
-  const canParseAndShow = (urlInputRef.current || url || '').trim().length > 0;
+  const canParseAndShow = endpoint.trim().length > 0;
 
   return (
     <BaseSidebarPanel title="Universal XML Feed Block">
@@ -149,18 +300,42 @@ export default function UniversalXmlFeedSidebarPanel({
             ...safeData,
             props: {
               ...safeData.props,
-              blockType: newBlockType,
-              title: getBlockTitleByType(newBlockType) || undefined,
+              blockType: newBlockType || undefined,
+              title: newBlockType ? getBlockTitleByType(newBlockType) || undefined : undefined,
             },
           });
         }}
       >
+        <MenuItem value="">
+          Select the feed type
+        </MenuItem>
         {BLOCK_TYPE_OPTIONS.map((opt) => (
           <MenuItem key={opt.value} value={opt.value}>
             {opt.label}
           </MenuItem>
         ))}
       </TextField>
+
+      {blockType && endpoint && (
+        <Box sx={{ mb: 1 }}>
+          <Box sx={{ fontSize: '0.875rem', color: 'text.secondary', wordBreak: 'break-all' }}>
+            Endpoint: {endpoint}
+          </Box>
+          <Button
+            variant="contained"
+            size="medium"
+            fullWidth
+            onClick={handleLoad}
+            disabled={loading || !endpoint.trim()}
+            sx={{ mt: 1 }}
+          >
+            {loading ? 'Loading…' : 'Load'}
+          </Button>
+          {loadError && (
+            <Box sx={{ color: 'error.main', fontSize: '0.875rem', mt: 0.5 }}>{loadError}</Box>
+          )}
+        </Box>
+      )}
 
       <FormControlLabel
         control={
@@ -178,6 +353,94 @@ export default function UniversalXmlFeedSidebarPanel({
         sx={{ mb: 1 }}
       />
 
+      <Accordion disableGutters sx={{ boxShadow: 'none', '&::before': { display: 'none' }, mb: 0.5 }}>
+        <AccordionSummary expandIcon={<ExpandMore />} sx={{ minHeight: 40, '& .MuiAccordionSummary-content': { my: 0.5 } }}>
+          <Box component="span" sx={{ fontSize: '0.875rem' }}>
+            Campaign (conference){campaignTermIds.length > 0 ? ` (${campaignTermIds.length})` : ''}
+          </Box>
+        </AccordionSummary>
+        <AccordionDetails sx={{ pt: 0, pb: 1 }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={campaignOptions.length > 0 && campaignTermIds.length === campaignOptions.length}
+                indeterminate={campaignTermIds.length > 0 && campaignTermIds.length < campaignOptions.length}
+                onChange={(e) => {
+                  const next = e.target.checked ? campaignOptions.map((o) => o.tid) : [];
+                  updateData({ ...safeData, props: { ...safeData.props, campaignTermIds: next } });
+                }}
+              />
+            }
+            label="Select all"
+            sx={{ display: 'block', mb: 0.5 }}
+          />
+          <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
+            {campaignOptions.map((opt) => (
+              <FormControlLabel
+                key={opt.tid}
+                control={
+                  <Checkbox
+                    checked={campaignTermIds.includes(opt.tid)}
+                    onChange={(e) => {
+                      const next = e.target.checked
+                        ? [...campaignTermIds, opt.tid]
+                        : campaignTermIds.filter((id) => id !== opt.tid);
+                      updateData({ ...safeData, props: { ...safeData.props, campaignTermIds: next } });
+                    }}
+                  />
+                }
+                label={opt.name}
+                sx={{ display: 'block', ml: 0.5 }}
+              />
+            ))}
+          </Box>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion disableGutters sx={{ boxShadow: 'none', '&::before': { display: 'none' }, mb: 1 }}>
+        <AccordionSummary expandIcon={<ExpandMore />} sx={{ minHeight: 40, '& .MuiAccordionSummary-content': { my: 0.5 } }}>
+          <Box component="span" sx={{ fontSize: '0.875rem' }}>
+            Topic{topicTermIds.length > 0 ? ` (${topicTermIds.length})` : ''}
+          </Box>
+        </AccordionSummary>
+        <AccordionDetails sx={{ pt: 0, pb: 1 }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={topicOptions.length > 0 && topicTermIds.length === topicOptions.length}
+                indeterminate={topicTermIds.length > 0 && topicTermIds.length < topicOptions.length}
+                onChange={(e) => {
+                  const next = e.target.checked ? topicOptions.map((o) => o.tid) : [];
+                  updateData({ ...safeData, props: { ...safeData.props, topicTermIds: next } });
+                }}
+              />
+            }
+            label="Select all"
+            sx={{ display: 'block', mb: 0.5 }}
+          />
+          <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
+            {topicOptions.map((opt) => (
+              <FormControlLabel
+                key={opt.tid}
+                control={
+                  <Checkbox
+                    checked={topicTermIds.includes(opt.tid)}
+                    onChange={(e) => {
+                      const next = e.target.checked
+                        ? [...topicTermIds, opt.tid]
+                        : topicTermIds.filter((id) => id !== opt.tid);
+                      updateData({ ...safeData, props: { ...safeData.props, topicTermIds: next } });
+                    }}
+                  />
+                }
+                label={opt.name}
+                sx={{ display: 'block', ml: 0.5 }}
+              />
+            ))}
+          </Box>
+        </AccordionDetails>
+      </Accordion>
+
       <TextField
         type="number"
         label="Items"
@@ -193,30 +456,6 @@ export default function UniversalXmlFeedSidebarPanel({
         }}
         sx={{ mb: 2 }}
       />
-
-      <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
-        <TextInput
-          label="URL"
-          placeholder="https://example.com/feed.xml"
-          defaultValue={url ?? ''}
-          onChange={(v) => {
-            urlInputRef.current = v;
-            updateData({ ...safeData, props: { ...safeData.props, url: v } });
-          }}
-        />
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={handleLoad}
-          disabled={loading}
-          sx={{ mt: 2, minWidth: 90 }}
-        >
-          {loading ? 'Loading…' : 'Load'}
-        </Button>
-      </Box>
-      {loadError && (
-        <Box sx={{ color: 'error.main', fontSize: '0.875rem' }}>{loadError}</Box>
-      )}
 
       {tableRows.length > 0 && (
         <Box sx={{ overflowX: 'auto' }}>

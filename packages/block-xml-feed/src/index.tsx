@@ -2,8 +2,37 @@ import React from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
 
-// Re-export block type options; title helper is defined here so it works with compiled blockTypes.js
+// Re-export block type options; title and endpoint helpers defined here so they work with compiled blockTypes.js
 export { BLOCK_TYPE_OPTIONS, type XmlBlockTypeValue } from './blockTypes';
+
+/** Base URL for all XML feed API endpoints (mirrored here so build does not depend on blockTypes.js). */
+export const XML_FEED_API_BASE_URL = 'https://rheumnow.com/admin';
+
+/** Endpoint path suffix by block type (mirrored here so build does not depend on blockTypes.js). */
+const PATH_BY_TYPE: Record<string, string> = {
+  VideoXml: 'video-xml',
+  VideoPosterBlock: 'video-poster',
+  Gems: 'gems',
+  TherapeuticUpdateXml: 'therapeutic-update',
+  FeaturedStoryXml: 'featured-story',
+  NewsPanelXml: 'news-panel',
+  BlogXml: 'blogs-xml',
+  Advertisement72890Xml: 'ad-728x90',
+  Advertisement300250Xml: 'ad-300x250',
+  ConferenceAdvertisement300250Xml: 'conference-ad-300x250',
+  DailyDownloadXml: 'daily-download',
+  PromotedSurveyXml: 'promoted-survey',
+};
+
+/** Full endpoint URL for a given block type: API_BASE_URL + path. */
+export function getEndpointByType(blockType: string | null | undefined): string {
+  if (!blockType) return '';
+  const path = PATH_BY_TYPE[blockType] ?? '';
+  if (!path) return '';
+  const base = XML_FEED_API_BASE_URL.replace(/\/$/, '');
+  const suffix = path.replace(/^\//, '');
+  return `${base}/${suffix}`;
+}
 
 /** Default block header title by block type (used when blockTypes.js has no blockTitle). */
 const BLOCK_TITLE_BY_TYPE: Record<string, string> = {
@@ -44,6 +73,23 @@ export const FIELD_TYPE_OPTIONS = [
 
 export type FieldTypeValue = (typeof FIELD_TYPE_OPTIONS)[number]['value'];
 
+/** Default field type by XML field name when loading fields from XML. All other fields default to html. */
+const DEFAULT_FIELD_TYPE_BY_NAME: Record<string, string> = {
+  view_node: 'contentLink',
+  title: 'title',
+  field_media_image: 'imageWithContentLink',
+  created: 'date',
+  field_author_attribution: 'author',
+  field_addtional_authors: 'author',
+  type: 'doNotShow',
+  field_article_type: 'doNotShow',
+};
+
+/** Default field type for an XML field name when loading (used in Load). Unknown fields default to html. */
+export function getDefaultFieldTypeForName(fieldName: string): string {
+  return DEFAULT_FIELD_TYPE_BY_NAME[fieldName] ?? 'html';
+}
+
 export const UniversalXmlFeedPropsSchema = z.object({
   style: z
     .object({
@@ -65,10 +111,17 @@ export const UniversalXmlFeedPropsSchema = z.object({
       title: z.string().optional().nullable(),
       displayBlockTitle: z.boolean().optional().nullable(),
       url: z.string().optional().nullable(),
+      campaignTermIds: z.array(z.string()).optional().nullable(),
+      topicTermIds: z.array(z.string()).optional().nullable(),
       numberOfItems: z.number().min(0).optional().nullable(),
       fieldOrder: z.array(z.string()).optional().nullable(),
       fieldMapping: z.record(z.string(), z.string()).optional().nullable(),
       previewItems: z.array(z.record(z.string(), z.unknown())).optional().nullable(),
+      feedSlices: z
+        .array(z.object({ label: z.string(), items: z.array(z.record(z.string(), z.unknown())) }))
+        .optional()
+        .nullable(),
+      activeSliceIndex: z.number().min(0).optional().nullable(),
     })
     .optional()
     .nullable(),
@@ -81,10 +134,14 @@ export const UniversalXmlFeedPropsDefaults = {
   title: null as string | null,
   displayBlockTitle: true,
   url: '',
+  campaignTermIds: null as string[] | null,
+  topicTermIds: null as string[] | null,
   numberOfItems: 0,
   fieldOrder: null as string[] | null,
   fieldMapping: {} as Record<string, string>,
   previewItems: null as Record<string, unknown>[] | null,
+  feedSlices: null as { label: string; items: Record<string, unknown>[] }[] | null,
+  activeSliceIndex: 0,
 } as const;
 
 /**
@@ -224,7 +281,12 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
       : getBlockTitleByType(blockType);
   const displayBlockTitle = propsData?.displayBlockTitle ?? UniversalXmlFeedPropsDefaults.displayBlockTitle;
   const fieldMapping = propsData?.fieldMapping ?? UniversalXmlFeedPropsDefaults.fieldMapping;
-  const previewItems = propsData?.previewItems ?? UniversalXmlFeedPropsDefaults.previewItems ?? [];
+  const feedSlices = propsData?.feedSlices ?? UniversalXmlFeedPropsDefaults.feedSlices;
+  const activeSliceIndex = Math.max(0, propsData?.activeSliceIndex ?? UniversalXmlFeedPropsDefaults.activeSliceIndex);
+  const previewItems =
+    feedSlices && feedSlices.length > 0
+      ? (feedSlices[Math.min(activeSliceIndex, feedSlices.length - 1)]?.items ?? [])
+      : (propsData?.previewItems ?? UniversalXmlFeedPropsDefaults.previewItems ?? []);
 
   const padding = style?.padding;
   const wrapperStyle: React.CSSProperties = {
