@@ -1,5 +1,5 @@
 /** Base URL for all XML feed API endpoints. Path suffixes in BLOCK_TYPE_OPTIONS are appended to this. */
-export const XML_FEED_API_BASE_URL = 'http://116.203.204.172/admin';
+export const XML_FEED_API_BASE_URL = 'https://rheumnow.com/admin';
 
 /** Human-readable block type labels, default block header titles, and endpoint path suffix (appended to XML_FEED_API_BASE_URL). */
 export const BLOCK_TYPE_OPTIONS = [
