@@ -2,59 +2,20 @@ import React from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
 
-// Re-export block type options; title and endpoint helpers defined here so they work with compiled blockTypes.js
-export { BLOCK_TYPE_OPTIONS, type XmlBlockTypeValue } from './blockTypes';
-
-/** Base URL for all XML feed API endpoints (mirrored here so build does not depend on blockTypes.js). */
-export const XML_FEED_API_BASE_URL = 'https://rheumnow.com/admin';
-
-/** Endpoint path suffix by block type (mirrored here so build does not depend on blockTypes.js). */
-const PATH_BY_TYPE: Record<string, string> = {
-  VideoXml: 'video-xml',
-  VideoPosterBlock: 'video-poster',
-  Gems: 'gems',
-  TherapeuticUpdateXml: 'therapeutic-update',
-  FeaturedStoryXml: 'featured-story',
-  NewsPanelXml: 'news-panel',
-  BlogXml: 'blogs-xml',
-  Advertisement72890Xml: 'ad-728x90',
-  Advertisement300250Xml: 'ad-300x250',
-  ConferenceAdvertisement300250Xml: 'conference-ad-300x250',
-  DailyDownloadXml: 'daily-download',
-  PromotedSurveyXml: 'promoted-survey',
-};
-
-/** Full endpoint URL for a given block type: API_BASE_URL + path. */
-export function getEndpointByType(blockType: string | null | undefined): string {
-  if (!blockType) return '';
-  const path = PATH_BY_TYPE[blockType] ?? '';
-  if (!path) return '';
-  const base = XML_FEED_API_BASE_URL.replace(/\/$/, '');
-  const suffix = path.replace(/^\//, '');
-  return `${base}/${suffix}`;
-}
-
-/** Default block header title by block type (used when blockTypes.js has no blockTitle). */
-const BLOCK_TITLE_BY_TYPE: Record<string, string> = {
-  VideoXml: 'Video XML',
-  VideoPosterBlock: 'Poster Hall',
-  Gems: 'Gems',
-  TherapeuticUpdateXml: 'Therapeutic Updates',
-  FeaturedStoryXml: 'Featured Story',
-  NewsPanelXml: 'News Panel',
-  BlogXml: 'Blogs',
-  Advertisement72890Xml: 'Advertisement 728x90',
-  Advertisement300250Xml: 'Advertisement 300x250',
-  ConferenceAdvertisement300250Xml: 'Conference Advertisement',
-  DailyDownloadXml: 'Daily Download',
-  PromotedSurveyXml: 'RheumNow Survey',
-};
-
-/** Default block header title for a given block type. */
-export function getBlockTitleByType(blockType: string | null | undefined): string {
-  if (!blockType) return '';
-  return BLOCK_TITLE_BY_TYPE[blockType] ?? '';
-}
+// Single source of truth for block types, endpoints and titles
+import {
+  BLOCK_TYPE_OPTIONS,
+  getBlockTitleByType,
+  getEndpointByType,
+  XML_FEED_API_BASE_URL,
+} from './blockTypes';
+export type { XmlBlockTypeValue } from './blockTypes';
+export {
+  BLOCK_TYPE_OPTIONS,
+  getBlockTitleByType,
+  getEndpointByType,
+  XML_FEED_API_BASE_URL,
+} from './blockTypes';
 
 /** Field type options for the mapping table (second column). */
 export const FIELD_TYPE_OPTIONS = [
