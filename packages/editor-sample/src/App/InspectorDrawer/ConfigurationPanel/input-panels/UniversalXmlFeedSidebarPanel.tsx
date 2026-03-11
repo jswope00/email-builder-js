@@ -265,14 +265,16 @@ export default function UniversalXmlFeedSidebarPanel({
           const items = num > 0 ? allParsed[i].slice(0, num) : allParsed[i];
           return { label: spec.label || `Section ${i + 1}`, items };
         });
+        const currentIndex = safeData.props?.activeSliceIndex ?? 0;
+        const validIndex = currentIndex >= 0 && currentIndex < feedSlices.length ? currentIndex : 0;
         updateData({
           ...safeData,
           props: {
             ...safeData.props,
             url: sliceSpecs[0].url,
-            previewItems: feedSlices[0].items,
+            previewItems: feedSlices[validIndex].items,
             feedSlices,
-            activeSliceIndex: 0,
+            activeSliceIndex: validIndex,
           },
         });
       }

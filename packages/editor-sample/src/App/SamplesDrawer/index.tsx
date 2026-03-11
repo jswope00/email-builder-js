@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import {
   Box,
@@ -42,11 +42,27 @@ export default function SamplesDrawer() {
 
   const block = selectedBlockId ? document[selectedBlockId] : null;
   const isUniversalXmlFeed = block?.type === 'UniversalXmlFeed';
-  const feedSlices = (block?.data as { props?: { feedSlices?: { label: string; items: unknown[] }[] } })?.props?.feedSlices;
-  const activeSliceIndex = (block?.data as { props?: { activeSliceIndex?: number } })?.props?.activeSliceIndex ?? 0;
-  const showFeedSectionsTab = Boolean(
-    isUniversalXmlFeed && feedSlices && feedSlices.length > 1,
-  );
+  const blockProps = (block?.data as { props?: { feedSlices?: { label: string; items: unknown[] }[]; activeSliceIndex?: number; campaignTermIds?: string[]; topicTermIds?: string[] } })?.props;
+  const feedSlices = blockProps?.feedSlices;
+  const activeSliceIndex = blockProps?.activeSliceIndex ?? 0;
+  const campaignTermIds = blockProps?.campaignTermIds ?? [];
+  const topicTermIds = blockProps?.topicTermIds ?? [];
+  const sliceCount =
+    campaignTermIds.length > 0 && topicTermIds.length > 0
+      ? campaignTermIds.length * topicTermIds.length
+      : campaignTermIds.length > 0
+        ? campaignTermIds.length
+        : topicTermIds.length > 0
+          ? topicTermIds.length
+          : 0;
+  const showFeedSectionsTab = Boolean(isUniversalXmlFeed && sliceCount > 1);
+  const prevShowFeedSectionsTab = useRef(false);
+  useEffect(() => {
+    if (showFeedSectionsTab && !prevShowFeedSectionsTab.current) {
+      setSamplesDrawerTab('feed-sections');
+    }
+    prevShowFeedSectionsTab.current = showFeedSectionsTab;
+  }, [showFeedSectionsTab]);
 
   const loadTemplates = async () => {
     setIsLoading(true);
@@ -136,11 +152,12 @@ export default function SamplesDrawer() {
     </Stack>
   );
 
+  const sectionCount = feedSlices && feedSlices.length > 1 ? feedSlices.length : sliceCount;
   const feedSectionsContent =
-    feedSlices && feedSlices.length > 1 ? (
+    sectionCount > 1 ? (
       <Box sx={{ maxHeight: '100%', overflow: 'auto', py: 0.5 }}>
         <List dense disablePadding>
-          {feedSlices.map((slice, index) => (
+          {Array.from({ length: sectionCount }, (_, index) => (
             <ListItemButton
               key={index}
               selected={activeSliceIndex === index}
@@ -148,7 +165,7 @@ export default function SamplesDrawer() {
               sx={{ py: 0.5 }}
             >
               <Typography variant="body2" noWrap sx={{ width: '100%' }}>
-                {slice.label || `Section ${index + 1}`}
+                {feedSlices && feedSlices[index] ? (feedSlices[index].label || `Section ${index + 1}`) : `Section ${index + 1}`}
               </Typography>
             </ListItemButton>
           ))}
