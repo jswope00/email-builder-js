@@ -233,6 +233,75 @@ function stripHtmlToPlainText(s: string): string {
   return decoded.replace(/<[^>]*>/g, '').trim();
 }
 
+/** CSS for Promoted Survey block: poll/survey markup from xml-example (scoped to .universal-xml-feed-promoted-survey). */
+const PROMOTED_SURVEY_CSS = `
+.universal-xml-feed-promoted-survey .poll-view .poll dd { display: none; }
+.universal-xml-feed-promoted-survey .poll .poll-question {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 20pt;
+  color: #0b3c5d;
+  margin: 0 0 20px 0;
+  padding: 16px 16px 20px 16px;
+}
+.universal-xml-feed-promoted-survey .view-promoted-survey-result .views-field-nothing {
+  background: #ffffff;
+  border: 1px solid #e6edf5;
+  border-radius: 16px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+  overflow: clip;
+  position: relative;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transform-style: preserve-3d;
+  padding: 16px 16px 0 16px;
+  padding-bottom: 40px;
+}
+.universal-xml-feed-promoted-survey .poll .chart-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  border: 1px solid #e6edf5;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.universal-xml-feed-promoted-survey .poll .chart-wrap .choice-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #1b6fae;
+  display: grid;
+  place-items: center;
+  flex: 0 0 18px;
+}
+.universal-xml-feed-promoted-survey .poll .chart-wrap .chart-percent-title {
+  font-weight: 600;
+  color: #0f2742;
+}
+.universal-xml-feed-promoted-survey .poll .total { display: none; }
+.universal-xml-feed-promoted-survey .survey-result-wrap .submit-btn {
+  text-decoration: none;
+  background: #1585FE;
+  width: 180px;
+  display: block;
+  text-align: center;
+  margin: 0 auto;
+  margin-bottom: 10px;
+  padding: 15px 0;
+  color: white;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif !important;
+}
+.universal-xml-feed-promoted-survey .survey-result-wrap p {
+  text-align: center;
+  color: #7927A0;
+}
+`;
+
 export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedProps) {
   const url = propsData?.url ?? UniversalXmlFeedPropsDefaults.url;
   const blockType = propsData?.blockType ?? UniversalXmlFeedPropsDefaults.blockType;
@@ -349,7 +418,8 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
       marginBottom: '8px',
     };
 
-    return (
+    const isPromotedSurvey = blockType === 'PromotedSurveyXml';
+    const mainContent = (
       <div style={wrapperStyle}>
         {displayBlockTitle && title && (
           <h2 style={blockTitleStyle}>
@@ -509,6 +579,18 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
         })}
       </div>
     );
+
+    if (isPromotedSurvey) {
+      return (
+        <>
+          <style dangerouslySetInnerHTML={{ __html: PROMOTED_SURVEY_CSS }} />
+          <div className="universal-xml-feed-promoted-survey">
+            {mainContent}
+          </div>
+        </>
+      );
+    }
+    return mainContent;
   }
 
   return (
