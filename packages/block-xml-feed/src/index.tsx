@@ -281,7 +281,8 @@ const PROMOTED_SURVEY_CSS = `
   color: #0f2742;
 }
 .universal-xml-feed-promoted-survey .poll .total { display: none; }
-.universal-xml-feed-promoted-survey .survey-result-wrap .submit-btn {
+.universal-xml-feed-promoted-survey .survey-result-wrap .submit-btn,
+.universal-xml-feed-promoted-survey .submit-btn {
   text-decoration: none;
   background: #1585FE;
   width: 180px;
@@ -299,6 +300,61 @@ const PROMOTED_SURVEY_CSS = `
 .universal-xml-feed-promoted-survey .survey-result-wrap p {
   text-align: center;
   color: #7927A0;
+}
+/* Vote form variant (poll with .vote-form: True/False choices) */
+.universal-xml-feed-promoted-survey .poll .vote-form .poll-question {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 20pt;
+  color: #0b3c5d;
+  margin: 0 0 16px 0;
+  padding: 0;
+}
+.universal-xml-feed-promoted-survey .poll .vote-form .fieldset-wrapper {
+  margin: 0 0 16px 0;
+  padding: 0;
+}
+.universal-xml-feed-promoted-survey .poll .vote-form .form-item-choice,
+.universal-xml-feed-promoted-survey .poll .vote-form .js-form-item.form-item-choice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  border: 1px solid #e6edf5;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #0f2742;
+  font-family: 'Poppins', sans-serif;
+}
+.universal-xml-feed-promoted-survey .poll .vote-form .class-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #1b6fae;
+  display: inline-block;
+  flex: 0 0 18px;
+}
+.universal-xml-feed-promoted-survey .poll .vote-form .class-icon.hide {
+  display: inline-block;
+}
+.universal-xml-feed-promoted-survey .poll .vote-form .visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.universal-xml-feed-promoted-survey .poll .vote-form .form-actions {
+  margin: 0;
+  padding: 0;
 }
 `;
 
