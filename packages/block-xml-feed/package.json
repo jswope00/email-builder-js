@@ -25,7 +25,9 @@
   "license": "MIT",
   "peerDependencies": {
     "react": "^16 || ^17 || ^18",
-    "zod": "^3"
+    "zod": "^3",
+    "@mui/material": "^5 || ^6",
+    "@mui/icons-material": "^5 || ^6"
   },
   "dependencies": {
     "fast-xml-parser": "^4.3.2"

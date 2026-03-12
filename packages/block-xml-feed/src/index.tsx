@@ -1,208 +1,38 @@
 import React from 'react';
-import { z } from 'zod';
-import { XMLParser } from 'fast-xml-parser';
 
-// Single source of truth for block types, endpoints and titles
+// Plugins: registry is source of truth for block types, endpoints, titles
 import {
-  BLOCK_TYPE_OPTIONS,
   getBlockTitleByType,
   getEndpointByType,
+  getPlugin,
+  getPluginsList,
   XML_FEED_API_BASE_URL,
-} from './blockTypes';
-export type { XmlBlockTypeValue } from './blockTypes';
+} from './plugins/registry';
+export type { XmlFeedPlugin } from './plugins/types';
 export {
-  BLOCK_TYPE_OPTIONS,
   getBlockTitleByType,
   getEndpointByType,
+  getPlugin,
+  getPluginsList,
   XML_FEED_API_BASE_URL,
-} from './blockTypes';
+} from './plugins/registry';
 
-/** Field type options for the mapping table (second column). */
-export const FIELD_TYPE_OPTIONS = [
-  { value: 'text', label: 'Text' },
-  { value: 'title', label: 'Title' },
-  { value: 'contentLink', label: 'Content link' },
-  { value: 'imageWithContentLink', label: 'Image with content link' },
-  { value: 'author', label: 'Author' },
-  { value: 'date', label: 'Date' },
-  { value: 'link', label: 'Link' },
-  { value: 'image', label: 'Image' },
-  { value: 'number', label: 'Number' },
-  { value: 'html', label: 'HTML' },
-  { value: 'doNotShow', label: 'Do not show' },
-] as const;
+import {
+  FIELD_TYPE_OPTIONS,
+  getDefaultFieldTypeForName,
+  UniversalXmlFeedPropsDefaults,
+  UniversalXmlFeedPropsSchema,
+  type FieldTypeValue,
+  type UniversalXmlFeedProps,
+} from './schema';
+export { FIELD_TYPE_OPTIONS, getDefaultFieldTypeForName, UniversalXmlFeedPropsSchema, UniversalXmlFeedPropsDefaults };
+export type { FieldTypeValue, UniversalXmlFeedProps };
 
-export type FieldTypeValue = (typeof FIELD_TYPE_OPTIONS)[number]['value'];
+import { parseXmlToFieldNames, parseXmlToItems } from './parseXml';
+export { parseXmlToFieldNames, parseXmlToItems };
 
-/** Default field type by XML field name when loading fields from XML. All other fields default to html. */
-const DEFAULT_FIELD_TYPE_BY_NAME: Record<string, string> = {
-  view_node: 'contentLink',
-  title: 'title',
-  field_media_image: 'imageWithContentLink',
-  created: 'date',
-  field_author_attribution: 'author',
-  field_addtional_authors: 'author',
-  type: 'doNotShow',
-  field_article_type: 'doNotShow',
-};
-
-/** Default field type for an XML field name when loading (used in Load). Unknown fields default to html. */
-export function getDefaultFieldTypeForName(fieldName: string): string {
-  return DEFAULT_FIELD_TYPE_BY_NAME[fieldName] ?? 'html';
-}
-
-export const UniversalXmlFeedPropsSchema = z.object({
-  style: z
-    .object({
-      padding: z
-        .object({
-          top: z.number(),
-          bottom: z.number(),
-          right: z.number(),
-          left: z.number(),
-        })
-        .optional()
-        .nullable(),
-    })
-    .optional()
-    .nullable(),
-  props: z
-    .object({
-      blockType: z.string().optional().nullable(),
-      title: z.string().optional().nullable(),
-      displayBlockTitle: z.boolean().optional().nullable(),
-      url: z.string().optional().nullable(),
-      campaignTermIds: z.array(z.string()).optional().nullable(),
-      topicTermIds: z.array(z.string()).optional().nullable(),
-      numberOfItems: z.number().min(0).optional().nullable(),
-      fieldOrder: z.array(z.string()).optional().nullable(),
-      fieldMapping: z.record(z.string(), z.string()).optional().nullable(),
-      previewItems: z.array(z.record(z.string(), z.unknown())).optional().nullable(),
-      feedSlices: z
-        .array(z.object({ label: z.string(), items: z.array(z.record(z.string(), z.unknown())) }))
-        .optional()
-        .nullable(),
-      activeSliceIndex: z.number().min(0).optional().nullable(),
-    })
-    .optional()
-    .nullable(),
-});
-
-export type UniversalXmlFeedProps = z.infer<typeof UniversalXmlFeedPropsSchema>;
-
-export const UniversalXmlFeedPropsDefaults = {
-  blockType: 'PromotedSurveyXml',
-  title: null as string | null,
-  displayBlockTitle: true,
-  url: '',
-  campaignTermIds: null as string[] | null,
-  topicTermIds: null as string[] | null,
-  numberOfItems: 0,
-  fieldOrder: null as string[] | null,
-  fieldMapping: {} as Record<string, string>,
-  previewItems: null as Record<string, unknown>[] | null,
-  feedSlices: null as { label: string; items: Record<string, unknown>[] }[] | null,
-  activeSliceIndex: 0,
-} as const;
-
-/**
- * Parses XML string and returns all items as array of objects (same structure as discovered by parseXmlToFieldNames).
- * Used when user clicks "Parse & show" to display the feed in the block.
- */
-export function parseXmlToItems(xmlText: string): Record<string, unknown>[] {
-  try {
-    const parser = new XMLParser({
-      ignoreAttributes: false,
-      attributeNamePrefix: '@_',
-    });
-    const result = parser.parse(xmlText);
-
-    let items: Record<string, unknown>[] = [];
-
-    const findItems = (obj: unknown): void => {
-      if (items.length > 0) return;
-      if (Array.isArray(obj) && obj.length > 0 && typeof obj[0] === 'object' && obj[0] !== null) {
-        items = obj as Record<string, unknown>[];
-        return;
-      }
-      if (typeof obj === 'object' && obj !== null) {
-        const o = obj as Record<string, unknown>;
-        if (Array.isArray(o.item) && o.item.length > 0) {
-          items = o.item as Record<string, unknown>[];
-          return;
-        }
-        if (o.item && typeof o.item === 'object' && o.item !== null && !Array.isArray(o.item)) {
-          items = [o.item as Record<string, unknown>];
-          return;
-        }
-        for (const key in o) {
-          findItems(o[key]);
-          if (items.length > 0) return;
-        }
-      }
-    };
-
-    findItems(result);
-    return items;
-  } catch {
-    return [];
-  }
-}
-
-/**
- * Parses XML string and returns field names from the first item found in a repeating structure (e.g. item[], rss.channel.item).
- * Used by the config panel when user clicks "Load" to discover columns for the mapping table.
- */
-export function parseXmlToFieldNames(xmlText: string): string[] {
-  try {
-    const parser = new XMLParser({
-      ignoreAttributes: false,
-      attributeNamePrefix: '@_',
-    });
-    const result = parser.parse(xmlText);
-
-    let firstItem: Record<string, unknown> | null = null;
-
-    const findFirstItem = (obj: unknown): void => {
-      if (firstItem) return;
-      if (Array.isArray(obj) && obj.length > 0 && typeof obj[0] === 'object' && obj[0] !== null) {
-        firstItem = obj[0] as Record<string, unknown>;
-        return;
-      }
-      if (typeof obj === 'object' && obj !== null) {
-        const o = obj as Record<string, unknown>;
-        if (Array.isArray(o.item) && o.item.length > 0) {
-          firstItem = o.item[0] as Record<string, unknown>;
-          return;
-        }
-        if (o.item && typeof o.item === 'object' && o.item !== null) {
-          firstItem = o.item as Record<string, unknown>;
-          return;
-        }
-        for (const key in o) {
-          findFirstItem(o[key]);
-          if (firstItem) return;
-        }
-      }
-    };
-
-    findFirstItem(result);
-    if (!firstItem) return [];
-
-    const obj = firstItem as Record<string, unknown>;
-    const keys: string[] = [];
-    for (const k of Object.keys(obj)) {
-      if (k.startsWith('@_')) continue;
-      const v = obj[k];
-      if (typeof v === 'string' || typeof v === 'number' || v === null) {
-        keys.push(k);
-      }
-    }
-    return keys;
-  } catch {
-    return [];
-  }
-}
+export { default as XmlFeedSidebarPanel } from './panel/XmlFeedSidebarPanel';
+export type { XmlFeedSidebarPanelProps } from './panel/XmlFeedSidebarPanel';
 
 function stringValue(val: unknown): string {
   if (val == null) return '';
@@ -422,32 +252,56 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
   };
 
   if (!url) {
+    const displayTitle = (displayBlockTitle && title) ? title : (displayBlockTitle && blockType ? getBlockTitleByType(blockType) : null);
     return (
-      <div
-        style={{
-          ...wrapperStyle,
-          border: '1px dashed #ccc',
-          textAlign: 'center',
-          padding: '20px',
-          color: '#666',
-        }}
-      >
-        Configure XML feed: choose block type, enter URL, and click Load in the right panel.
+      <div style={wrapperStyle}>
+        {displayTitle && (
+          <h2
+            style={{
+              fontSize: '18px',
+              marginBottom: '12px',
+              color: '#333',
+              textTransform: 'uppercase',
+              borderLeft: '4px solid #1585fe',
+              paddingLeft: '10px',
+              lineHeight: 1.2,
+              margin: '0 0 16px 0',
+            }}
+          >
+            {displayTitle}
+          </h2>
+        )}
+        <div
+          style={{
+            border: '1px dashed #ccc',
+            textAlign: 'center',
+            padding: '20px',
+            color: '#666',
+          }}
+        >
+          {blockType ? 'Loading feed…' : 'Choose block type in the right panel.'}
+        </div>
       </div>
     );
   }
 
   if (previewItems.length > 0) {
     const fieldOrder = propsData?.fieldOrder ?? UniversalXmlFeedPropsDefaults.fieldOrder;
+    const fieldWeights = propsData?.fieldWeights ?? UniversalXmlFeedPropsDefaults.fieldWeights;
     const mapping = fieldMapping ?? {};
     const visible = (name: string) => mapping[name] && mapping[name] !== 'doNotShow';
-    const orderedNames =
+    let orderedNames =
       fieldOrder && fieldOrder.length > 0
         ? [
             ...fieldOrder.filter((name) => visible(name)),
             ...Object.keys(mapping).filter((name) => visible(name) && !fieldOrder.includes(name)),
           ]
         : Object.keys(mapping).filter((name) => visible(name));
+    if (fieldWeights && Object.keys(fieldWeights).length > 0) {
+      orderedNames = [...orderedNames].sort(
+        (a, b) => (fieldWeights[a] ?? 999) - (fieldWeights[b] ?? 999),
+      );
+    }
     const mappingEntries: [string, string][] = orderedNames.map((name) => [name, mapping[name]]);
     const contentLinkField = mappingEntries.find(([, t]) => t === 'contentLink')?.[0];
     const titleField = mappingEntries.find(([, t]) => t === 'title')?.[0];
@@ -727,14 +581,35 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
     );
   }
 
+  // url is set but previewItems is empty (e.g. still loading or no items in feed)
+  const displayTitle = (displayBlockTitle && title) ? title : (displayBlockTitle && blockType ? getBlockTitleByType(blockType) : null);
   return (
-    <div style={{ ...wrapperStyle, border: '1px solid #eee', borderRadius: 4, padding: 12 }}>
-      <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
-        XML feed ({blockType})
-      </div>
-      <div style={{ fontSize: 14, color: '#333' }}>{url}</div>
-      <div style={{ fontSize: 12, color: '#999', marginTop: 8 }}>
-        Click &quot;Parse &amp; show&quot; in the right panel to display the feed.
+    <div style={wrapperStyle}>
+      {displayTitle && (
+        <h2
+          style={{
+            fontSize: '18px',
+            marginBottom: '12px',
+            color: '#333',
+            textTransform: 'uppercase',
+            borderLeft: '4px solid #1585fe',
+            paddingLeft: '10px',
+            lineHeight: 1.2,
+            margin: '0 0 16px 0',
+          }}
+        >
+          {displayTitle}
+        </h2>
+      )}
+      <div
+        style={{
+          border: '1px dashed #ccc',
+          textAlign: 'center',
+          padding: '20px',
+          color: '#666',
+        }}
+      >
+        No items in feed.
       </div>
     </div>
   );
