@@ -358,6 +358,47 @@ const PROMOTED_SURVEY_CSS = `
 }
 `;
 
+/** Block-type-specific styles (Video, Therapeutic Update, News Panel, Blog, Daily Download, etc.). */
+const BLOCK_TYPE_CSS = `
+/* Daily Download: button-style link */
+.universal-xml-feed-block.universal-xml-feed-DailyDownloadXml .download-btn-link {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #1585fe;
+  color: #ffffff !important;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 8px;
+}
+.universal-xml-feed-block.universal-xml-feed-DailyDownloadXml .download-btn-link:hover {
+  background-color: #489ffe;
+  color: #ffffff !important;
+}
+/* Therapeutic Update: sponsored author (when .author-sponsored is applied via field) */
+.universal-xml-feed-block.universal-xml-feed-TherapeuticUpdateXml .author-sponsored {
+  color: #800080;
+  font-weight: bold;
+}
+/* News Panel: tighter table-style spacing for list items */
+.universal-xml-feed-block.universal-xml-feed-NewsPanelXml .universal-xml-feed-item {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+/* Blog / Featured Story: same as default, ensure link color */
+.universal-xml-feed-block.universal-xml-feed-BlogXml a:not(.download-btn-link),
+.universal-xml-feed-block.universal-xml-feed-FeaturedStoryXml a:not(.download-btn-link) {
+  color: #1585fe;
+}
+.universal-xml-feed-block.universal-xml-feed-VideoXml a,
+.universal-xml-feed-block.universal-xml-feed-VideoPosterBlock a {
+  color: inherit;
+}
+`;
+
 export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedProps) {
   const url = propsData?.url ?? UniversalXmlFeedPropsDefaults.url;
   const blockType = propsData?.blockType ?? UniversalXmlFeedPropsDefaults.blockType;
@@ -475,8 +516,10 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
     };
 
     const isPromotedSurvey = blockType === 'PromotedSurveyXml';
+    const isDailyDownload = blockType === 'DailyDownloadXml';
+    const blockWrapperClass = `universal-xml-feed-block universal-xml-feed-${blockType}`;
     const mainContent = (
-      <div style={wrapperStyle}>
+      <div className={blockWrapperClass} style={wrapperStyle}>
         {displayBlockTitle && title && (
           <h2 style={blockTitleStyle}>
             {title}
@@ -628,8 +671,30 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
           });
 
           return (
-            <div key={index} style={getItemWrapperStyle(index)}>
+            <div key={index} className="universal-xml-feed-item" style={getItemWrapperStyle(index)}>
               {fieldNodes}
+              {isDailyDownload && linkUrl && (
+                <a
+                  href={linkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="download-btn-link"
+                  style={{
+                    display: 'inline-block',
+                    padding: '12px 24px',
+                    backgroundColor: '#1585fe',
+                    color: '#ffffff',
+                    textDecoration: 'none',
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    marginTop: 8,
+                  }}
+                >
+                  Download
+                </a>
+              )}
             </div>
           );
         })}
@@ -640,13 +705,19 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
       return (
         <>
           <style dangerouslySetInnerHTML={{ __html: PROMOTED_SURVEY_CSS }} />
+          <style dangerouslySetInnerHTML={{ __html: BLOCK_TYPE_CSS }} />
           <div className="universal-xml-feed-promoted-survey">
             {mainContent}
           </div>
         </>
       );
     }
-    return mainContent;
+    return (
+      <>
+        <style dangerouslySetInnerHTML={{ __html: BLOCK_TYPE_CSS }} />
+        {mainContent}
+      </>
+    );
   }
 
   return (
