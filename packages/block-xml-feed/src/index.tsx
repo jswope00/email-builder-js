@@ -502,9 +502,16 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
     const titleStyle: React.CSSProperties = isGems
       ? { margin: '0 0 10px 0', fontSize: gemsTitleFontSize, lineHeight: 1.45, color: gemsTextColor, fontStyle: 'italic' }
       : { margin: '0 0 8px 0', fontSize: '18px', lineHeight: 1.4, color: '#333' };
+    const bodyContentStyle = {
+      fontSize: '14px',
+      lineHeight: 1.5,
+      color: 'rgb(102, 102, 102)',
+    } as const;
     const textStyle: React.CSSProperties = isGems
       ? { marginBottom: 6, fontSize: gemsBodyFontSize, lineHeight: 1.5, color: gemsTextColor }
-      : { marginBottom: 4 };
+      : blockType === 'FeaturedStoryXml'
+        ? { marginBottom: 4 }
+        : { marginBottom: 4, ...bodyContentStyle };
     const blockStyle: React.CSSProperties = isGems
       ? { marginBottom: 10 }
       : { marginBottom: 8 };
