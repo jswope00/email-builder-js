@@ -5,6 +5,9 @@ import { therapeuticUpdateXmlPlugin } from './therapeutic-update-xml';
 import { advertisement300250XmlPlugin } from './advertisement-300-250-xml';
 import { advertisement72890XmlPlugin } from './advertisement-728-90-xml';
 import { conferenceAdvertisement300250XmlPlugin } from './conference-advertisement-300-250-xml';
+import { dailyDownloadXmlPlugin } from './daily-download-xml';
+import { emailSurveyXmlPlugin } from './email-survey-xml';
+import { featuredStoryXmlPlugin } from './featured-story-xml';
 
 const PLUGINS: XmlFeedPlugin[] = [
   blogXmlPlugin,
@@ -13,6 +16,9 @@ const PLUGINS: XmlFeedPlugin[] = [
   advertisement300250XmlPlugin,
   advertisement72890XmlPlugin,
   conferenceAdvertisement300250XmlPlugin,
+  dailyDownloadXmlPlugin,
+  emailSurveyXmlPlugin,
+  featuredStoryXmlPlugin,
 ];
 
 const BY_MACHINE_NAME = new Map<string, XmlFeedPlugin>(PLUGINS.map((p) => [p.machineName, p]));

@@ -12,6 +12,7 @@ export const advertisement300250XmlPlugin: XmlFeedPlugin = {
     field_ad_image: { type: 'imageWithContentLink', weight: 0 },
     field_ad_image_1: { type: 'doNotShow', weight: 100 },
     field_tracking_code: { type: 'html', weight: 100 },
+    field_topics: { type: 'doNotShow', weight: 100 },
   },
   imageDimensions: { width: 300, height: 250 },
   showAdvertisementLabel: true,

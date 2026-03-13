@@ -27,4 +27,8 @@ export interface XmlFeedPlugin {
   showAdvertisementLabel?: boolean;
   /** Field name for tracking code (hidden div, raw HTML). Used when showAdvertisementLabel is true. */
   trackingCodeField?: string;
+  /** When set, show play icon on image if this field equals videoIndicatorValue (case-insensitive). */
+  videoIndicatorField?: string;
+  /** Value that indicates video content (e.g. "video"). Used with videoIndicatorField. */
+  videoIndicatorValue?: string;
 }

@@ -50,6 +50,39 @@ function escapeHtml(s: string): string {
     .replace(/'/g, '&#039;');
 }
 
+/** Play icon overlay for video items (e.g. Featured Story when type === "video"). */
+function PlayIconOverlay() {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 48,
+        height: 48,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        pointerEvents: 'none',
+      }}
+    >
+      <div
+        style={{
+          width: 0,
+          height: 0,
+          borderTop: '10px solid transparent',
+          borderBottom: '10px solid transparent',
+          borderLeft: '16px solid white',
+          marginLeft: 4,
+        }}
+      />
+    </div>
+  );
+}
+
 /** Strip HTML tags and decode entities so date/author show as plain text (e.g. "Mar 05, 2026"). */
 function stripHtmlToPlainText(s: string): string {
   if (!s || typeof s !== 'string') return '';
@@ -249,8 +282,9 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
     numberOfItems > 0 ? rawPreviewItems.slice(0, numberOfItems) : rawPreviewItems;
 
   const padding = style?.padding;
+  const isAdBlock = Boolean(getPlugin(blockType)?.showAdvertisementLabel);
   const wrapperStyle: React.CSSProperties = {
-    padding: padding ? `${padding.top}px ${padding.right}px ${padding.bottom}px ${padding.left}px` : undefined,
+    padding: isAdBlock ? 0 : (padding ? `${padding.top}px ${padding.right}px ${padding.bottom}px ${padding.left}px` : undefined),
     fontFamily: 'sans-serif',
   };
 
@@ -434,7 +468,8 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
               );
             }
             if (fieldType === 'image' || fieldType === 'imageWithContentLink') {
-              const adDimensions = getPlugin(blockType)?.imageDimensions;
+              const plugin = getPlugin(blockType);
+              const adDimensions = plugin?.imageDimensions;
               const imgStyle: React.CSSProperties = adDimensions
                 ? { width: adDimensions.width, height: adDimensions.height, display: 'block', marginBottom: 12, borderRadius: 4, marginLeft: 'auto', marginRight: 'auto' }
                 : { width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 };
@@ -445,6 +480,17 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
                   style={imgStyle}
                 />
               );
+              const videoField = plugin?.videoIndicatorField;
+              const videoValue = plugin?.videoIndicatorValue;
+              const showVideoIcon = Boolean(
+                videoField && videoValue && stringValue(record[videoField]).toLowerCase() === videoValue.toLowerCase(),
+              );
+              const imgNode = showVideoIcon ? (
+                <div style={{ position: 'relative' }}>
+                  {img}
+                  <PlayIconOverlay />
+                </div>
+              ) : img;
               if (fieldType === 'imageWithContentLink' && linkUrl) {
                 return (
                   <div key={key} style={textStyle}>
@@ -454,14 +500,14 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
                       rel="noopener noreferrer"
                       style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
                     >
-                      {img}
+                      {imgNode}
                     </a>
                   </div>
                 );
               }
               return (
                 <div key={key} style={textStyle}>
-                  {img}
+                  {imgNode}
                 </div>
               );
             }
