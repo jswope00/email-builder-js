@@ -47,6 +47,7 @@ export default function XmlFeedSidebarPanel({ data, setData }: XmlFeedSidebarPan
   };
 
   const blockType = safeData.props?.blockType ?? UniversalXmlFeedPropsDefaults.blockType;
+  const numberOfItems = safeData.props?.numberOfItems ?? UniversalXmlFeedPropsDefaults.numberOfItems;
 
   const handleBlockTypeChange = async (newBlockType: string) => {
     const nextData = {
@@ -70,7 +71,9 @@ export default function XmlFeedSidebarPanel({ data, setData }: XmlFeedSidebarPan
       if (!response.ok) throw new Error('HTTP ' + response.status);
       const text = await response.text();
       const names = parseXmlToFieldNames(text);
-      const items = parseXmlToItems(text);
+      const allItems = parseXmlToItems(text);
+      const num = nextData.props?.numberOfItems ?? 0;
+      const items = num > 0 ? allItems.slice(0, num) : allItems;
       const plugin = getPlugin(newBlockType);
       const nextMapping: Record<string, string> = {};
       const nextWeights: Record<string, number> = {};
@@ -125,6 +128,23 @@ export default function XmlFeedSidebarPanel({ data, setData }: XmlFeedSidebarPan
             </MenuItem>
           ))}
         </TextField>
+        <TextField
+          type="number"
+          label="Items"
+          fullWidth
+          size="small"
+          variant="standard"
+          value={numberOfItems ?? 0}
+          inputProps={{ min: 0, step: 1 }}
+          helperText="0 = show all"
+          onChange={(e) => {
+            const v = Math.max(0, parseInt(String(e.target.value), 10) || 0);
+            updateData({
+              ...safeData,
+              props: { ...safeData.props, numberOfItems: v },
+            });
+          }}
+        />
         {loading && (
           <Typography variant="body2" color="text.secondary">
             Loading feed…
