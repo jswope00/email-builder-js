@@ -9,6 +9,7 @@ export const conferenceAdvertisement300250XmlPlugin: XmlFeedPlugin = {
   machineName: 'ConferenceAdvertisement300250Xml',
   urlSuffix: 'conference_email_ad_300_250_xml',
   blockTitle: 'Conference Advertisement 300x250',
+  defaultShowBlockTitle: false,
   defaultFieldMapping: {
     field_destination_url: { type: 'contentLink', weight: -10 },
     field_ad_image: { type: 'imageWithContentLink', weight: 0 },

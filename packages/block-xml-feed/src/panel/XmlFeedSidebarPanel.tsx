@@ -50,12 +50,15 @@ export default function XmlFeedSidebarPanel({ data, setData }: XmlFeedSidebarPan
   const numberOfItems = safeData.props?.numberOfItems ?? UniversalXmlFeedPropsDefaults.numberOfItems;
 
   const handleBlockTypeChange = async (newBlockType: string) => {
+    const plugin = newBlockType ? getPlugin(newBlockType) : undefined;
+    const defaultShowBlockTitle = plugin?.defaultShowBlockTitle ?? true;
     const nextData = {
       ...safeData,
       props: {
         ...safeData.props,
         blockType: newBlockType || undefined,
         title: newBlockType ? getBlockTitleByType(newBlockType) || undefined : undefined,
+        displayBlockTitle: defaultShowBlockTitle,
       },
     };
     updateData(nextData);

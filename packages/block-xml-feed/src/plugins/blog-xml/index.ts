@@ -10,6 +10,7 @@ export const blogXmlPlugin: XmlFeedPlugin = {
   machineName: 'BlogXml',
   urlSuffix: 'blogs_xml',
   blockTitle: 'Blogs',
+  defaultShowBlockTitle: true,
   defaultFieldMapping: {
     view_node: { type: 'contentLink', weight: -10 },
     title: { type: 'title', weight: 0 },

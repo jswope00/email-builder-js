@@ -5,6 +5,7 @@ export const advertisement72890XmlPlugin: XmlFeedPlugin = {
   machineName: 'Advertisement72890Xml',
   urlSuffix: 'email_ad_728_90_xml',
   blockTitle: 'Advertisement 728x90',
+  defaultShowBlockTitle: false,
   defaultFieldMapping: {
     title: { type: 'doNotShow', weight: 100 },
     field_destination_url: { type: 'contentLink', weight: -10 },

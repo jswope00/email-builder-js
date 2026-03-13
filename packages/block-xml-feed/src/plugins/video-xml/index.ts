@@ -9,6 +9,7 @@ export const videoXmlPlugin: XmlFeedPlugin = {
   machineName: 'VideoXml',
   urlSuffix: 'video-xml',
   blockTitle: 'Video XML',
+  defaultShowBlockTitle: true,
   defaultFieldMapping: {
     view_node: { type: 'contentLink', weight: -10 },
     title: { type: 'title', weight: 20 },

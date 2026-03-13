@@ -436,7 +436,7 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
             if (fieldType === 'image' || fieldType === 'imageWithContentLink') {
               const adDimensions = getPlugin(blockType)?.imageDimensions;
               const imgStyle: React.CSSProperties = adDimensions
-                ? { width: adDimensions.width, height: adDimensions.height, display: 'block', marginBottom: 12, borderRadius: 4 }
+                ? { width: adDimensions.width, height: adDimensions.height, display: 'block', marginBottom: 12, borderRadius: 4, marginLeft: 'auto', marginRight: 'auto' }
                 : { width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 };
               const img = (
                 <img

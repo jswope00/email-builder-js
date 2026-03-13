@@ -10,6 +10,7 @@ export const therapeuticUpdateXmlPlugin: XmlFeedPlugin = {
   machineName: 'TherapeuticUpdateXml',
   urlSuffix: 'therapeutic_update_xml',
   blockTitle: 'Therapeutic Updates',
+  defaultShowBlockTitle: true,
   defaultFieldMapping: {
     view_node: { type: 'contentLink', weight: -10 },
     title: { type: 'title', weight: 0 },

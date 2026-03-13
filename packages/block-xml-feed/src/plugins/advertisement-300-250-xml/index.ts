@@ -5,6 +5,7 @@ export const advertisement300250XmlPlugin: XmlFeedPlugin = {
   machineName: 'Advertisement300250Xml',
   urlSuffix: 'email_ad_300_250_xml',
   blockTitle: 'Advertisement 300x250',
+  defaultShowBlockTitle: false,
   defaultFieldMapping: {
     title: { type: 'doNotShow', weight: 100 },
     field_destination_url: { type: 'contentLink', weight: -10 },
@@ -15,5 +16,6 @@ export const advertisement300250XmlPlugin: XmlFeedPlugin = {
   imageDimensions: { width: 300, height: 250 },
   showAdvertisementLabel: true,
   trackingCodeField: 'field_tracking_code',
+  defaultShowBlockTitle: false,
   styles: '.universal-xml-feed-Advertisement300250Xml .universal-xml-feed-ad-label{font-size:11px;color:#999;text-align:center;}',
 };

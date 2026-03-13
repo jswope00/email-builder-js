@@ -15,6 +15,8 @@ export interface XmlFeedPlugin {
   urlSuffix: string;
   /** Default block header title. */
   blockTitle: string;
+  /** Default for "Show block title". When false, block title is hidden by default (e.g. ads). Omit or true = show. */
+  defaultShowBlockTitle?: boolean;
   /** Default field name -> { type, weight }. Weight used for render order. */
   defaultFieldMapping: Record<string, FieldMappingEntry>;
   /** Optional CSS string for this block type. */
