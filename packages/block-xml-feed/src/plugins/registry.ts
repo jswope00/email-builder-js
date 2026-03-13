@@ -5,7 +5,7 @@ const PLUGINS: XmlFeedPlugin[] = [blogXmlPlugin];
 
 const BY_MACHINE_NAME = new Map<string, XmlFeedPlugin>(PLUGINS.map((p) => [p.machineName, p]));
 
-export const XML_FEED_API_BASE_URL = 'http://116.203.204.172/admin';
+export const XML_FEED_API_BASE_URL = 'https://rheumnow.com/admin';
 
 export function getPluginsList(): XmlFeedPlugin[] {
   return [...PLUGINS];
