@@ -434,11 +434,15 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
               );
             }
             if (fieldType === 'image' || fieldType === 'imageWithContentLink') {
+              const adDimensions = getPlugin(blockType)?.imageDimensions;
+              const imgStyle: React.CSSProperties = adDimensions
+                ? { width: adDimensions.width, height: adDimensions.height, display: 'block', marginBottom: 12, borderRadius: 4 }
+                : { width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 };
               const img = (
                 <img
                   src={val}
                   alt={titleVal || ''}
-                  style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 }}
+                  style={imgStyle}
                 />
               );
               if (fieldType === 'imageWithContentLink' && linkUrl) {
@@ -535,9 +539,23 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
             if (node != null) fieldNodes.push(<React.Fragment key={fieldName}>{node}</React.Fragment>);
           });
 
+          const plugin = getPlugin(blockType);
+          const showAdLabel = plugin?.showAdvertisementLabel;
+          const trackingField = plugin?.trackingCodeField;
+          const trackingHtml = trackingField ? stringValue(record[trackingField]) : '';
           return (
             <div key={index} className="universal-xml-feed-item" style={getItemWrapperStyle(index)}>
               {fieldNodes}
+              {showAdLabel && (
+                <>
+                  {trackingHtml && (
+                    <div style={{ display: 'none' }} dangerouslySetInnerHTML={{ __html: trackingHtml }} />
+                  )}
+                  <div className="universal-xml-feed-ad-label" style={{ fontSize: '11px', color: '#999', textAlign: 'center' }}>
+                    Advertisement
+                  </div>
+                </>
+              )}
               {isDailyDownload && linkUrl && (
                 <a
                   href={linkUrl}

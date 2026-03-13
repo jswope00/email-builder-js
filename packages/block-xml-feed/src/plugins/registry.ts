@@ -2,8 +2,18 @@ import type { XmlFeedPlugin } from './types';
 import { blogXmlPlugin } from './blog-xml';
 import { videoXmlPlugin } from './video-xml';
 import { therapeuticUpdateXmlPlugin } from './therapeutic-update-xml';
+import { advertisement300250XmlPlugin } from './advertisement-300-250-xml';
+import { advertisement72890XmlPlugin } from './advertisement-728-90-xml';
+import { conferenceAdvertisement300250XmlPlugin } from './conference-advertisement-300-250-xml';
 
-const PLUGINS: XmlFeedPlugin[] = [blogXmlPlugin, videoXmlPlugin, therapeuticUpdateXmlPlugin];
+const PLUGINS: XmlFeedPlugin[] = [
+  blogXmlPlugin,
+  videoXmlPlugin,
+  therapeuticUpdateXmlPlugin,
+  advertisement300250XmlPlugin,
+  advertisement72890XmlPlugin,
+  conferenceAdvertisement300250XmlPlugin,
+];
 
 const BY_MACHINE_NAME = new Map<string, XmlFeedPlugin>(PLUGINS.map((p) => [p.machineName, p]));
 
