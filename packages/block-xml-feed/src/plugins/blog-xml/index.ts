@@ -19,5 +19,7 @@ export const blogXmlPlugin: XmlFeedPlugin = {
     body: { type: 'html', weight: 30 },
     field_show_author: { type: 'doNotShow', weight: 100 },
     field_article_type: { type: 'doNotShow', weight: 100 },
+    nid: { type: 'doNotShow', weight: 100 },
+    user_picture: { type: 'doNotShow', weight: 100 },
   },
 };
