@@ -1,10 +1,11 @@
 import React from 'react';
 
-import { Box, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 
 import { TEditorBlock } from '../../../documents/editor/core';
 import { setDocument, useDocument, useSelectedBlockId } from '../../../documents/editor/EditorContext';
 
+import TemplateSlicesSection from './TemplateSlicesSection';
 import Advertisement300250XmlSidebarPanel from './input-panels/Advertisement300250XmlSidebarPanel';
 import ConferenceAdvertisement300250XmlSidebarPanel from './input-panels/ConferenceAdvertisement300250XmlSidebarPanel';
 import Advertisement72890XmlSidebarPanel from './input-panels/Advertisement72890XmlSidebarPanel';
@@ -40,84 +41,113 @@ export default function ConfigurationPanel() {
   const document = useDocument();
   const selectedBlockId = useSelectedBlockId();
 
+  let blockContent: React.ReactNode;
   if (!selectedBlockId) {
-    return renderMessage('Click on a block to inspect.');
-  }
-  const block = document[selectedBlockId];
-  if (!block) {
-    return renderMessage(`Block with id ${selectedBlockId} was not found. Click on a block to reset.`);
+    blockContent = renderMessage('Click on a block to inspect.');
+  } else {
+    const block = document[selectedBlockId];
+    if (!block) {
+      blockContent = renderMessage(`Block with id ${selectedBlockId} was not found. Click on a block to reset.`);
+    } else {
+      const setBlock = (conf: TEditorBlock) => setDocument({ [selectedBlockId]: conf });
+      const { data, type } = block;
+      switch (type) {
+        case 'Avatar':
+          blockContent = <AvatarSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />;
+          break;
+        case 'Button':
+          blockContent = <ButtonSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />;
+          break;
+        case 'ColumnsContainer':
+          blockContent = (
+            <ColumnsContainerSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />
+          );
+          break;
+        case 'Container':
+          blockContent = <ContainerSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />;
+          break;
+        case 'Divider':
+          blockContent = <DividerSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />;
+          break;
+        case 'Heading':
+          blockContent = <HeadingSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />;
+          break;
+        case 'Html':
+          blockContent = <HtmlSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />;
+          break;
+        case 'Image':
+          blockContent = <ImageSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />;
+          break;
+        case 'EmailLayout':
+          blockContent = <EmailLayoutSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />;
+          break;
+        case 'Spacer':
+          blockContent = <SpacerSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />;
+          break;
+        case 'Text':
+          blockContent = <TextSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />;
+          break;
+        case 'VideoXml':
+          blockContent = <VideoXmlSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />;
+          break;
+        case 'TherapeuticUpdateXml':
+          blockContent = (
+            <TherapeuticUpdateXmlSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />
+          );
+          break;
+        case 'FeaturedStoryXml':
+          blockContent = (
+            <FeaturedStoryXmlSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />
+          );
+          break;
+        case 'NewsPanelXml':
+          blockContent = (
+            <NewsPanelXmlSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />
+          );
+          break;
+        case 'BlogXml':
+          blockContent = <BlogXmlSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />;
+          break;
+        case 'Advertisement72890Xml':
+          blockContent = (
+            <Advertisement72890XmlSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />
+          );
+          break;
+        case 'Advertisement300250Xml':
+          blockContent = (
+            <Advertisement300250XmlSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />
+          );
+          break;
+        case 'ConferenceAdvertisement300250Xml':
+          blockContent = (
+            <ConferenceAdvertisement300250XmlSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />
+          );
+          break;
+        case 'DailyDownloadXml':
+          blockContent = (
+            <DailyDownloadXmlSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />
+          );
+          break;
+        case 'PromotedSurveyXml':
+          blockContent = (
+            <PromotedSurveyXmlSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />
+          );
+          break;
+        case 'UniversalXmlFeed':
+          blockContent = (
+            <XmlFeedSidebarPanel  data={data} setData={(d) => setBlock({ type, data: d })} />
+          );
+          break;
+        default:
+          blockContent = <pre>{JSON.stringify(block, null, '  ')}</pre>;
+      }
+    }
   }
 
-  const setBlock = (conf: TEditorBlock) => setDocument({ [selectedBlockId]: conf });
-  const { data, type } = block;
-  switch (type) {
-    case 'Avatar':
-      return <AvatarSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />;
-    case 'Button':
-      return <ButtonSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />;
-    case 'ColumnsContainer':
-      return (
-        <ColumnsContainerSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
-      );
-    case 'Container':
-      return <ContainerSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />;
-    case 'Divider':
-      return <DividerSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />;
-    case 'Heading':
-      return <HeadingSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />;
-    case 'Html':
-      return <HtmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />;
-    case 'Image':
-      return <ImageSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />;
-    case 'EmailLayout':
-      return <EmailLayoutSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />;
-    case 'Spacer':
-      return <SpacerSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />;
-    case 'Text':
-      return <TextSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />;
-    case 'VideoXml':
-      return <VideoXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />;
-    case 'TherapeuticUpdateXml':
-      return (
-        <TherapeuticUpdateXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
-      );
-    case 'FeaturedStoryXml':
-      return (
-        <FeaturedStoryXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
-      );
-    case 'NewsPanelXml':
-      return (
-        <NewsPanelXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
-      );
-    case 'BlogXml':
-      return (
-        <BlogXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
-      );
-    case 'Advertisement72890Xml':
-      return (
-        <Advertisement72890XmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
-      );
-    case 'Advertisement300250Xml':
-      return (
-        <Advertisement300250XmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
-      );
-    case 'ConferenceAdvertisement300250Xml':
-      return (
-        <ConferenceAdvertisement300250XmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
-      );
-    case 'DailyDownloadXml':
-      return (
-        <DailyDownloadXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
-      );
-    case 'PromotedSurveyXml':
-      return (
-        <PromotedSurveyXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
-      );
-    case 'UniversalXmlFeed':
-      return (
-        <XmlFeedSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
-      );
-    default:
-      return <pre>{JSON.stringify(block, null, '  ')}</pre>;
-  }
+  return (
+    <Stack>
+      <TemplateSlicesSection />
+      <Box key={selectedBlockId ?? 'none'} sx={{ flex: 1 }}>{blockContent}</Box>
+    </Stack>
+  );
 }
