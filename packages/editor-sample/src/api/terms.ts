@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const TERMS_BASE_URL = 'https://rheumnow.com/admin';
 
 export interface TermOption {
   id: string;
@@ -40,7 +40,7 @@ function parseTermsJson(data: unknown): TermOption[] {
  * Fetch terms from endpoint; supports JSON array or XML with <item><tid/><name/></item>.
  */
 async function fetchTerms(path: string): Promise<TermOption[]> {
-  const url = `${API_URL.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+  const url = `${TERMS_BASE_URL.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Failed to fetch terms: ${response.statusText}`);
   const contentType = response.headers.get('content-type') ?? '';
