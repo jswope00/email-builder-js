@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, MenuItem, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import {
   getBlockTitleByType,
   getEndpointByType,
@@ -72,8 +72,6 @@ export default function XmlFeedSidebarPanel({ data, setData }: XmlFeedSidebarPan
       const text = await response.text();
       const names = parseXmlToFieldNames(text);
       const allItems = parseXmlToItems(text);
-      const num = nextData.props?.numberOfItems ?? 0;
-      const items = num > 0 ? allItems.slice(0, num) : allItems;
       const plugin = getPlugin(newBlockType);
       const nextMapping: Record<string, string> = {};
       const nextWeights: Record<string, number> = {};
@@ -87,7 +85,7 @@ export default function XmlFeedSidebarPanel({ data, setData }: XmlFeedSidebarPan
         props: {
           ...nextData.props,
           url: endpoint,
-          previewItems: items,
+          previewItems: allItems,
           fieldOrder: names,
           fieldMapping: nextMapping,
           fieldWeights: nextWeights,
@@ -97,6 +95,31 @@ export default function XmlFeedSidebarPanel({ data, setData }: XmlFeedSidebarPan
       });
     } catch {
       // keep blockType/title, no preview
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRenew = async () => {
+    if (!blockType) return;
+    const endpoint = getEndpointByType(blockType);
+    if (!endpoint.trim()) return;
+    setLoading(true);
+    try {
+      const response = await fetch(endpoint);
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const text = await response.text();
+      const allItems = parseXmlToItems(text);
+      updateData({
+        ...safeData,
+        props: {
+          ...safeData.props,
+          url: endpoint,
+          previewItems: allItems,
+        },
+      });
+    } catch {
+      // keep current data
     } finally {
       setLoading(false);
     }
@@ -145,6 +168,15 @@ export default function XmlFeedSidebarPanel({ data, setData }: XmlFeedSidebarPan
             });
           }}
         />
+        <Button
+          variant="outlined"
+          size="small"
+          fullWidth
+          onClick={handleRenew}
+          disabled={!blockType || loading}
+        >
+          Renew
+        </Button>
         {loading && (
           <Typography variant="body2" color="text.secondary">
             Loading feed…

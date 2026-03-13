@@ -1,7 +1,9 @@
 import type { XmlFeedPlugin } from './types';
 import { blogXmlPlugin } from './blog-xml';
+import { videoXmlPlugin } from './video-xml';
+import { therapeuticUpdateXmlPlugin } from './therapeutic-update-xml';
 
-const PLUGINS: XmlFeedPlugin[] = [blogXmlPlugin];
+const PLUGINS: XmlFeedPlugin[] = [blogXmlPlugin, videoXmlPlugin, therapeuticUpdateXmlPlugin];
 
 const BY_MACHINE_NAME = new Map<string, XmlFeedPlugin>(PLUGINS.map((p) => [p.machineName, p]));
 

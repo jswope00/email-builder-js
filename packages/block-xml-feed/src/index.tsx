@@ -240,10 +240,13 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
   const fieldMapping = propsData?.fieldMapping ?? UniversalXmlFeedPropsDefaults.fieldMapping;
   const feedSlices = propsData?.feedSlices ?? UniversalXmlFeedPropsDefaults.feedSlices;
   const activeSliceIndex = Math.max(0, propsData?.activeSliceIndex ?? UniversalXmlFeedPropsDefaults.activeSliceIndex);
-  const previewItems =
+  const rawPreviewItems =
     feedSlices && feedSlices.length > 0
       ? (feedSlices[Math.min(activeSliceIndex, feedSlices.length - 1)]?.items ?? [])
       : (propsData?.previewItems ?? UniversalXmlFeedPropsDefaults.previewItems ?? []);
+  const numberOfItems = propsData?.numberOfItems ?? UniversalXmlFeedPropsDefaults.numberOfItems;
+  const previewItems =
+    numberOfItems > 0 ? rawPreviewItems.slice(0, numberOfItems) : rawPreviewItems;
 
   const padding = style?.padding;
   const wrapperStyle: React.CSSProperties = {
@@ -507,20 +510,21 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
             if (fieldType === 'author' || fieldType === 'date') {
               if (hasAuthorDateLine && !authorDateLineRendered) {
                 authorDateLineRendered = true;
+                const isSponsored =
+                  blockType === 'TherapeuticUpdateXml' &&
+                  (stringValue(record['field_rxu_is_sponsored']).toLowerCase() === 'on' || record['field_rxu_is_sponsored'] === '1');
+                const authorNode = authorLine ? (
+                  isSponsored ? (
+                    <span className="author-sponsored" style={{ fontWeight: 'bold' }}>{authorLine}</span>
+                  ) : (
+                    <span style={{ fontWeight: 'bold' }}>{authorLine}</span>
+                  )
+                ) : null;
                 fieldNodes.push(
                   <div key="author-date-line" style={authorDateStyle}>
-                    {authorLine && (
-                      <>
-                        <span style={{ fontWeight: 'bold' }}>{authorLine}</span>
-                        {dateText && (
-                          <>
-                            <span style={{ margin: '0 8px' }}>•</span>
-                            <span>{dateText}</span>
-                          </>
-                        )}
-                      </>
-                    )}
-                    {!authorLine && dateText && <span>{dateText}</span>}
+                    {authorNode}
+                    {authorLine && dateText && <span style={{ margin: '0 8px' }}>•</span>}
+                    {dateText && <span>{dateText}</span>}
                   </div>,
                 );
               }
@@ -567,15 +571,20 @@ export function UniversalXmlFeed({ style, props: propsData }: UniversalXmlFeedPr
         <>
           <style dangerouslySetInnerHTML={{ __html: PROMOTED_SURVEY_CSS }} />
           <style dangerouslySetInnerHTML={{ __html: BLOCK_TYPE_CSS }} />
+          {getPlugin(blockType)?.styles && (
+            <style dangerouslySetInnerHTML={{ __html: getPlugin(blockType)!.styles! }} />
+          )}
           <div className="universal-xml-feed-promoted-survey">
             {mainContent}
           </div>
         </>
       );
     }
+    const pluginStyles = getPlugin(blockType)?.styles;
     return (
       <>
         <style dangerouslySetInnerHTML={{ __html: BLOCK_TYPE_CSS }} />
+        {pluginStyles && <style dangerouslySetInnerHTML={{ __html: pluginStyles }} />}
         {mainContent}
       </>
     );
