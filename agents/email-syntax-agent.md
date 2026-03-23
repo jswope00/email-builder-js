@@ -74,15 +74,26 @@ The agent enables developers, content creators, and AI systems to:
 - `Container`: Generic container for grouping blocks
 - `ColumnsContainer`: Multi-column layout (typically 2-3 columns)
 
-**XML Blocks** (fetch dynamic content from XML URLs):
-- `NewsPanelXml`: News article panels
-- `VideoXml`: Video embeds
-- `BlogXml`: Blog post content
-- `FeaturedStoryXml`: Featured story content
-- `Advertisement72890Xml`, `Advertisement300250Xml`: Advertisement blocks
-- `ConferenceAdvertisement300250Xml`: Conference-specific ads
-- `DailyDownloadXml`: Download content
-- `TherapeuticUpdateXml`: Medical/therapeutic content
+**XML Blocks** (fetch dynamic content from **fixed RheumNow admin XML endpoints**):
+- These blocks **do not** store an XML URL in `data.props`. Each package exports a `*_FEED_URL` (or `VIDEO_XML_FEED_URL`) constant in `src/index.tsx`; the React component always fetches that URL (client `fetch` and SSR prefetch use the same string).
+- **Configurable in the editor** (typical): `title`, `numberOfItems`, and `style` (e.g. padding)—see each block’s Zod schema and matching `*SidebarPanel` in `packages/editor-sample`.
+- **Not** XML feeds: `Button` and `Image` still use `props.url` for link/target and image `src` respectively.
+
+| Block `type` | Exported feed constant (package) | Endpoint |
+|--------------|----------------------------------|----------|
+| `VideoXml` | `VIDEO_XML_FEED_URL` (`block-video-xml`) | `https://rheumnow.com/admin/video-xml` |
+| `TherapeuticUpdateXml` | `THERAPEUTIC_UPDATE_XML_FEED_URL` | `https://rheumnow.com/admin/therapeutic_update_xml` |
+| `FeaturedStoryXml` | `FEATURED_STORY_XML_FEED_URL` | `https://rheumnow.com/admin/featured-story-xml` |
+| `NewsPanelXml` | `NEWS_PANEL_XML_FEED_URL` | `https://rheumnow.com/admin/daily_news_xml` |
+| `BlogXml` | `BLOG_XML_FEED_URL` | `https://rheumnow.com/admin/blogs_xml` |
+| `Advertisement72890Xml` | `ADVERTISEMENT_72890_XML_FEED_URL` | `https://rheumnow.com/admin/email_ad_728_90_xml` |
+| `Advertisement300250Xml` | `ADVERTISEMENT_300250_XML_FEED_URL` | `https://rheumnow.com/admin/email_ad_300_250_xml` |
+| `ConferenceAdvertisement300250Xml` | `CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL` | `https://rheumnow.com/admin/conference_email_ad_300_250_xml` |
+| `DailyDownloadXml` | `DAILY_DOWNLOAD_XML_FEED_URL` | `https://rheumnow.com/admin/daily_download_xml` |
+
+**SSR / static HTML:** `packages/email-builder/src/renderers/renderToStaticMarkup.tsx` discovers which feeds to prefetch via `XML_FEED_URL_BY_BLOCK_TYPE` (must stay aligned with the block packages). Prefetched XML is exposed as `__XML_DATA_CONTEXT__` on `global` / `window`, keyed by the **full fetch URL** string components use.
+
+**RheumNow / local samples:** `packages/editor-sample/src/getConfiguration/sample/rheumnow-daily*.ts` omit `props.url` for XML blocks. To point feeds at another host or path (e.g. local sample XML), change the exported `*_FEED_URL` in the relevant block package and rebuild its `dist`.
 
 ### Block Schema Pattern
 
@@ -147,7 +158,7 @@ Email HTML uses table-based layouts and inline styles for maximum compatibility.
 - Validate block schemas (Zod schema compliance)
 - Check for orphaned blocks (blocks not referenced in `childrenIds`)
 - Validate style property values (colors, fonts, padding ranges)
-- Ensure XML block URLs are properly formatted
+- For XML blocks: do **not** expect or require `props.url`; validate only properties present in each block’s current Zod schema
 
 ### 4. Document Transformation
 - Add/remove blocks from documents
@@ -250,7 +261,7 @@ The agent should:
 - Provide clear error messages for invalid documents
 - Suggest fixes for common mistakes
 - Handle missing or malformed block references gracefully
-- Validate XML block URLs before including them
+- For XML blocks: treat feed endpoints as **code-defined**, not document fields; do not add `props.url` when generating or fixing templates unless the product reintroduces it
 - Warn about potential email client compatibility issues
 
 ## Examples
@@ -316,9 +327,9 @@ Modified document with EmailLayout backdropColor updated to "#E8F4F8"
 
 The agent should be aware of:
 - `@usewaypoint/document-core`: Core document building utilities
-- `@usewaypoint/email-builder`: Reader and renderer components
-- Block packages: Individual block implementations and schemas
-- Editor sample: Example implementation patterns
+- `@usewaypoint/email-builder`: Reader and renderer components; **`renderToStaticMarkup`** and **`XML_FEED_URL_BY_BLOCK_TYPE`** for XML prefetch
+- Block packages: Individual block implementations, Zod schemas, and **`*_FEED_URL` / `VIDEO_XML_FEED_URL`** exports for XML-backed blocks
+- Editor sample: Block inspector panels under `ConfigurationPanel/input-panels/` (XML URL inputs removed for the nine XML blocks above)
 
 ## Success Criteria
 
@@ -334,6 +345,7 @@ The agent is successful when it can:
 ## Future Enhancements
 
 Potential future capabilities:
+- Topic or query-parameter filters on XML feeds (would require updating each block’s effective fetch URL, `XML_FEED_URL_BY_BLOCK_TYPE` / prefetch keys, and inspector UI)
 - Support for dynamic content (LiquidJS variables)
 - Template library management
 - A/B testing variant generation
@@ -347,7 +359,7 @@ Potential future capabilities:
 ## Agent Implementation Notes
 
 When implementing this agent:
-1. Load and understand all block schemas from the codebase
+1. Load and understand all block schemas from the codebase (XML blocks: confirm current `props` shape; ignore stale docs that mention `props.url` for those types)
 2. Maintain a registry of available block types and their properties
 3. Implement document traversal and manipulation utilities
 4. Create validation functions that check against Zod schemas
