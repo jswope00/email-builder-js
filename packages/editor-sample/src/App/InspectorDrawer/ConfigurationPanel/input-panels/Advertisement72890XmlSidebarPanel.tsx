@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Advertisement72890XmlProps, Advertisement72890XmlPropsDefaults, Advertisement72890XmlPropsSchema } from '@usewaypoint/block-advertisement-728-90-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
+import RheumnowDashboardTagSelect from './helpers/RheumnowDashboardTagSelect';
+import RheumnowTopicSelect from './helpers/RheumnowTopicSelect';
 import TextInput from './helpers/inputs/TextInput';
 import MultiStylePropertyPanel from './helpers/style-inputs/MultiStylePropertyPanel';
 
@@ -33,6 +35,18 @@ export default function Advertisement72890XmlSidebarPanel({ data, setData }: Adv
         label="Title (optional)"
         defaultValue={title}
         onChange={(v) => updateData({ ...data, props: { ...data.props, title: v } })}
+      />
+      <RheumnowTopicSelect
+        value={data.props?.topicTid ?? null}
+        onChange={(topicTid) =>
+          updateData({ ...data, props: { ...data.props, topicTid: topicTid ?? null } })
+        }
+      />
+      <RheumnowDashboardTagSelect
+        value={data.props?.dashboardTagTid ?? null}
+        onChange={(dashboardTagTid) =>
+          updateData({ ...data, props: { ...data.props, dashboardTagTid: dashboardTagTid ?? null } })
+        }
       />
       <TextInput
         label="Number of items"

@@ -121,6 +121,20 @@ export function MyBlock({ style, props }: MyBlockProps) {
 
 **Note:** Run `npm install` in the root to link the new package (if using workspaces) or build the package locally.
 
+### 1.3 Root workspace (required)
+
+Add the new package directory to the **`workspaces`** array in the **root** `package.json` (e.g. `"packages/block-my-block"`). Without this, npm will not link the package and imports like `@usewaypoint/block-my-block` will fail.
+
+Commit the updated **`package-lock.json`** after `npm install` so CI and Docker get the same tree.
+
+### 1.4 Shared packages (not a block)
+
+If you add a **library** under `packages/` (e.g. `@usewaypoint/rheumnow-xml-topic`), still add it to root **`workspaces`**, run **`npm install`** at the repo root, and add it as a dependency of any package that imports it (`"@usewaypoint/your-lib": "*"`). If that library ships a **`dist`** build, run `npm run build` in that package (or `npm run build -w @usewaypoint/your-lib`) before consumers build.
+
+**Docker Compose (dev):** Services use anonymous volumes for `node_modules` (see `docker-compose.yml`). After adding or changing workspace packages, run **`docker compose down`** and **`docker compose up`** again so the container runs a fresh `npm install`. If problems persist, remove the anonymous volumes (e.g. `docker compose down -v` — only if you are okay recreating volumes) so installs are not stale.
+
+**`@usewaypoint/email-builder`:** Keep its dependency graph small. Prefer **not** wiring new shared libs into `email-builder` if the same logic can live in blocks or `editor-sample` only; otherwise Vite must resolve those imports when bundling the editor.
+
 ---
 
 ## Step 3: Register the Block in Editor Core

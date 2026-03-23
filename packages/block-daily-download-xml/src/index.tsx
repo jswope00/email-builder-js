@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
+import { buildTopicFilteredFeedUrl } from '@usewaypoint/rheumnow-xml-topic';
 
 /** Fixed feed URL for this block (not editable in the inspector). */
 export const DAILY_DOWNLOAD_XML_FEED_URL = 'https://rheumnow.com/admin/daily_download_xml';
@@ -17,6 +18,8 @@ export const DailyDownloadXmlPropsSchema = z.object({
   props: z.object({
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
+    topicTid: z.number().int().positive().optional().nullable(),
+    dashboardTagTid: z.number().int().positive().optional().nullable(),
   }).optional().nullable(),
 });
 
@@ -89,7 +92,7 @@ function parseDailyDownloadXml(xmlText: string, numberOfItems: number): Download
 }
 
 export function DailyDownloadXml({ style, props }: DailyDownloadXmlProps) {
-  const url = DAILY_DOWNLOAD_XML_FEED_URL;
+  const url = buildTopicFilteredFeedUrl(DAILY_DOWNLOAD_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? DailyDownloadXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? DailyDownloadXmlPropsDefaults.numberOfItems;
 
@@ -126,6 +129,7 @@ export function DailyDownloadXml({ style, props }: DailyDownloadXmlProps) {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+      setItems([]);
       try {
         const response = await fetch(url);
         if (!response.ok) {

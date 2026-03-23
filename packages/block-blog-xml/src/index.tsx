@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
+import { buildTopicFilteredFeedUrl } from '@usewaypoint/rheumnow-xml-topic';
 
 /** Fixed feed URL for this block (not editable in the inspector). */
 export const BLOG_XML_FEED_URL = 'https://rheumnow.com/admin/blogs_xml';
@@ -17,6 +18,8 @@ export const BlogXmlPropsSchema = z.object({
   props: z.object({
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
+    topicTid: z.number().int().positive().optional().nullable(),
+    dashboardTagTid: z.number().int().positive().optional().nullable(),
   }).optional().nullable(),
 });
 
@@ -124,7 +127,7 @@ function parseBlogXml(xmlText: string, numberOfItems: number): BlogItem[] {
 }
 
 export function BlogXml({ style, props }: BlogXmlProps) {
-  const url = BLOG_XML_FEED_URL;
+  const url = buildTopicFilteredFeedUrl(BLOG_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? BlogXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? BlogXmlPropsDefaults.numberOfItems;
 
@@ -161,6 +164,7 @@ export function BlogXml({ style, props }: BlogXmlProps) {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+      setItems([]);
       try {
         const response = await fetch(url);
         if (!response.ok) {

@@ -75,13 +75,13 @@ The agent enables developers, content creators, and AI systems to:
 - `ColumnsContainer`: Multi-column layout (typically 2-3 columns)
 
 **XML Blocks** (fetch dynamic content from **fixed RheumNow admin XML endpoints**):
-- These blocks **do not** store an XML URL in `data.props`. Each package exports a `*_FEED_URL` (or `VIDEO_XML_FEED_URL`) constant in `src/index.tsx`; the React component always fetches that URL (client `fetch` and SSR prefetch use the same string).
-- **Configurable in the editor** (typical): `title`, `numberOfItems`, and `style` (e.g. padding)—see each block’s Zod schema and matching `*SidebarPanel` in `packages/editor-sample`.
+- Each package exports a base `*_FEED_URL` in `src/index.tsx`. The effective fetch URL is `buildTopicFilteredFeedUrl(baseUrl, props.topicTid, props.dashboardTagTid)` from `@usewaypoint/rheumnow-xml-topic` in blocks: topic-only `{baseUrl}/{tid}`; both topic and dashboard tag `{baseUrl}/{topicTid},{dashboardTagTid}`; dashboard-only `{baseUrl}/{dashboardTagTid}`. **Duplicate:** the same join logic exists in `packages/email-builder/src/renderers/renderToStaticMarkup.tsx`—change both when altering separators. After edits, run `npm run build` in `packages/rheumnow-xml-topic` and `packages/email-builder` (and restart Vite / rebuild Docker) so `dist/` and the browser are not still using old `+` output.
+- **Configurable in the editor** (typical): `title`, `numberOfItems`, optional **`topicTid`** / **`dashboardTagTid`**, and `style` (e.g. padding)—see each block’s Zod schema and matching `*SidebarPanel` in `packages/editor-sample` (`RheumnowTopicSelect`, `RheumnowDashboardTagSelect`). Dropdowns use `/admin/terms` rows where **`vid`** is **`Topic`** or **`Dashboard tags`** (case-insensitive). **Dashboard tags** require **`field_is_active === 1`**. **Topics** use `vid === Topic` and treat empty or `1` as active; **`0`** / **`Off`** are excluded.
 - **Not** XML feeds: `Button` and `Image` still use `props.url` for link/target and image `src` respectively.
 
 | Block `type` | Exported feed constant (package) | Endpoint |
 |--------------|----------------------------------|----------|
-| `VideoXml` | `VIDEO_XML_FEED_URL` (`block-video-xml`) | `https://rheumnow.com/admin/video-xml` |
+| `VideoXml` | `VIDEO_XML_FEED_URL` (`block-video-xml`) | `https://rheumnow.com/admin/videos-xml` |
 | `TherapeuticUpdateXml` | `THERAPEUTIC_UPDATE_XML_FEED_URL` | `https://rheumnow.com/admin/therapeutic_update_xml` |
 | `FeaturedStoryXml` | `FEATURED_STORY_XML_FEED_URL` | `https://rheumnow.com/admin/featured-story-xml` |
 | `NewsPanelXml` | `NEWS_PANEL_XML_FEED_URL` | `https://rheumnow.com/admin/daily_news_xml` |
@@ -91,7 +91,7 @@ The agent enables developers, content creators, and AI systems to:
 | `ConferenceAdvertisement300250Xml` | `CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL` | `https://rheumnow.com/admin/conference_email_ad_300_250_xml` |
 | `DailyDownloadXml` | `DAILY_DOWNLOAD_XML_FEED_URL` | `https://rheumnow.com/admin/daily_download_xml` |
 
-**SSR / static HTML:** `packages/email-builder/src/renderers/renderToStaticMarkup.tsx` discovers which feeds to prefetch via `XML_FEED_URL_BY_BLOCK_TYPE` (must stay aligned with the block packages). Prefetched XML is exposed as `__XML_DATA_CONTEXT__` on `global` / `window`, keyed by the **full fetch URL** string components use.
+**SSR / static HTML:** `packages/email-builder/src/renderers/renderToStaticMarkup.tsx` walks the document and, for each XML block instance, prefetches the same effective URL the component would use (optional topic and/or dashboard tag segment). Prefetched XML is exposed as `__XML_DATA_CONTEXT__` on `global` / `window`, keyed by the **full fetch URL** string components use.
 
 **RheumNow / local samples:** `packages/editor-sample/src/getConfiguration/sample/rheumnow-daily*.ts` omit `props.url` for XML blocks. To point feeds at another host or path (e.g. local sample XML), change the exported `*_FEED_URL` in the relevant block package and rebuild its `dist`.
 

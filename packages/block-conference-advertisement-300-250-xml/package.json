@@ -25,6 +25,7 @@
     "zod": "^3"
   },
   "dependencies": {
+    "@usewaypoint/rheumnow-xml-topic": "*",
     "fast-xml-parser": "^4.3.2"
   },
   "devDependencies": {

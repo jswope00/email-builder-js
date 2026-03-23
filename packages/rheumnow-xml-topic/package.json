@@ -1,7 +1,7 @@
 {
-  "name": "@usewaypoint/block-video-xml",
+  "name": "@usewaypoint/rheumnow-xml-topic",
   "version": "0.0.1",
-  "description": "Video XML block for EmailBuilder.js",
+  "description": "RheumNow admin terms parsing and topic-filtered XML feed URLs",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -16,20 +16,13 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup ./src/index.tsx --outDir dist --format cjs,esm --dts"
+    "build": "tsup ./src/index.ts --outDir dist --format cjs,esm --dts"
   },
-  "author": "waypoint",
   "license": "MIT",
-  "peerDependencies": {
-    "react": "^16 || ^17 || ^18",
-    "zod": "^3"
-  },
   "dependencies": {
-    "@usewaypoint/rheumnow-xml-topic": "*",
     "fast-xml-parser": "^4.3.2"
   },
   "devDependencies": {
     "tsup": "^6.0.0"
   }
 }
-

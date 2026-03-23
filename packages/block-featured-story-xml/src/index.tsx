@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
+import { buildTopicFilteredFeedUrl } from '@usewaypoint/rheumnow-xml-topic';
 
 /** Fixed feed URL for this block (not editable in the inspector). */
 export const FEATURED_STORY_XML_FEED_URL = 'https://rheumnow.com/admin/featured-story-xml';
@@ -17,6 +18,8 @@ export const FeaturedStoryXmlPropsSchema = z.object({
   props: z.object({
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
+    topicTid: z.number().int().positive().optional().nullable(),
+    dashboardTagTid: z.number().int().positive().optional().nullable(),
   }).optional().nullable(),
 });
 
@@ -146,7 +149,7 @@ function parseFeaturedStoryXml(xmlText: string, numberOfItems: number): Featured
 }
 
 export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
-  const url = FEATURED_STORY_XML_FEED_URL;
+  const url = buildTopicFilteredFeedUrl(FEATURED_STORY_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? FeaturedStoryXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? FeaturedStoryXmlPropsDefaults.numberOfItems;
 
@@ -183,6 +186,7 @@ export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+      setItems([]);
       try {
         const response = await fetch(url);
         if (!response.ok) {

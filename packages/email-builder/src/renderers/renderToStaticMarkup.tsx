@@ -12,6 +12,30 @@ import { VIDEO_XML_FEED_URL } from '@usewaypoint/block-video-xml';
 
 import Reader, { TReaderDocument } from '../Reader/core';
 
+/** Same rules as `@usewaypoint/rheumnow-xml-topic` `buildTopicFilteredFeedUrl` (kept inline so this package does not depend on that workspace package). */
+function buildTopicFilteredFeedUrl(
+  baseFeedUrl: string,
+  topicTid?: number | null,
+  dashboardTagTid?: number | null
+): string {
+  const base = baseFeedUrl.replace(/\/+$/, '');
+  const t =
+    topicTid != null && topicTid !== undefined && Number.isFinite(topicTid) && topicTid > 0
+      ? Math.floor(topicTid)
+      : null;
+  const d =
+    dashboardTagTid != null &&
+    dashboardTagTid !== undefined &&
+    Number.isFinite(dashboardTagTid) &&
+    dashboardTagTid > 0
+      ? Math.floor(dashboardTagTid)
+      : null;
+  if (t == null && d == null) return baseFeedUrl;
+  if (t != null && d != null) return `${base}/${t},${d}`;
+  if (t != null) return `${base}/${t}`;
+  return `${base}/${d!}`;
+}
+
 /** Maps XML-backed block types to their fixed feed URLs (see each block package). */
 const XML_FEED_URL_BY_BLOCK_TYPE: Record<string, string> = {
   VideoXml: VIDEO_XML_FEED_URL,
@@ -28,6 +52,22 @@ const XML_FEED_URL_BY_BLOCK_TYPE: Record<string, string> = {
 type TOptions = {
   rootBlockId: string;
 };
+
+function topicTidFromProps(props: Record<string, unknown> | undefined): number | null {
+  const raw = props?.topicTid;
+  if (typeof raw === 'number' && Number.isFinite(raw) && raw > 0) {
+    return Math.floor(raw);
+  }
+  return null;
+}
+
+function dashboardTagTidFromProps(props: Record<string, unknown> | undefined): number | null {
+  const raw = props?.dashboardTagTid;
+  if (typeof raw === 'number' && Number.isFinite(raw) && raw > 0) {
+    return Math.floor(raw);
+  }
+  return null;
+}
 
 // Helper function to extract all XML URLs from a document
 function extractXmlUrls(document: TReaderDocument): string[] {
@@ -46,7 +86,9 @@ function extractXmlUrls(document: TReaderDocument): string[] {
 
     const feedUrl = XML_FEED_URL_BY_BLOCK_TYPE[block.type];
     if (feedUrl) {
-      urls.push(feedUrl);
+      urls.push(
+        buildTopicFilteredFeedUrl(feedUrl, topicTidFromProps(props), dashboardTagTidFromProps(props))
+      );
     }
 
     // Traverse children

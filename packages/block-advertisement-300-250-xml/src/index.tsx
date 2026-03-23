@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
+import { buildTopicFilteredFeedUrl } from '@usewaypoint/rheumnow-xml-topic';
 
 /** Fixed feed URL for this block (not editable in the inspector). */
 export const ADVERTISEMENT_300250_XML_FEED_URL = 'https://rheumnow.com/admin/email_ad_300_250_xml';
@@ -17,6 +18,8 @@ export const Advertisement300250XmlPropsSchema = z.object({
   props: z.object({
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
+    topicTid: z.number().int().positive().optional().nullable(),
+    dashboardTagTid: z.number().int().positive().optional().nullable(),
   }).optional().nullable(),
 });
 
@@ -103,7 +106,11 @@ function parseAdvertisementXml(xmlText: string, numberOfItems: number): Advertis
 }
 
 export function Advertisement300250Xml({ style, props }: Advertisement300250XmlProps) {
-  const url = ADVERTISEMENT_300250_XML_FEED_URL;
+  const url = buildTopicFilteredFeedUrl(
+    ADVERTISEMENT_300250_XML_FEED_URL,
+    props?.topicTid,
+    props?.dashboardTagTid
+  );
   const title = props?.title ?? Advertisement300250XmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? Advertisement300250XmlPropsDefaults.numberOfItems;
 
@@ -140,6 +147,7 @@ export function Advertisement300250Xml({ style, props }: Advertisement300250XmlP
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+      setItems([]);
       try {
         const response = await fetch(url);
         if (!response.ok) {
