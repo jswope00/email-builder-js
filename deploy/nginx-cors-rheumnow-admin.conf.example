@@ -1,0 +1,41 @@
+# CORS: allow the local email-builder app (http://localhost:45173) to fetch /admin/* in the browser.
+#
+# On rheumnow.com’s nginx:
+#   • Add the `map` once inside `http { ... }`.
+#   • Add the `location` inside the `server { ... }` block for HTTPS on rheumnow.com.
+#   • If you already have `location ^~ /admin { ... }`, merge the `if (OPTIONS)` block and the
+#     `add_header Access-Control-*` lines into it — do not create a second `/admin` location.
+#   • Keep your existing `proxy_pass`, `fastcgi_pass`, or `root` directives inside that location.
+#
+# Reload: sudo nginx -t && sudo systemctl reload nginx
+#
+# Note: Browsers send Origin as http://localhost:45173 (no trailing slash). The map matches that.
+
+# ========== place inside: http { ... } ========================================
+
+map $http_origin $cors_rheumnow_admin {
+    default "";
+    "http://localhost:45173" "http://localhost:45173";
+}
+
+# ========== place inside: server { ... } for rheumnow.com =======================
+# Merge the following into your real /admin location (example skeleton only):
+
+# location ^~ /admin {
+#     if ($request_method = OPTIONS) {
+#         add_header Access-Control-Allow-Origin $cors_rheumnow_admin always;
+#         add_header Access-Control-Allow-Methods "GET, OPTIONS" always;
+#         add_header Access-Control-Allow-Headers "Accept, Content-Type, Authorization" always;
+#         add_header Access-Control-Max-Age 86400 always;
+#         return 204;
+#     }
+#
+#     # --- your existing backend config, e.g. ---
+#     # proxy_pass http://127.0.0.1:8080;
+#     # include fastcgi_params;
+#     # fastcgi_pass unix:/run/php/...;
+#
+#     add_header Access-Control-Allow-Origin $cors_rheumnow_admin always;
+#     # If the browser sends cookies to rheumnow.com on this request, also add:
+#     # add_header Access-Control-Allow-Credentials true always;
+# }

@@ -24,7 +24,6 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
     }
   };
 
-  const url = data.props?.url ?? NewsPanelXmlPropsDefaults.url;
   const title = data.props?.title ?? NewsPanelXmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? NewsPanelXmlPropsDefaults.numberOfItems;
 
@@ -34,11 +33,6 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
         label="Title (optional)"
         defaultValue={title}
         onChange={(v) => updateData({ ...data, props: { ...data.props, title: v } })}
-      />
-      <TextInput
-        label="XML URL"
-        defaultValue={url}
-        onChange={(v) => updateData({ ...data, props: { ...data.props, url: v } })}
       />
       <TextInput
         label="Number of items"

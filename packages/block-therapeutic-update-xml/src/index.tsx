@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
 
+/** Fixed feed URL for this block (not editable in the inspector). */
+export const THERAPEUTIC_UPDATE_XML_FEED_URL = 'https://rheumnow.com/admin/therapeutic_update_xml';
+
 export const TherapeuticUpdateXmlPropsSchema = z.object({
   style: z.object({
     padding: z.object({
@@ -12,7 +15,6 @@ export const TherapeuticUpdateXmlPropsSchema = z.object({
     }).optional().nullable(),
   }).optional().nullable(),
   props: z.object({
-    url: z.string().optional().nullable(),
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
   }).optional().nullable(),
@@ -21,7 +23,6 @@ export const TherapeuticUpdateXmlPropsSchema = z.object({
 export type TherapeuticUpdateXmlProps = z.infer<typeof TherapeuticUpdateXmlPropsSchema>;
 
 export const TherapeuticUpdateXmlPropsDefaults = {
-  url: '',
   title: '',
   numberOfItems: 3,
 } as const;
@@ -114,7 +115,7 @@ function parseTherapeuticUpdateXml(xmlText: string, numberOfItems: number): Upda
 }
 
 export function TherapeuticUpdateXml({ style, props }: TherapeuticUpdateXmlProps) {
-  const url = props?.url ?? TherapeuticUpdateXmlPropsDefaults.url;
+  const url = THERAPEUTIC_UPDATE_XML_FEED_URL;
   const title = props?.title ?? TherapeuticUpdateXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? TherapeuticUpdateXmlPropsDefaults.numberOfItems;
 
@@ -147,10 +148,6 @@ export function TherapeuticUpdateXml({ style, props }: TherapeuticUpdateXmlProps
     if (preFetchedItems) {
       return;
     }
-    if (!url) {
-      setItems([]);
-      return;
-    }
 
     const fetchData = async () => {
       setLoading(true);
@@ -181,10 +178,6 @@ export function TherapeuticUpdateXml({ style, props }: TherapeuticUpdateXmlProps
     fontFamily: 'sans-serif',
   };
 
-  if (!url) {
-     return <div style={{ ...wrapperStyle, border: '1px dashed #ccc', textAlign: 'center', padding: '20px' }}>Configure Therapeutic Update XML URL</div>;
-  }
-  
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading updates...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
   if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No updates found.</div>;

@@ -24,7 +24,6 @@ export default function FeaturedStoryXmlSidebarPanel({ data, setData }: Featured
     }
   };
 
-  const url = data.props?.url ?? FeaturedStoryXmlPropsDefaults.url;
   const title = data.props?.title ?? FeaturedStoryXmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? FeaturedStoryXmlPropsDefaults.numberOfItems;
 
@@ -34,11 +33,6 @@ export default function FeaturedStoryXmlSidebarPanel({ data, setData }: Featured
         label="Title (optional)"
         defaultValue={title}
         onChange={(v) => updateData({ ...data, props: { ...data.props, title: v } })}
-      />
-      <TextInput
-        label="XML URL"
-        defaultValue={url}
-        onChange={(v) => updateData({ ...data, props: { ...data.props, url: v } })}
       />
       <TextInput
         label="Number of items"

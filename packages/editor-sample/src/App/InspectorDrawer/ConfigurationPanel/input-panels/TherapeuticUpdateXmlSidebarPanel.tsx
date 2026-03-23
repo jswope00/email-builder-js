@@ -24,7 +24,6 @@ export default function TherapeuticUpdateXmlSidebarPanel({ data, setData }: Ther
     }
   };
 
-  const url = data.props?.url ?? TherapeuticUpdateXmlPropsDefaults.url;
   const title = data.props?.title ?? TherapeuticUpdateXmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? TherapeuticUpdateXmlPropsDefaults.numberOfItems;
 
@@ -34,11 +33,6 @@ export default function TherapeuticUpdateXmlSidebarPanel({ data, setData }: Ther
         label="Title (optional)"
         defaultValue={title}
         onChange={(v) => updateData({ ...data, props: { ...data.props, title: v } })}
-      />
-      <TextInput
-        label="XML URL"
-        defaultValue={url}
-        onChange={(v) => updateData({ ...data, props: { ...data.props, url: v } })}
       />
       <TextInput
         label="Number of items"

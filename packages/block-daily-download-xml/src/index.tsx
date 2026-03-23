@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
 
+/** Fixed feed URL for this block (not editable in the inspector). */
+export const DAILY_DOWNLOAD_XML_FEED_URL = 'https://rheumnow.com/admin/daily_download_xml';
+
 export const DailyDownloadXmlPropsSchema = z.object({
   style: z.object({
     padding: z.object({
@@ -12,7 +15,6 @@ export const DailyDownloadXmlPropsSchema = z.object({
     }).optional().nullable(),
   }).optional().nullable(),
   props: z.object({
-    url: z.string().optional().nullable(),
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
   }).optional().nullable(),
@@ -21,7 +23,6 @@ export const DailyDownloadXmlPropsSchema = z.object({
 export type DailyDownloadXmlProps = z.infer<typeof DailyDownloadXmlPropsSchema>;
 
 export const DailyDownloadXmlPropsDefaults = {
-  url: '',
   title: '',
   numberOfItems: 3,
 } as const;
@@ -88,7 +89,7 @@ function parseDailyDownloadXml(xmlText: string, numberOfItems: number): Download
 }
 
 export function DailyDownloadXml({ style, props }: DailyDownloadXmlProps) {
-  const url = props?.url ?? DailyDownloadXmlPropsDefaults.url;
+  const url = DAILY_DOWNLOAD_XML_FEED_URL;
   const title = props?.title ?? DailyDownloadXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? DailyDownloadXmlPropsDefaults.numberOfItems;
 
@@ -121,10 +122,6 @@ export function DailyDownloadXml({ style, props }: DailyDownloadXmlProps) {
     if (preFetchedItems) {
       return;
     }
-    if (!url) {
-      setItems([]);
-      return;
-    }
 
     const fetchData = async () => {
       setLoading(true);
@@ -155,10 +152,6 @@ export function DailyDownloadXml({ style, props }: DailyDownloadXmlProps) {
     fontFamily: 'sans-serif',
   };
 
-  if (!url) {
-     return <div style={{ ...wrapperStyle, border: '1px dashed #ccc', textAlign: 'center', padding: '20px' }}>Configure Daily Download XML URL</div>;
-  }
-  
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading downloads...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
   if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No downloads found.</div>;

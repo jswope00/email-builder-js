@@ -129,7 +129,6 @@ const RHEUMNOW_DAILY_LOCAL: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/video-sample.xml",
         "title": "Videos",
         "numberOfItems": 3
       }
@@ -147,7 +146,6 @@ const RHEUMNOW_DAILY_LOCAL: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/therapeutic-update-sample.xml",
         "title": "Therapeutic Updates",
         "numberOfItems": 1
       }
@@ -165,7 +163,6 @@ const RHEUMNOW_DAILY_LOCAL: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/featured-story-sample.xml",
         "numberOfItems": 3
       }
     }
@@ -182,7 +179,6 @@ const RHEUMNOW_DAILY_LOCAL: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/news-panel-sample.xml",
         "numberOfItems": 7
       }
     }
@@ -199,7 +195,6 @@ const RHEUMNOW_DAILY_LOCAL: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/blog-sample.xml",
         "title": "Blogs",
         "numberOfItems": 3
       }
@@ -217,7 +212,6 @@ const RHEUMNOW_DAILY_LOCAL: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/advertisement-728_90-sample.xml",
         "numberOfItems": 3
       }
     }
@@ -234,7 +228,6 @@ const RHEUMNOW_DAILY_LOCAL: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/advertisement-300_250-sample.xml",
         "numberOfItems": 3
       }
     }
@@ -251,7 +244,6 @@ const RHEUMNOW_DAILY_LOCAL: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/daily-download-sample.xml",
         "title": "Daily Download",
         "numberOfItems": 3
       }
@@ -287,7 +279,6 @@ const RHEUMNOW_DAILY_LOCAL: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "/email-builder-js/conference-advertisement-300_250-sample.xml",
         "numberOfItems": 3
       }
     }

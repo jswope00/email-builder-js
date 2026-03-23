@@ -24,7 +24,6 @@ export default function BlogXmlSidebarPanel({ data, setData }: BlogXmlSidebarPan
     }
   };
 
-  const url = data.props?.url ?? BlogXmlPropsDefaults.url;
   const title = data.props?.title ?? BlogXmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? BlogXmlPropsDefaults.numberOfItems;
 
@@ -34,11 +33,6 @@ export default function BlogXmlSidebarPanel({ data, setData }: BlogXmlSidebarPan
         label="Title (optional)"
         defaultValue={title}
         onChange={(v) => updateData({ ...data, props: { ...data.props, title: v } })}
-      />
-      <TextInput
-        label="XML URL"
-        defaultValue={url}
-        onChange={(v) => updateData({ ...data, props: { ...data.props, url: v } })}
       />
       <TextInput
         label="Number of items"

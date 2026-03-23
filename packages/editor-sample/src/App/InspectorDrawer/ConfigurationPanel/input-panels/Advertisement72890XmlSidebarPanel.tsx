@@ -24,7 +24,6 @@ export default function Advertisement72890XmlSidebarPanel({ data, setData }: Adv
     }
   };
 
-  const url = data.props?.url ?? Advertisement72890XmlPropsDefaults.url;
   const title = data.props?.title ?? Advertisement72890XmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? Advertisement72890XmlPropsDefaults.numberOfItems;
 
@@ -34,11 +33,6 @@ export default function Advertisement72890XmlSidebarPanel({ data, setData }: Adv
         label="Title (optional)"
         defaultValue={title}
         onChange={(v) => updateData({ ...data, props: { ...data.props, title: v } })}
-      />
-      <TextInput
-        label="XML URL"
-        defaultValue={url}
-        onChange={(v) => updateData({ ...data, props: { ...data.props, url: v } })}
       />
       <TextInput
         label="Number of items"

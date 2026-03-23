@@ -24,7 +24,6 @@ export default function ConferenceAdvertisement300250XmlSidebarPanel({ data, set
     }
   };
 
-  const url = data.props?.url ?? ConferenceAdvertisement300250XmlPropsDefaults.url;
   const title = data.props?.title ?? ConferenceAdvertisement300250XmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? ConferenceAdvertisement300250XmlPropsDefaults.numberOfItems;
 
@@ -34,11 +33,6 @@ export default function ConferenceAdvertisement300250XmlSidebarPanel({ data, set
         label="Title (optional)"
         defaultValue={title}
         onChange={(v) => updateData({ ...data, props: { ...data.props, title: v } })}
-      />
-      <TextInput
-        label="XML URL"
-        defaultValue={url}
-        onChange={(v) => updateData({ ...data, props: { ...data.props, url: v } })}
       />
       <TextInput
         label="Number of items"

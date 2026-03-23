@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
 
+/** Fixed feed URL for this block (not editable in the inspector). */
+export const VIDEO_XML_FEED_URL = 'https://rheumnow.com/admin/video-xml';
+
 export const VideoXmlPropsSchema = z.object({
   style: z.object({
     padding: z.object({
@@ -12,7 +15,6 @@ export const VideoXmlPropsSchema = z.object({
     }).optional().nullable(),
   }).optional().nullable(),
   props: z.object({
-    url: z.string().optional().nullable(),
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
   }).optional().nullable(),
@@ -21,7 +23,6 @@ export const VideoXmlPropsSchema = z.object({
 export type VideoXmlProps = z.infer<typeof VideoXmlPropsSchema>;
 
 export const VideoXmlPropsDefaults = {
-  url: '',
   title: '',
   numberOfItems: 3,
 } as const;
@@ -91,7 +92,7 @@ function parseVideoXml(xmlText: string, numberOfItems: number): VideoItem[] {
 }
 
 export function VideoXml({ style, props }: VideoXmlProps) {
-  const url = props?.url ?? VideoXmlPropsDefaults.url;
+  const url = VIDEO_XML_FEED_URL;
   const title = props?.title ?? VideoXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? VideoXmlPropsDefaults.numberOfItems;
 
@@ -124,11 +125,6 @@ export function VideoXml({ style, props }: VideoXmlProps) {
     if (preFetchedItems) {
       return;
     }
-    if (!url) {
-      setItems([]);
-      return;
-    }
-
     const fetchData = async () => {
       setLoading(true);
       setError(null);
@@ -158,10 +154,6 @@ export function VideoXml({ style, props }: VideoXmlProps) {
     fontFamily: 'sans-serif',
   };
 
-  if (!url) {
-     return <div style={{ ...wrapperStyle, border: '1px dashed #ccc', textAlign: 'center', padding: '20px' }}>Configure Video XML URL</div>;
-  }
-  
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading videos...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
   if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No videos found.</div>;

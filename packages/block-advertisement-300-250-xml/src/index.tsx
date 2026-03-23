@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
 
+/** Fixed feed URL for this block (not editable in the inspector). */
+export const ADVERTISEMENT_300250_XML_FEED_URL = 'https://rheumnow.com/admin/email_ad_300_250_xml';
+
 export const Advertisement300250XmlPropsSchema = z.object({
   style: z.object({
     padding: z.object({
@@ -12,7 +15,6 @@ export const Advertisement300250XmlPropsSchema = z.object({
     }).optional().nullable(),
   }).optional().nullable(),
   props: z.object({
-    url: z.string().optional().nullable(),
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
   }).optional().nullable(),
@@ -21,7 +23,6 @@ export const Advertisement300250XmlPropsSchema = z.object({
 export type Advertisement300250XmlProps = z.infer<typeof Advertisement300250XmlPropsSchema>;
 
 export const Advertisement300250XmlPropsDefaults = {
-  url: '',
   title: '',
   numberOfItems: 3,
 } as const;
@@ -102,7 +103,7 @@ function parseAdvertisementXml(xmlText: string, numberOfItems: number): Advertis
 }
 
 export function Advertisement300250Xml({ style, props }: Advertisement300250XmlProps) {
-  const url = props?.url ?? Advertisement300250XmlPropsDefaults.url;
+  const url = ADVERTISEMENT_300250_XML_FEED_URL;
   const title = props?.title ?? Advertisement300250XmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? Advertisement300250XmlPropsDefaults.numberOfItems;
 
@@ -135,10 +136,6 @@ export function Advertisement300250Xml({ style, props }: Advertisement300250XmlP
     if (preFetchedItems) {
       return;
     }
-    if (!url) {
-      setItems([]);
-      return;
-    }
 
     const fetchData = async () => {
       setLoading(true);
@@ -169,10 +166,6 @@ export function Advertisement300250Xml({ style, props }: Advertisement300250XmlP
     fontFamily: 'sans-serif',
   };
 
-  if (!url) {
-     return <div style={{ ...wrapperStyle, border: '1px dashed #ccc', textAlign: 'center', padding: '20px' }}>Configure Advertisement 300x250 XML URL</div>;
-  }
-  
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading advertisements...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
   if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No advertisements found.</div>;

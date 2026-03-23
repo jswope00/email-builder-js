@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
 
+/** Fixed feed URL for this block (not editable in the inspector). */
+export const NEWS_PANEL_XML_FEED_URL = 'https://rheumnow.com/admin/daily_news_xml';
+
 export const NewsPanelXmlPropsSchema = z.object({
   style: z.object({
     padding: z.object({
@@ -12,7 +15,6 @@ export const NewsPanelXmlPropsSchema = z.object({
     }).optional().nullable(),
   }).optional().nullable(),
   props: z.object({
-    url: z.string().optional().nullable(),
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
   }).optional().nullable(),
@@ -21,7 +23,6 @@ export const NewsPanelXmlPropsSchema = z.object({
 export type NewsPanelXmlProps = z.infer<typeof NewsPanelXmlPropsSchema>;
 
 export const NewsPanelXmlPropsDefaults = {
-  url: '',
   title: '',
   numberOfItems: 3,
 } as const;
@@ -173,7 +174,7 @@ function parseNewsPanelXml(xmlText: string, numberOfItems: number): NewsPanelIte
 }
 
 export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
-  const url = props?.url ?? NewsPanelXmlPropsDefaults.url;
+  const url = NEWS_PANEL_XML_FEED_URL;
   const title = props?.title ?? NewsPanelXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? NewsPanelXmlPropsDefaults.numberOfItems;
 
@@ -206,10 +207,6 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
     if (preFetchedItems) {
       return;
     }
-    if (!url) {
-      setItems([]);
-      return;
-    }
 
     const fetchData = async () => {
       setLoading(true);
@@ -240,10 +237,6 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
     fontFamily: 'sans-serif',
   };
 
-  if (!url) {
-     return <div style={{ ...wrapperStyle, border: '1px dashed #ccc', textAlign: 'center', padding: '20px' }}>Configure News Panel XML URL</div>;
-  }
-  
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading news...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
   if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No news items found.</div>;

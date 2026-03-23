@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
 
+/** Fixed feed URL for this block (not editable in the inspector). */
+export const BLOG_XML_FEED_URL = 'https://rheumnow.com/admin/blogs_xml';
+
 export const BlogXmlPropsSchema = z.object({
   style: z.object({
     padding: z.object({
@@ -12,7 +15,6 @@ export const BlogXmlPropsSchema = z.object({
     }).optional().nullable(),
   }).optional().nullable(),
   props: z.object({
-    url: z.string().optional().nullable(),
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
   }).optional().nullable(),
@@ -21,7 +23,6 @@ export const BlogXmlPropsSchema = z.object({
 export type BlogXmlProps = z.infer<typeof BlogXmlPropsSchema>;
 
 export const BlogXmlPropsDefaults = {
-  url: '',
   title: '',
   numberOfItems: 3,
 } as const;
@@ -123,7 +124,7 @@ function parseBlogXml(xmlText: string, numberOfItems: number): BlogItem[] {
 }
 
 export function BlogXml({ style, props }: BlogXmlProps) {
-  const url = props?.url ?? BlogXmlPropsDefaults.url;
+  const url = BLOG_XML_FEED_URL;
   const title = props?.title ?? BlogXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? BlogXmlPropsDefaults.numberOfItems;
 
@@ -156,10 +157,6 @@ export function BlogXml({ style, props }: BlogXmlProps) {
     if (preFetchedItems) {
       return;
     }
-    if (!url) {
-        setItems([]);
-        return;
-    }
 
     const fetchData = async () => {
       setLoading(true);
@@ -190,10 +187,6 @@ export function BlogXml({ style, props }: BlogXmlProps) {
     fontFamily: 'sans-serif',
   };
 
-  if (!url) {
-     return <div style={{ ...wrapperStyle, border: '1px dashed #ccc', textAlign: 'center', padding: '20px' }}>Configure Blog XML URL</div>;
-  }
-  
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading blog posts...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
   if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No blog posts found.</div>;

@@ -24,7 +24,6 @@ export default function DailyDownloadXmlSidebarPanel({ data, setData }: DailyDow
     }
   };
 
-  const url = data.props?.url ?? DailyDownloadXmlPropsDefaults.url;
   const title = data.props?.title ?? DailyDownloadXmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? DailyDownloadXmlPropsDefaults.numberOfItems;
 
@@ -34,11 +33,6 @@ export default function DailyDownloadXmlSidebarPanel({ data, setData }: DailyDow
         label="Title (optional)"
         defaultValue={title}
         onChange={(v) => updateData({ ...data, props: { ...data.props, title: v } })}
-      />
-      <TextInput
-        label="XML URL"
-        defaultValue={url}
-        onChange={(v) => updateData({ ...data, props: { ...data.props, url: v } })}
       />
       <TextInput
         label="Number of items"

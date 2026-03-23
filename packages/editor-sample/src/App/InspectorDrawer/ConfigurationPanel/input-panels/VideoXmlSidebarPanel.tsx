@@ -24,7 +24,6 @@ export default function VideoXmlSidebarPanel({ data, setData }: VideoXmlSidebarP
     }
   };
 
-  const url = data.props?.url ?? VideoXmlPropsDefaults.url;
   const title = data.props?.title ?? VideoXmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? VideoXmlPropsDefaults.numberOfItems;
 
@@ -34,11 +33,6 @@ export default function VideoXmlSidebarPanel({ data, setData }: VideoXmlSidebarP
         label="Title (optional)"
         defaultValue={title}
         onChange={(v) => updateData({ ...data, props: { ...data.props, title: v } })}
-      />
-      <TextInput
-        label="XML URL"
-        defaultValue={url}
-        onChange={(v) => updateData({ ...data, props: { ...data.props, url: v } })}
       />
       <TextInput
         label="Number of items"

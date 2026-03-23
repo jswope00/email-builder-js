@@ -1,7 +1,29 @@
 import React from 'react';
 import { renderToStaticMarkup as baseRenderToStaticMarkup } from 'react-dom/server';
+import { ADVERTISEMENT_300250_XML_FEED_URL } from '@usewaypoint/block-advertisement-300-250-xml';
+import { ADVERTISEMENT_72890_XML_FEED_URL } from '@usewaypoint/block-advertisement-728-90-xml';
+import { BLOG_XML_FEED_URL } from '@usewaypoint/block-blog-xml';
+import { CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL } from '@usewaypoint/block-conference-advertisement-300-250-xml';
+import { DAILY_DOWNLOAD_XML_FEED_URL } from '@usewaypoint/block-daily-download-xml';
+import { FEATURED_STORY_XML_FEED_URL } from '@usewaypoint/block-featured-story-xml';
+import { NEWS_PANEL_XML_FEED_URL } from '@usewaypoint/block-news-panel-xml';
+import { THERAPEUTIC_UPDATE_XML_FEED_URL } from '@usewaypoint/block-therapeutic-update-xml';
+import { VIDEO_XML_FEED_URL } from '@usewaypoint/block-video-xml';
 
 import Reader, { TReaderDocument } from '../Reader/core';
+
+/** Maps XML-backed block types to their fixed feed URLs (see each block package). */
+const XML_FEED_URL_BY_BLOCK_TYPE: Record<string, string> = {
+  VideoXml: VIDEO_XML_FEED_URL,
+  TherapeuticUpdateXml: THERAPEUTIC_UPDATE_XML_FEED_URL,
+  FeaturedStoryXml: FEATURED_STORY_XML_FEED_URL,
+  NewsPanelXml: NEWS_PANEL_XML_FEED_URL,
+  BlogXml: BLOG_XML_FEED_URL,
+  Advertisement72890Xml: ADVERTISEMENT_72890_XML_FEED_URL,
+  Advertisement300250Xml: ADVERTISEMENT_300250_XML_FEED_URL,
+  ConferenceAdvertisement300250Xml: CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL,
+  DailyDownloadXml: DAILY_DOWNLOAD_XML_FEED_URL,
+};
 
 type TOptions = {
   rootBlockId: string;
@@ -19,14 +41,16 @@ function extractXmlUrls(document: TReaderDocument): string[] {
     const block = document[blockId];
     if (!block) return;
 
-    // Check if this is an XML block with a URL
-    const props = block.data?.props;
-    if (props?.url && typeof props.url === 'string' && props.url.trim()) {
-      urls.push(props.url);
+    const data = block.data as Record<string, unknown> | undefined;
+    const props = data?.props as Record<string, unknown> | undefined;
+
+    const feedUrl = XML_FEED_URL_BY_BLOCK_TYPE[block.type];
+    if (feedUrl) {
+      urls.push(feedUrl);
     }
 
     // Traverse children
-    const childrenIds = block.data?.childrenIds;
+    const childrenIds = data?.childrenIds;
     if (Array.isArray(childrenIds)) {
       childrenIds.forEach((childId) => {
         if (typeof childId === 'string') {

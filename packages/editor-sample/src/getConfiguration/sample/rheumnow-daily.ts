@@ -129,7 +129,6 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "https://rheumnow.com/admin/video-xml",
         "title": "Videos",
         "numberOfItems": 3
       }
@@ -147,7 +146,6 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "https://rheumnow.com/admin/therapeutic_update_xml",
         "title": "Therapeutic Updates",
         "numberOfItems": 1
       }
@@ -165,7 +163,6 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "https://rheumnow.com/admin/featured-story-xml",
         "numberOfItems": 3
       }
     }
@@ -182,7 +179,6 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "https://rheumnow.com/admin/daily_news_xml",
         "numberOfItems": 7
       }
     }
@@ -199,7 +195,6 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "https://rheumnow.com/admin/blogs_xml",
         "title": "Blogs",
         "numberOfItems": 3
       }
@@ -217,7 +212,6 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "https://rheumnow.com/admin/email_ad_728_90_xml",
         "numberOfItems": 3
       }
     }
@@ -234,7 +228,6 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "https://rheumnow.com/admin/email_ad_300_250_xml",
         "numberOfItems": 3
       }
     }
@@ -251,7 +244,6 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "https://rheumnow.com/admin/daily_download_xml",
         "title": "Daily Download",
         "numberOfItems": 3
       }
@@ -287,7 +279,6 @@ const RHEUMNOW_DAILY: TEditorConfiguration = {
         }
       },
       "props": {
-        "url": "https://rheumnow.com/admin/conference_email_ad_300_250_xml",
         "numberOfItems": 3
       }
     }
