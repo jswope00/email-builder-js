@@ -13,7 +13,7 @@ import {
   Chip,
   Alert,
 } from '@mui/material';
-import { ExpandMore, People, Campaign, Segment as SegmentIcon } from '@mui/icons-material';
+import { ExpandMore, People, Campaign as CampaignIcon, Segment as SegmentIcon } from '@mui/icons-material';
 
 import { fetchAudiences, fetchSegments, fetchCampaigns, type Audience, type Segment, type Campaign } from '../../api/mailchimp';
 
@@ -100,7 +100,6 @@ export default function MailchimpPage() {
     if (!audience) return;
 
     if (expanded) {
-      // Load segments and campaigns when accordion is expanded
       if (!audience.segments || audience.segments.length === 0) {
         loadSegments(audienceId);
       }
@@ -186,7 +185,6 @@ export default function MailchimpPage() {
               </AccordionSummary>
               <AccordionDetails>
                 <Stack spacing={3}>
-                  {/* Segments Section */}
                   <Box>
                     <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
                       <SegmentIcon color="primary" />
@@ -231,10 +229,9 @@ export default function MailchimpPage() {
                     )}
                   </Box>
 
-                  {/* Campaigns Section */}
                   <Box>
                     <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
-                      <Campaign color="primary" />
+                      <CampaignIcon color="primary" />
                       <Typography variant="h6">Recent Campaigns</Typography>
                     </Stack>
                     {audience.loadingCampaigns && (

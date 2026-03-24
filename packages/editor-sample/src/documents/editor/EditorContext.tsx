@@ -16,7 +16,7 @@ type TValue = {
 
   inspectorDrawerOpen: boolean;
   samplesDrawerOpen: boolean;
-  currentView: 'editor' | 'mailchimp';
+  currentView: 'editor' | 'mailchimp' | 'sends';
 };
 
 const editorStateStore = create<TValue>(() => ({
@@ -28,7 +28,7 @@ const editorStateStore = create<TValue>(() => ({
   selectedMainTab: 'editor',
   selectedScreenSize: 'desktop',
 
-  inspectorDrawerOpen: true,
+  inspectorDrawerOpen: false,
   samplesDrawerOpen: true,
   currentView: 'editor',
 }));

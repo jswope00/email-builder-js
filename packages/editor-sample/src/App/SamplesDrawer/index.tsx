@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { Box, Button, CircularProgress, Drawer, Stack, Typography } from '@mui/material';
-import { EditOutlined, MailOutline } from '@mui/icons-material';
+import { EditOutlined, MailOutline, SendOutlined } from '@mui/icons-material';
 
 import { useSamplesDrawerOpen, setCurrentView } from '../../documents/editor/EditorContext';
 import { fetchTemplates, type TemplateListItem } from '../../api/templates';
@@ -74,6 +74,17 @@ export default function SamplesDrawer() {
           <Typography variant="h6" component="h1" sx={{ p: 0.75 }}>
             RheumNow Email Builder
           </Typography>
+
+          <Button
+            variant="contained"
+            color="primary"
+            size="medium"
+            startIcon={<SendOutlined />}
+            onClick={() => setCurrentView('sends')}
+            sx={{ py: 1.25, fontWeight: 600 }}
+          >
+            Sends &amp; schedules
+          </Button>
 
           <Stack spacing={1} alignItems="flex-start" width="100%">
             <Stack direction="row" spacing={0.75} alignItems="center" sx={{ px: 1, pt: 0.5 }}>
@@ -148,7 +159,7 @@ export default function SamplesDrawer() {
               onClick={() => setCurrentView('mailchimp')}
               sx={{ mt: 0.5 }}
             >
-              View lists &amp; campaigns
+              Lists &amp; campaigns
             </Button>
           </Stack>
         </Box>

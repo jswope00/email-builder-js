@@ -8,6 +8,8 @@ import healthRouter from './routes/health';
 import authRouter from './routes/auth';
 import { requireAuth } from './middleware/auth';
 import mailchimpRouter from './routes/mailchimp';
+import sendsRouter from './routes/sends';
+import { startSendScheduler } from './scheduler/sendScheduler';
 
 dotenv.config();
 
@@ -34,6 +36,7 @@ app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/templates', requireAuth, templatesRouter);
 app.use('/api/mailchimp', requireAuth, mailchimpRouter);
+app.use('/api/sends', requireAuth, sendsRouter);
 
 // Root endpoint
 app.get('/', (req: Request, res: Response) => {
@@ -44,6 +47,7 @@ app.get('/', (req: Request, res: Response) => {
       health: '/api/health',
       templates: '/api/templates',
       mailchimp: '/api/mailchimp',
+      sends: '/api/sends',
     },
   });
 });
@@ -76,6 +80,8 @@ async function startServer() {
       console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
       console.log(`📧 Templates API: http://localhost:${PORT}/api/templates`);
       console.log(`📬 Mailchimp API: http://localhost:${PORT}/api/mailchimp`);
+      console.log(`📅 Sends API: http://localhost:${PORT}/api/sends`);
+      startSendScheduler();
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);

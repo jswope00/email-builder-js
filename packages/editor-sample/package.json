@@ -35,6 +35,7 @@
     "@usewaypoint/document-core": "^0.0.6",
     "@usewaypoint/email-builder": "^0.0.9",
     "@usewaypoint/rheumnow-xml-topic": "*",
+    "luxon": "^3.4.4",
     "highlight.js": "^11.9.0",
     "prettier": "^3.2.5",
     "react": "^18.2.0",
@@ -44,6 +45,7 @@
     "zustand": "^4.5.1"
   },
   "devDependencies": {
+    "@types/luxon": "^3.4.2",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
