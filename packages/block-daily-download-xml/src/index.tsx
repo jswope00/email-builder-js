@@ -185,14 +185,12 @@ export function DailyDownloadXml({ style, props }: DailyDownloadXmlProps) {
               {item.image && (
                 <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 }} />
               )}
-              <h3 style={{ margin: '0 0 12px 0', fontSize: '18px', lineHeight: '1.4', color: '#333' }}>{item.title}</h3>
             </a>
           ) : (
             <>
               {item.image && (
                 <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 }} />
               )}
-              <h3 style={{ margin: '0 0 12px 0', fontSize: '18px', lineHeight: '1.4' }}>{item.title}</h3>
             </>
           )}
           
