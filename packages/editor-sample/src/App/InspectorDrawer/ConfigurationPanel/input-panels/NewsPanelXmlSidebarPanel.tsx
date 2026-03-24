@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select } from '@mui/material';
 
 import {
   NewsPanelItemTypeFilter,
@@ -37,6 +37,7 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
   const numberOfItems = data.props?.numberOfItems ?? NewsPanelXmlPropsDefaults.numberOfItems;
   const itemTypeFilter: NewsPanelItemTypeFilter =
     data.props?.itemTypeFilter ?? NewsPanelXmlPropsDefaults.itemTypeFilter;
+  const hideImages = data.props?.hideImages ?? NewsPanelXmlPropsDefaults.hideImages;
 
   return (
     <BaseSidebarPanel title="News Panel XML Block">
@@ -73,6 +74,17 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
           <MenuItem value="Tweet">Tweets only</MenuItem>
         </Select>
       </FormControl>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={hideImages}
+            onChange={(e) =>
+              updateData({ ...data, props: { ...data.props, hideImages: e.target.checked } })
+            }
+          />
+        }
+        label="Hide images (save vertical space)"
+      />
       <TextInput
         label="Number of items"
         defaultValue={numberOfItems.toString()}

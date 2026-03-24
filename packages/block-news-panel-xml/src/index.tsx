@@ -22,6 +22,8 @@ export const NewsPanelXmlPropsSchema = z.object({
     dashboardTagTid: z.number().int().positive().optional().nullable(),
     /** When not `all`, only include that content type (up to `numberOfItems`). */
     itemTypeFilter: z.enum(['all', 'Article', 'Tweet']).optional().nullable(),
+    /** Omit article/tweet thumbnails to save vertical space. */
+    hideImages: z.boolean().optional().nullable(),
   }).optional().nullable(),
 });
 
@@ -31,6 +33,7 @@ export const NewsPanelXmlPropsDefaults = {
   title: '',
   numberOfItems: 3,
   itemTypeFilter: 'all' as const,
+  hideImages: false,
 } as const;
 
 export type NewsPanelItemTypeFilter = 'all' | 'Article' | 'Tweet';
@@ -206,6 +209,7 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
   const numberOfItems = props?.numberOfItems ?? NewsPanelXmlPropsDefaults.numberOfItems;
   const itemTypeFilter: NewsPanelItemTypeFilter =
     props?.itemTypeFilter ?? NewsPanelXmlPropsDefaults.itemTypeFilter;
+  const hideImages = props?.hideImages ?? NewsPanelXmlPropsDefaults.hideImages;
 
   // Try to get pre-fetched XML data from context
   // The renderToStaticMarkup function fetches XML data and makes it available globally
@@ -305,7 +309,7 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
               <table width="100%" cellPadding="0" cellSpacing="0" style={{ borderCollapse: 'collapse' }}>
                 <tbody>
                   <tr>
-                    {item.image && (
+                    {item.image && !hideImages && (
                       <td width="160" valign="top" style={{ paddingRight: 16, paddingBottom: 0 }}>
                         {item.viewNode ? (
                           <a href={item.viewNode} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
@@ -356,7 +360,7 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
               <table width="100%" cellPadding="0" cellSpacing="0" style={{ borderCollapse: 'collapse' }}>
                 <tbody>
                   <tr>
-                    {item.image && (
+                    {item.image && !hideImages && (
                       <td width="160" valign="top" style={{ paddingRight: 16, paddingBottom: 0 }}>
                         {item.tweetId ? (
                           <a href={item.tweetId} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
