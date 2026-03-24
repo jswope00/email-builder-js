@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 
-import { NewsPanelXmlProps, NewsPanelXmlPropsDefaults, NewsPanelXmlPropsSchema } from '@usewaypoint/block-news-panel-xml';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+
+import {
+  NewsPanelItemTypeFilter,
+  NewsPanelXmlProps,
+  NewsPanelXmlPropsDefaults,
+  NewsPanelXmlPropsSchema,
+} from '@usewaypoint/block-news-panel-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
 import RheumnowDashboardTagSelect from './helpers/RheumnowDashboardTagSelect';
@@ -28,6 +35,8 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
 
   const title = data.props?.title ?? NewsPanelXmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? NewsPanelXmlPropsDefaults.numberOfItems;
+  const itemTypeFilter: NewsPanelItemTypeFilter =
+    data.props?.itemTypeFilter ?? NewsPanelXmlPropsDefaults.itemTypeFilter;
 
   return (
     <BaseSidebarPanel title="News Panel XML Block">
@@ -48,6 +57,22 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
           updateData({ ...data, props: { ...data.props, dashboardTagTid: dashboardTagTid ?? null } })
         }
       />
+      <FormControl fullWidth size="small">
+        <InputLabel id="news-panel-xml-item-type-filter-label">Item types</InputLabel>
+        <Select
+          labelId="news-panel-xml-item-type-filter-label"
+          label="Item types"
+          value={itemTypeFilter}
+          onChange={(e) => {
+            const v = e.target.value as NewsPanelItemTypeFilter;
+            updateData({ ...data, props: { ...data.props, itemTypeFilter: v } });
+          }}
+        >
+          <MenuItem value="all">Articles and tweets</MenuItem>
+          <MenuItem value="Article">Articles only</MenuItem>
+          <MenuItem value="Tweet">Tweets only</MenuItem>
+        </Select>
+      </FormControl>
       <TextInput
         label="Number of items"
         defaultValue={numberOfItems.toString()}

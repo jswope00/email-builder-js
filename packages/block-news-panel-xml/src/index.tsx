@@ -20,6 +20,8 @@ export const NewsPanelXmlPropsSchema = z.object({
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
     topicTid: z.number().int().positive().optional().nullable(),
     dashboardTagTid: z.number().int().positive().optional().nullable(),
+    /** When not `all`, only include that content type (up to `numberOfItems`). */
+    itemTypeFilter: z.enum(['all', 'Article', 'Tweet']).optional().nullable(),
   }).optional().nullable(),
 });
 
@@ -28,7 +30,10 @@ export type NewsPanelXmlProps = z.infer<typeof NewsPanelXmlPropsSchema>;
 export const NewsPanelXmlPropsDefaults = {
   title: '',
   numberOfItems: 3,
+  itemTypeFilter: 'all' as const,
 } as const;
+
+export type NewsPanelItemTypeFilter = 'all' | 'Article' | 'Tweet';
 
 type LinkItem = {
   href: string;
@@ -106,7 +111,11 @@ const parseLinks = (linksHtml: string): LinkItem[] => {
 };
 
 // Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client)
-function parseNewsPanelXml(xmlText: string, numberOfItems: number): NewsPanelItem[] {
+function parseNewsPanelXml(
+  xmlText: string,
+  numberOfItems: number,
+  itemTypeFilter: NewsPanelItemTypeFilter = 'all'
+): NewsPanelItem[] {
   try {
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -179,7 +188,12 @@ function parseNewsPanelXml(xmlText: string, numberOfItems: number): NewsPanelIte
       }
     });
 
-    return mappedItems.slice(0, numberOfItems);
+    const filtered =
+      itemTypeFilter === 'all'
+        ? mappedItems
+        : mappedItems.filter((i) => i.type === itemTypeFilter);
+
+    return filtered.slice(0, numberOfItems);
   } catch (err) {
     console.error('Failed to parse news panel XML:', err);
     return [];
@@ -190,6 +204,8 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
   const url = buildTopicFilteredFeedUrl(NEWS_PANEL_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? NewsPanelXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? NewsPanelXmlPropsDefaults.numberOfItems;
+  const itemTypeFilter: NewsPanelItemTypeFilter =
+    props?.itemTypeFilter ?? NewsPanelXmlPropsDefaults.itemTypeFilter;
 
   // Try to get pre-fetched XML data from context
   // The renderToStaticMarkup function fetches XML data and makes it available globally
@@ -209,15 +225,23 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
   }
   
   // Parse pre-fetched data synchronously if available
-  const preFetchedItems = preFetchedXmlText ? parseNewsPanelXml(preFetchedXmlText, numberOfItems) : null;
+  const preFetchedItems = preFetchedXmlText
+    ? parseNewsPanelXml(preFetchedXmlText, numberOfItems, itemTypeFilter)
+    : null;
 
   const [items, setItems] = useState<NewsPanelItem[]>(preFetchedItems || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (preFetchedXmlText) {
+      setItems(parseNewsPanelXml(preFetchedXmlText, numberOfItems, itemTypeFilter));
+    }
+  }, [preFetchedXmlText, numberOfItems, itemTypeFilter]);
+
+  useEffect(() => {
     // Skip fetching if we already have pre-fetched data
-    if (preFetchedItems) {
+    if (preFetchedXmlText) {
       return;
     }
 
@@ -232,7 +256,7 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
         }
         const text = await response.text();
         
-        const parsedItems = parseNewsPanelXml(text, numberOfItems);
+        const parsedItems = parseNewsPanelXml(text, numberOfItems, itemTypeFilter);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -243,7 +267,7 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems]);
+  }, [url, numberOfItems, itemTypeFilter, preFetchedXmlText]);
 
   const padding = style?.padding;
   const wrapperStyle = {
