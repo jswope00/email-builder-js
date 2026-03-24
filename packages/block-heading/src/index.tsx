@@ -1,5 +1,18 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useContext } from 'react';
 import { z } from 'zod';
+
+import { HeadingWildcardExtrasContext } from './HeadingWildcardContext';
+import { expandHeadingWildcards } from './wildcards';
+
+export { HeadingWildcardExtrasContext } from './HeadingWildcardContext';
+export type { HeadingWildcardExtrasValue } from './HeadingWildcardContext';
+export {
+  HEADING_DATE_WILDCARD,
+  HEADING_FEATURED_STORY_TITLE_WILDCARD,
+  expandHeadingWildcards,
+  formatHeadingWildcardDate,
+  type ExpandHeadingWildcardsOptions,
+} from './wildcards';
 
 const COLOR_SCHEMA = z
   .string()
@@ -89,7 +102,10 @@ export const HeadingPropsDefaults = {
 
 export function Heading({ props, style }: HeadingProps) {
   const level = props?.level ?? HeadingPropsDefaults.level;
-  const text = props?.text ?? HeadingPropsDefaults.text;
+  const extras = useContext(HeadingWildcardExtrasContext);
+  const text = expandHeadingWildcards(props?.text ?? HeadingPropsDefaults.text, new Date(), {
+    featuredStoryFirstTitle: extras.featuredStoryFirstTitle,
+  });
   const hStyle: CSSProperties = {
     color: style?.color ?? undefined,
     backgroundColor: style?.backgroundColor ?? undefined,

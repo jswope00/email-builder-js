@@ -9,7 +9,8 @@ import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
 import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
 import { Button, ButtonPropsSchema } from '@usewaypoint/block-button';
 import { Divider, DividerPropsSchema } from '@usewaypoint/block-divider';
-import { Heading, HeadingPropsSchema } from '@usewaypoint/block-heading';
+import { HeadingPropsSchema } from '@usewaypoint/block-heading';
+import { HeadingReader } from '@usewaypoint/email-builder';
 import { Html, HtmlPropsSchema } from '@usewaypoint/block-html';
 import { Image, ImagePropsSchema } from '@usewaypoint/block-image';
 import { Spacer, SpacerPropsSchema } from '@usewaypoint/block-spacer';
@@ -69,7 +70,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: HeadingPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <Heading {...props} />
+        <HeadingReader {...props} />
       </EditorBlockWrapper>
     ),
   },

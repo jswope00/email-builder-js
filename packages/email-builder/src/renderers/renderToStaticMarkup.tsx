@@ -101,6 +101,15 @@ function extractXmlUrls(document: TReaderDocument): string[] {
       });
     }
 
+    const propsChildrenIds = props?.childrenIds;
+    if (Array.isArray(propsChildrenIds)) {
+      propsChildrenIds.forEach((childId) => {
+        if (typeof childId === 'string') {
+          traverse(childId);
+        }
+      });
+    }
+
     // Traverse columns in ColumnsContainer
     const columns = props?.columns;
     if (Array.isArray(columns)) {

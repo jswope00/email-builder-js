@@ -1,7 +1,8 @@
-import React, { createContext, useContext } from 'react';
+import React from 'react';
 import { z } from 'zod';
 
-import { XmlDataProvider } from './XmlDataContext';
+import EmailBuildingEnvironment from './EmailBuildingEnvironment';
+import { useReaderDocument } from './ReaderContexts';
 
 import { Advertisement300250Xml, Advertisement300250XmlPropsSchema } from '@usewaypoint/block-advertisement-300-250-xml';
 import { ConferenceAdvertisement300250Xml, ConferenceAdvertisement300250XmlPropsSchema } from '@usewaypoint/block-conference-advertisement-300-250-xml';
@@ -12,7 +13,7 @@ import { Button, ButtonPropsSchema } from '@usewaypoint/block-button';
 import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
 import { Divider, DividerPropsSchema } from '@usewaypoint/block-divider';
 import { FeaturedStoryXml, FeaturedStoryXmlPropsSchema } from '@usewaypoint/block-featured-story-xml';
-import { Heading, HeadingPropsSchema } from '@usewaypoint/block-heading';
+import { HeadingPropsSchema } from '@usewaypoint/block-heading';
 import { Html, HtmlPropsSchema } from '@usewaypoint/block-html';
 import { Image, ImagePropsSchema } from '@usewaypoint/block-image';
 import { NewsPanelXml, NewsPanelXmlPropsSchema } from '@usewaypoint/block-news-panel-xml';
@@ -32,12 +33,7 @@ import { ContainerPropsSchema } from '../blocks/Container/ContainerPropsSchema';
 import ContainerReader from '../blocks/Container/ContainerReader';
 import { EmailLayoutPropsSchema } from '../blocks/EmailLayout/EmailLayoutPropsSchema';
 import EmailLayoutReader from '../blocks/EmailLayout/EmailLayoutReader';
-
-const ReaderContext = createContext<TReaderDocument>({});
-
-function useReaderDocument() {
-  return useContext(ReaderContext);
-}
+import HeadingReader from '../blocks/Heading/HeadingReader';
 
 const READER_DICTIONARY = buildBlockConfigurationDictionary({
   ColumnsContainer: {
@@ -67,7 +63,7 @@ const READER_DICTIONARY = buildBlockConfigurationDictionary({
   },
   Heading: {
     schema: HeadingPropsSchema,
-    Component: Heading,
+    Component: HeadingReader,
   },
   Html: {
     schema: HtmlPropsSchema,
@@ -144,10 +140,8 @@ export type TReaderProps = {
 };
 export default function Reader({ document, rootBlockId, xmlData = {} }: TReaderProps) {
   return (
-    <ReaderContext.Provider value={document}>
-      <XmlDataProvider data={xmlData}>
-        <ReaderBlock id={rootBlockId} />
-      </XmlDataProvider>
-    </ReaderContext.Provider>
+    <EmailBuildingEnvironment document={document} rootBlockId={rootBlockId} xmlData={xmlData}>
+      <ReaderBlock id={rootBlockId} />
+    </EmailBuildingEnvironment>
   );
 }

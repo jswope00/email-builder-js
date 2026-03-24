@@ -30,6 +30,9 @@ export default function HeadingSidebarPanel({ data, setData }: HeadingSidebarPan
       <TextInput
         label="Content"
         rows={3}
+        helperText={
+          'Use %DATE% for today\'s date (e.g. "23 Mar 2026"). Use %FEATURED_STORY_TITLE% for the first Featured Story title (same feed as the Featured Story block).'
+        }
         defaultValue={data.props?.text ?? HeadingPropsDefaults.text}
         onChange={(text) => {
           updateData({ ...data, props: { ...data.props, text } });

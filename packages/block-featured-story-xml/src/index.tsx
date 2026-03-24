@@ -72,8 +72,11 @@ const PlayIcon = () => (
   </div>
 );
 
-// Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client)
-function parseFeaturedStoryXml(xmlText: string, numberOfItems: number): FeaturedStoryItem[] {
+/**
+ * Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client),
+ * and by other blocks (e.g. Heading wildcards) that need the same item shape.
+ */
+export function parseFeaturedStoryXml(xmlText: string, numberOfItems: number): FeaturedStoryItem[] {
   try {
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -148,8 +151,22 @@ function parseFeaturedStoryXml(xmlText: string, numberOfItems: number): Featured
   }
 }
 
+/** Effective feed URL for this block’s topic / dashboard tag filters (matches `FeaturedStoryXml` fetch URL). */
+export function buildFeaturedStoryFeedUrl(
+  topicTid?: number | null,
+  dashboardTagTid?: number | null
+): string {
+  return buildTopicFilteredFeedUrl(FEATURED_STORY_XML_FEED_URL, topicTid, dashboardTagTid);
+}
+
+/** First story title from raw XML (same ordering as the Featured Story block). */
+export function getFirstFeaturedStoryTitleFromXml(xmlText: string): string {
+  const items = parseFeaturedStoryXml(xmlText, 1);
+  return (items[0]?.title ?? '').trim();
+}
+
 export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
-  const url = buildTopicFilteredFeedUrl(FEATURED_STORY_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
+  const url = buildFeaturedStoryFeedUrl(props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? FeaturedStoryXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? FeaturedStoryXmlPropsDefaults.numberOfItems;
 
