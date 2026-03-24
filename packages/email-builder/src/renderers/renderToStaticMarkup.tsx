@@ -1,5 +1,6 @@
 import React from 'react';
 import { renderToStaticMarkup as baseRenderToStaticMarkup } from 'react-dom/server';
+import { COLUMNS_CONTAINER_STACK_TD_CLASS } from '@usewaypoint/block-columns-container';
 import { ADVERTISEMENT_300250_XML_FEED_URL } from '@usewaypoint/block-advertisement-300-250-xml';
 import { ADVERTISEMENT_72890_XML_FEED_URL } from '@usewaypoint/block-advertisement-728-90-xml';
 import { BLOG_XML_FEED_URL } from '@usewaypoint/block-blog-xml';
@@ -48,6 +49,28 @@ const XML_FEED_URL_BY_BLOCK_TYPE: Record<string, string> = {
   ConferenceAdvertisement300250Xml: CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL,
   DailyDownloadXml: DAILY_DOWNLOAD_XML_FEED_URL,
 };
+
+/** Matches typical email canvas width; column `<td>`s stack below this viewport width. */
+const RESPONSIVE_BREAKPOINT_PX = 600;
+
+function buildEmailResponsiveStackCss(stackTdClass: string): string {
+  const c = stackTdClass;
+  return [
+    `@media only screen and (max-width: ${RESPONSIVE_BREAKPOINT_PX}px) {`,
+    `  td.${c} {`,
+    '    display: block !important;',
+    '    width: 100% !important;',
+    '    max-width: 100% !important;',
+    '    box-sizing: border-box !important;',
+    '    padding-left: 0 !important;',
+    '    padding-right: 0 !important;',
+    '  }',
+    `  td.${c} + td.${c} {`,
+    '    padding-top: 16px !important;',
+    '  }',
+    '}',
+  ].join('\n');
+}
 
 type TOptions = {
   rootBlockId: string;
@@ -178,9 +201,15 @@ export default async function renderToStaticMarkup(
     (window as any).__XML_DATA_CONTEXT__ = xmlDataMap;
   }
 
+  const responsiveStackCss = buildEmailResponsiveStackCss(COLUMNS_CONTAINER_STACK_TD_CLASS);
+
   const html = '<!DOCTYPE html>' +
     baseRenderToStaticMarkup(
       <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <style dangerouslySetInnerHTML={{ __html: responsiveStackCss }} />
+        </head>
         <body>
           <Reader document={document} rootBlockId={rootBlockId} xmlData={xmlDataMap} />
         </body>

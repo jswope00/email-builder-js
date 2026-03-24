@@ -22,6 +22,9 @@ const FIXED_WIDTHS_SCHEMA = z
   .optional()
   .nullable();
 
+/** Applied to each column `<td>`; paired with responsive CSS in `@usewaypoint/email-builder` `renderToStaticMarkup`. */
+export const COLUMNS_CONTAINER_STACK_TD_CLASS = 'eb-stack-column';
+
 const getPadding = (padding: z.infer<typeof PADDING_SCHEMA>) =>
   padding ? `${padding.top}px ${padding.right}px ${padding.bottom}px ${padding.left}px` : undefined;
 
@@ -118,7 +121,11 @@ function TableCell({ index, props, columns }: Props) {
     width: props.fixedWidths?.[index] ?? undefined,
   };
   const children = (columns && columns[index]) ?? null;
-  return <td style={style}>{children}</td>;
+  return (
+    <td className={COLUMNS_CONTAINER_STACK_TD_CLASS} style={style}>
+      {children}
+    </td>
+  );
 }
 
 function getPaddingBefore(index: number, { columnsGap, columnsCount }: Props['props']) {

@@ -130,7 +130,9 @@ const BaseReaderBlock = buildBlockComponent(READER_DICTIONARY);
 export type TReaderBlockProps = { id: string };
 export function ReaderBlock({ id }: TReaderBlockProps) {
   const document = useReaderDocument();
-  return <BaseReaderBlock {...document[id]} />;
+  const block = document[id] as TReaderBlock | undefined;
+  if (!block) return null;
+  return <BaseReaderBlock {...block} />;
 }
 
 export type TReaderProps = {
