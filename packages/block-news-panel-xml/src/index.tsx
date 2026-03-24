@@ -76,6 +76,16 @@ const extractAuthor = (fullName: string): string => {
   return text.trim();
 };
 
+/** CDATA / mixed XML nodes sometimes parse as string or { '#text': string }. */
+const xmlFieldToString = (value: unknown): string => {
+  if (value == null) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object' && value !== null && '#text' in value) {
+    return String((value as { '#text': unknown })['#text']);
+  }
+  return '';
+};
+
 // Helper function to parse field_links HTML and extract link items
 const parseLinks = (linksHtml: string): LinkItem[] => {
   if (!linksHtml) return [];
@@ -155,7 +165,7 @@ function parseNewsPanelXml(xmlText: string, numberOfItems: number): NewsPanelIte
         };
       } else {
         const image = item.field_tweet_external_image || item.field_social_author_image1 || '';
-        const links = parseLinks(item.field_links || '');
+        const links = parseLinks(xmlFieldToString(item.field_links));
 
         return {
           type: 'Tweet' as const,
@@ -347,10 +357,34 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
                       )}
 
                       {item.links.length > 0 && (
-                        <div style={{ marginBottom: 12 }}>
+                        <div
+                          style={{
+                            marginTop: 4,
+                            marginBottom: 12,
+                            paddingLeft: 0,
+                            marginLeft: 0,
+                          }}
+                        >
                           {item.links.map((link, linkIndex) => (
-                            <div key={linkIndex} style={{ marginBottom: 8 }}>
-                              <a href={link.href} target="_blank" style={{ color: '#1585fe', textDecoration: 'none', fontSize: '14px' }}>
+                            <div
+                              key={linkIndex}
+                              style={{
+                                marginBottom: linkIndex < item.links.length - 1 ? 6 : 0,
+                                lineHeight: 1.45,
+                              }}
+                            >
+                              <a
+                                href={link.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  color: '#1585fe',
+                                  textDecoration: 'underline',
+                                  fontSize: '14px',
+                                  fontWeight: 500,
+                                  wordBreak: 'break-word',
+                                }}
+                              >
                                 {link.text || link.href}
                               </a>
                             </div>
