@@ -30,6 +30,8 @@ jobs:
         run: npm ci
       - name: Force reinstall optional dependencies
         run: npm install --force --no-save rollup @swc/core
+      - name: Build @usewaypoint/rheumnow-xml-topic
+        run: npm run build -w @usewaypoint/rheumnow-xml-topic
       - name: Build documentation
         run: npm run build --workspaces
       - name: Upload artifact

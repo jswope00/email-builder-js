@@ -33,6 +33,10 @@ jobs:
       - name: Force reinstall optional dependencies
         run: npm install --force --no-save rollup @swc/core
 
+      # XML blocks resolve types from this package’s dist/index.d.ts; workspace build order is not guaranteed.
+      - name: Build @usewaypoint/rheumnow-xml-topic
+        run: npm run build -w @usewaypoint/rheumnow-xml-topic
+
       - name: Build all packages (except frontend)
         run: npm run build --workspaces --if-present
       
