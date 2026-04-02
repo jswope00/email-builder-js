@@ -1,12 +1,11 @@
+import { renderToStaticMarkup, type TReaderDocument } from '@usewaypoint/email-builder';
+
 import {
   buildFeaturedStoryFeedUrl,
-  getFirstFeaturedStoryTitleFromXml,
-} from '@usewaypoint/block-featured-story-xml';
-import {
   expandHeadingWildcards,
+  getFirstFeaturedStoryTitleFromXml,
   HEADING_FEATURED_STORY_TITLE_WILDCARD,
-} from '@usewaypoint/block-heading';
-import { renderToStaticMarkup, type TReaderDocument } from '@usewaypoint/email-builder';
+} from '../utils/subjectWildcards';
 
 import { getTemplateById } from '../db/queries';
 import { AppError } from '../utils/errors';
