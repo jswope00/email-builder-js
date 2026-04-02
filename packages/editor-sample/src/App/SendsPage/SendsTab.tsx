@@ -1,6 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
+  buildFeaturedStoryFeedUrl,
+  getFirstFeaturedStoryTitleFromXml,
+} from '@usewaypoint/block-featured-story-xml';
+import {
+  expandHeadingWildcards,
+  HEADING_DATE_WILDCARD,
+  HEADING_FEATURED_STORY_TITLE_WILDCARD,
+} from '@usewaypoint/block-heading';
+
+import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
@@ -44,7 +54,7 @@ import {
   setCurrentView,
   setSelectedMainTab,
 } from '../../documents/editor/EditorContext';
-import { fetchTemplates, type TemplateListItem } from '../../api/templates';
+import { fetchTemplate, fetchTemplates, type TemplateListItem } from '../../api/templates';
 import { fetchAudiences, fetchSegments, type Audience, type Segment } from '../../api/mailchimp';
 import {
   createSend,
@@ -655,6 +665,48 @@ function buildSendPayload(send: EmailSendListItem, schedules: SchedulePayload[])
   };
 }
 
+/** BFS to find the first FeaturedStoryXml block props in a template configuration. */
+function findFirstFeaturedStoryInDoc(
+  config: Record<string, { type: string; data?: unknown }>,
+  rootId = 'root'
+): { topicTid?: number | null; dashboardTagTid?: number | null } | null {
+  const queue: string[] = [rootId];
+  const visited = new Set<string>();
+  while (queue.length > 0) {
+    const id = queue.shift()!;
+    if (visited.has(id)) continue;
+    visited.add(id);
+    const block = config[id];
+    if (!block) continue;
+    if (block.type === 'FeaturedStoryXml') {
+      const props = (block.data as { props?: Record<string, unknown> } | undefined)?.props;
+      return {
+        topicTid: props?.topicTid as number | null | undefined,
+        dashboardTagTid: props?.dashboardTagTid as number | null | undefined,
+      };
+    }
+    const data = block.data as Record<string, unknown> | undefined;
+    const props = data?.props as Record<string, unknown> | undefined;
+    const childIds: string[] = [];
+    if (Array.isArray(data?.childrenIds)) {
+      for (const c of data.childrenIds as unknown[]) if (typeof c === 'string') childIds.push(c);
+    }
+    if (Array.isArray(props?.childrenIds)) {
+      for (const c of props.childrenIds as unknown[]) if (typeof c === 'string') childIds.push(c);
+    }
+    const columns = props?.columns as Array<{ childrenIds?: unknown }> | undefined;
+    if (columns) {
+      for (const col of columns) {
+        if (Array.isArray(col?.childrenIds)) {
+          for (const c of col.childrenIds as unknown[]) if (typeof c === 'string') childIds.push(c);
+        }
+      }
+    }
+    queue.push(...childIds);
+  }
+  return null;
+}
+
 function ScheduleFormDialog({
   open,
   onClose,
@@ -1189,6 +1241,7 @@ function SendFormDialog({
   const [testSegments, setTestSegments] = useState<Segment[]>([]);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [featuredTitlePreview, setFeaturedTitlePreview] = useState<string>('');
 
   useEffect(() => {
     if (!open) return;
@@ -1240,6 +1293,45 @@ function SendFormDialog({
     }
     fetchSegments(testListId).then(setTestSegments).catch(() => setTestSegments([]));
   }, [testListId]);
+
+  useEffect(() => {
+    if (!open || !templateId) {
+      setFeaturedTitlePreview('');
+      return;
+    }
+    const slug = templates.find((t) => t.id === templateId)?.slug;
+    if (!slug) {
+      setFeaturedTitlePreview('');
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const tmpl = await fetchTemplate(slug);
+        if (cancelled) return;
+        const cfg = tmpl.configuration as Record<string, { type: string; data?: unknown }>;
+        const featuredBlock = findFirstFeaturedStoryInDoc(cfg, 'root');
+        if (!featuredBlock) return;
+        const feedUrl = buildFeaturedStoryFeedUrl(featuredBlock.topicTid, featuredBlock.dashboardTagTid);
+        const res = await fetch(feedUrl);
+        if (cancelled || !res.ok) return;
+        const xml = await res.text();
+        if (!cancelled) setFeaturedTitlePreview(getFirstFeaturedStoryTitleFromXml(xml));
+      } catch {
+        // preview is best-effort; leave empty on error
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [open, templateId, templates]);
+
+  const subjectPreview = useMemo(() => {
+    if (!subject.includes(HEADING_DATE_WILDCARD) && !subject.includes(HEADING_FEATURED_STORY_TITLE_WILDCARD)) {
+      return null;
+    }
+    return expandHeadingWildcards(subject, new Date(), { featuredStoryFirstTitle: featuredTitlePreview });
+  }, [subject, featuredTitlePreview]);
 
   const handleSubmit = async () => {
     setFormError(null);
@@ -1314,6 +1406,8 @@ function SendFormDialog({
             onChange={(e) => setSubject(e.target.value)}
             fullWidth
             required
+            helperText={subjectPreview !== null ? `Preview: ${subjectPreview}` : undefined}
+            FormHelperTextProps={subjectPreview !== null ? { sx: { fontStyle: 'italic' } } : undefined}
           />
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <FormControl fullWidth required>

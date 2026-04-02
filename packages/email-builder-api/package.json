@@ -13,6 +13,8 @@
   "author": "carlos@usewaypoint.com",
   "license": "MIT",
   "dependencies": {
+    "@usewaypoint/block-featured-story-xml": "*",
+    "@usewaypoint/block-heading": "*",
     "@usewaypoint/email-builder": "^0.0.9",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
