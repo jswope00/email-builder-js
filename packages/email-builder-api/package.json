@@ -7,13 +7,12 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsup src/index.ts --outDir dist --format cjs,esm --dts",
+    "build": "tsup",
     "start": "node dist/index.js"
   },
   "author": "carlos@usewaypoint.com",
   "license": "MIT",
   "dependencies": {
-    "@usewaypoint/email-builder": "^0.0.9",
     "fast-xml-parser": "^4.3.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
