@@ -36,10 +36,21 @@ type UpdateItem = {
   authorAttribution: string;
   image: string;
   body: string;
+  type: string;
+  isVideoType: boolean;
   viewNode: string;
   isSponsored: boolean;
   showAuthor: boolean;
 };
+
+function parseXmlTruthyBool(raw: unknown): boolean {
+  if (raw === true || raw === 1) return true;
+  if (typeof raw === 'string') {
+    const s = raw.trim().toLowerCase();
+    return s === '1' || s === 'true' || s === 'on' || s === 'yes';
+  }
+  return false;
+}
 
 // Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client)
 function parseTherapeuticUpdateXml(xmlText: string, numberOfItems: number): UpdateItem[] {
@@ -98,12 +109,20 @@ function parseTherapeuticUpdateXml(xmlText: string, numberOfItems: number): Upda
         authorAttribution = text.trim();
       }
 
+      const typeStr = String(item.type ?? '').trim();
+      const fromXml = parseXmlTruthyBool(
+        item.is_video_type ?? item.isVideoType ?? item.field_is_video_type
+      );
+      const isVideoType = fromXml || typeStr.toLowerCase() === 'video';
+
       return {
         title: item.title || '',
         createdDate: createdDate,
         authorAttribution: authorAttribution,
         image: item.field_media_image || '',
         body: item.body || '',
+        type: typeStr,
+        isVideoType,
         viewNode: item.view_node || '',
         isSponsored: item.field_rxu_is_sponsored === 'On',
         showAuthor: item.field_show_author == 1 || item.field_show_author === '1',
@@ -250,6 +269,28 @@ export function TherapeuticUpdateXml({ style, props }: TherapeuticUpdateXmlProps
                     {/* Render body, stripping CDATA wrapper if raw text or handle HTML safely if needed */}
                     {item.body.replace(/<!\[CDATA\[|\]\]>/g, '')}
                 </div>
+            )}
+
+            {item.viewNode && (
+              <div style={{ marginTop: 12 }}>
+                <a
+                  href={item.viewNode}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-block',
+                    backgroundColor: '#1585fe',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    padding: '10px 20px',
+                    borderRadius: 4,
+                  }}
+                >
+                  {item.isVideoType ? 'Watch Video' : 'Read Article'}
+                </a>
+              </div>
             )}
         </div>
       ))}

@@ -36,10 +36,21 @@ type BlogItem = {
   createdDate: string;
   image: string;
   body: string;
+  type: string;
+  isVideoType: boolean;
   viewNode: string;
   showAuthor: boolean;
   articleType: string;
 };
+
+function parseXmlTruthyBool(raw: unknown): boolean {
+  if (raw === true || raw === 1) return true;
+  if (typeof raw === 'string') {
+    const s = raw.trim().toLowerCase();
+    return s === '1' || s === 'true' || s === 'on' || s === 'yes';
+  }
+  return false;
+}
 
 // Helper function to extract date from created field
 const extractDate = (created: string): string => {
@@ -107,12 +118,20 @@ function parseBlogXml(xmlText: string, numberOfItems: number): BlogItem[] {
       const image = item.field_media_image || item.field_media_image || '';
       const showAuthor = item.field_show_author == 1 || item.field_show_author === '1';
 
+      const typeStr = String(item.type ?? '').trim();
+      const fromXml = parseXmlTruthyBool(
+        item.is_video_type ?? item.isVideoType ?? item.field_is_video_type
+      );
+      const isVideoType = fromXml || typeStr.toLowerCase() === 'video';
+
       return {
         title: item.title || '',
         author: item.field_author_attribution || '',
         createdDate: createdDate,
         image: image,
         body: item.body || '',
+        type: typeStr,
+        isVideoType,
         viewNode: item.view_node || '',
         showAuthor: showAuthor,
         articleType: item.field_article_type || '',
@@ -270,6 +289,28 @@ export function BlogXml({ style, props }: BlogXmlProps) {
             {item.body && (
               <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666' }}>
                 {item.body.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>?/gm, '')}
+              </div>
+            )}
+
+            {item.viewNode && (
+              <div style={{ marginTop: 12 }}>
+                <a
+                  href={item.viewNode}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-block',
+                    backgroundColor: '#1585fe',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    padding: '10px 20px',
+                    borderRadius: 4,
+                  }}
+                >
+                  {item.isVideoType ? 'Watch Video' : 'Read Article'}
+                </a>
               </div>
             )}
           </div>

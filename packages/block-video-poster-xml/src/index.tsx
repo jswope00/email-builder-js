@@ -346,6 +346,28 @@ export function VideoPosterXml({ style, props }: VideoPosterXmlProps) {
               {String(item.body).replace(/<!\[CDATA\[|\]\]>/g, '')}
             </div>
           )}
+
+          {item.viewNode && (
+            <div style={{ marginTop: 12 }}>
+              <a
+                href={item.viewNode}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-block',
+                  backgroundColor: '#1585fe',
+                  color: '#ffffff',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  padding: '10px 20px',
+                  borderRadius: 4,
+                }}
+              >
+                View Poster
+              </a>
+            </div>
+          )}
         </div>
       ))}
     </div>

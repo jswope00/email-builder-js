@@ -37,9 +37,20 @@ type FeaturedStoryItem = {
   image: string;
   body: string;
   type: string;
+  /** True when XML marks the item as video, or when `type` is `video`. */
+  isVideoType: boolean;
   showAuthor: boolean;
   viewNode: string;
 };
+
+function parseXmlTruthyBool(raw: unknown): boolean {
+  if (raw === true || raw === 1) return true;
+  if (typeof raw === 'string') {
+    const s = raw.trim().toLowerCase();
+    return s === '1' || s === 'true' || s === 'on' || s === 'yes';
+  }
+  return false;
+}
 
 // Play icon component (reused from block-video-xml)
 const PlayIcon = () => (
@@ -132,13 +143,20 @@ export function parseFeaturedStoryXml(xmlText: string, numberOfItems: number): F
         authorAttribution = text.trim();
       }
 
+      const typeStr = String(item.type ?? '').trim();
+      const fromXml = parseXmlTruthyBool(
+        item.is_video_type ?? item.isVideoType ?? item.field_is_video_type
+      );
+      const isVideoType = fromXml || typeStr.toLowerCase() === 'video';
+
       return {
         title: item.title || '',
         createdDate: createdDate,
         authorAttribution: authorAttribution,
         image: item.field_media_image || '',
         body: item.body || '',
-        type: item.type || '',
+        type: typeStr,
+        isVideoType,
         showAuthor: item.field_show_author == 1 || item.field_show_author === '1',
         viewNode: item.view_node || '',
       };
@@ -234,10 +252,6 @@ export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
   if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No stories found.</div>;
 
-  const isVideoType = (type: string) => {
-    return type && type.toLowerCase() === 'video';
-  };
-
   return (
     <div style={wrapperStyle}>
       {title && (
@@ -284,7 +298,7 @@ export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
                     {item.image && (
                         <div style={{ position: 'relative', marginBottom: 12 }}>
                             <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
-                            {isVideoType(item.type) && <PlayIcon />}
+                            {item.isVideoType && <PlayIcon />}
                         </div>
                     )}
                 </a>
@@ -293,7 +307,7 @@ export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
                     {item.image && (
                         <div style={{ position: 'relative', marginBottom: 12 }}>
                             <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
-                            {isVideoType(item.type) && <PlayIcon />}
+                            {item.isVideoType && <PlayIcon />}
                         </div>
                     )}
                 </>
@@ -303,6 +317,28 @@ export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
                 <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666' }}>
                     {item.body.replace(/<!\[CDATA\[|\]\]>/g, '')}
                 </div>
+            )}
+
+            {item.viewNode && (
+              <div style={{ marginTop: 12 }}>
+                <a
+                  href={item.viewNode}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-block',
+                    backgroundColor: '#1585fe',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    padding: '10px 20px',
+                    borderRadius: 4,
+                  }}
+                >
+                  {item.isVideoType ? 'Watch Video' : 'Read Article'}
+                </a>
+              </div>
             )}
         </div>
       ))}

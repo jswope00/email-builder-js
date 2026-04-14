@@ -52,6 +52,7 @@ type ArticleItem = {
   body: string;
   viewNode: string;
   showAuthor: boolean;
+  isVideoType: boolean;
 };
 
 type TweetItem = {
@@ -93,6 +94,15 @@ const xmlFieldToString = (value: unknown): string => {
   }
   return '';
 };
+
+function parseXmlTruthyBool(raw: unknown): boolean {
+  if (raw === true || raw === 1) return true;
+  if (typeof raw === 'string') {
+    const s = raw.trim().toLowerCase();
+    return s === '1' || s === 'true' || s === 'on' || s === 'yes';
+  }
+  return false;
+}
 
 // Helper function to parse field_links HTML and extract link items
 const parseLinks = (linksHtml: string): LinkItem[] => {
@@ -164,6 +174,11 @@ function parseNewsPanelXml(
       if (itemType.toLowerCase() === 'article') {
         const author = extractAuthor(item.field_full_name || '');
         const showAuthor = item.field_show_author == 1 || item.field_show_author === '1';
+        const typeStr = String(item.type ?? '').trim();
+        const fromXml = parseXmlTruthyBool(
+          item.is_video_type ?? item.isVideoType ?? item.field_is_video_type
+        );
+        const isVideoType = fromXml || typeStr.toLowerCase() === 'video';
 
         return {
           type: 'Article' as const,
@@ -174,6 +189,7 @@ function parseNewsPanelXml(
           body: item.body || '',
           viewNode: item.view_node || '',
           showAuthor: showAuthor,
+          isVideoType,
         };
       } else {
         const image = item.field_tweet_external_image || item.field_social_author_image1 || '';
@@ -345,6 +361,28 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
                       {item.body && (
                         <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666' }}>
                           {item.body.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>?/gm, '')}
+                        </div>
+                      )}
+
+                      {item.viewNode && (
+                        <div style={{ marginTop: 12 }}>
+                          <a
+                            href={item.viewNode}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: 'inline-block',
+                              backgroundColor: '#1585fe',
+                              color: '#ffffff',
+                              fontSize: '14px',
+                              fontWeight: 600,
+                              textDecoration: 'none',
+                              padding: '10px 20px',
+                              borderRadius: 4,
+                            }}
+                          >
+                            {item.isVideoType ? 'Watch Video' : 'Read Article'}
+                          </a>
                         </div>
                       )}
                     </td>
