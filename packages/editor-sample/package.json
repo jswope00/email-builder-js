@@ -24,6 +24,7 @@
     "@usewaypoint/block-spacer": "^0.0.3",
     "@usewaypoint/block-text": "^0.0.7",
     "@usewaypoint/block-therapeutic-update-xml": "*",
+    "@usewaypoint/block-video-poster-xml": "*",
     "@usewaypoint/block-video-xml": "*",
     "@usewaypoint/block-featured-story-xml": "*",
     "@usewaypoint/block-news-panel-xml": "*",

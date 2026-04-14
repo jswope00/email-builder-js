@@ -83,6 +83,7 @@ The agent enables developers, content creators, and AI systems to:
 |--------------|----------------------------------|----------|
 | `VideoXml` | `VIDEO_XML_FEED_URL` (`block-video-xml`) | `https://rheumnow.com/admin/videos-xml` |
 | `TherapeuticUpdateXml` | `THERAPEUTIC_UPDATE_XML_FEED_URL` | `https://rheumnow.com/admin/therapeutic_update_xml` |
+| `VideoPosterXml` | `VIDEO_POSTER_XML_FEED_URL` (`block-video-poster-xml`) | `https://rheumnow.com/admin/therapeutic_update_xml` |
 | `FeaturedStoryXml` | `FEATURED_STORY_XML_FEED_URL` | `https://rheumnow.com/admin/featured-story-xml` |
 | `NewsPanelXml` | `NEWS_PANEL_XML_FEED_URL` | `https://rheumnow.com/admin/daily_news_xml` |
 | `BlogXml` | `BLOG_XML_FEED_URL` | `https://rheumnow.com/admin/blogs_xml` |

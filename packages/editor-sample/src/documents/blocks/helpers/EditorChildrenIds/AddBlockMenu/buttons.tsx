@@ -14,6 +14,7 @@ import {
   MedicalServicesOutlined,
   NotesOutlined,
   OndemandVideoOutlined,
+  WallpaperOutlined,
   SmartButtonOutlined,
   ViewColumnOutlined,
 } from '@mui/icons-material';
@@ -158,6 +159,19 @@ export const BUTTONS: TButtonProps[] = [
         props: {
           url: '',
           numberOfItems: 3,
+        },
+      },
+    }),
+  },
+  {
+    label: 'Video Poster XML',
+    icon: <WallpaperOutlined />,
+    block: () => ({
+      type: 'VideoPosterXml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
+          numberOfItems: 1,
         },
       },
     }),

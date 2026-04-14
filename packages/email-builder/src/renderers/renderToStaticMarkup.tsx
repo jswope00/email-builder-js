@@ -9,6 +9,7 @@ import { DAILY_DOWNLOAD_XML_FEED_URL } from '@usewaypoint/block-daily-download-x
 import { FEATURED_STORY_XML_FEED_URL } from '@usewaypoint/block-featured-story-xml';
 import { NEWS_PANEL_XML_FEED_URL } from '@usewaypoint/block-news-panel-xml';
 import { THERAPEUTIC_UPDATE_XML_FEED_URL } from '@usewaypoint/block-therapeutic-update-xml';
+import { VIDEO_POSTER_XML_FEED_URL } from '@usewaypoint/block-video-poster-xml';
 import { VIDEO_XML_FEED_URL } from '@usewaypoint/block-video-xml';
 
 import Reader, { TReaderDocument } from '../Reader/core';
@@ -41,6 +42,7 @@ function buildTopicFilteredFeedUrl(
 const XML_FEED_URL_BY_BLOCK_TYPE: Record<string, string> = {
   VideoXml: VIDEO_XML_FEED_URL,
   TherapeuticUpdateXml: THERAPEUTIC_UPDATE_XML_FEED_URL,
+  VideoPosterXml: VIDEO_POSTER_XML_FEED_URL,
   FeaturedStoryXml: FEATURED_STORY_XML_FEED_URL,
   NewsPanelXml: NEWS_PANEL_XML_FEED_URL,
   BlogXml: BLOG_XML_FEED_URL,

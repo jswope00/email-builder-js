@@ -24,6 +24,7 @@ import TextSidebarPanel from './input-panels/TextSidebarPanel';
 import FeaturedStoryXmlSidebarPanel from './input-panels/FeaturedStoryXmlSidebarPanel';
 import NewsPanelXmlSidebarPanel from './input-panels/NewsPanelXmlSidebarPanel';
 import TherapeuticUpdateXmlSidebarPanel from './input-panels/TherapeuticUpdateXmlSidebarPanel';
+import VideoPosterXmlSidebarPanel from './input-panels/VideoPosterXmlSidebarPanel';
 import VideoXmlSidebarPanel from './input-panels/VideoXmlSidebarPanel';
 
 function renderMessage(val: string) {
@@ -78,6 +79,10 @@ export default function ConfigurationPanel() {
     case 'TherapeuticUpdateXml':
       return (
         <TherapeuticUpdateXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
+      );
+    case 'VideoPosterXml':
+      return (
+        <VideoPosterXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
       );
     case 'FeaturedStoryXml':
       return (

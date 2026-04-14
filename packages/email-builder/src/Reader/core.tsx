@@ -20,6 +20,7 @@ import { NewsPanelXml, NewsPanelXmlPropsSchema } from '@usewaypoint/block-news-p
 import { Spacer, SpacerPropsSchema } from '@usewaypoint/block-spacer';
 import { Text, TextPropsSchema } from '@usewaypoint/block-text';
 import { TherapeuticUpdateXml, TherapeuticUpdateXmlPropsSchema } from '@usewaypoint/block-therapeutic-update-xml';
+import { VideoPosterXml, VideoPosterXmlPropsSchema } from '@usewaypoint/block-video-poster-xml';
 import { VideoXml, VideoXmlPropsSchema } from '@usewaypoint/block-video-xml';
 import {
   buildBlockComponent,
@@ -88,6 +89,10 @@ const READER_DICTIONARY = buildBlockConfigurationDictionary({
   TherapeuticUpdateXml: {
     schema: TherapeuticUpdateXmlPropsSchema,
     Component: TherapeuticUpdateXml,
+  },
+  VideoPosterXml: {
+    schema: VideoPosterXmlPropsSchema,
+    Component: VideoPosterXml,
   },
   FeaturedStoryXml: {
     schema: FeaturedStoryXmlPropsSchema,

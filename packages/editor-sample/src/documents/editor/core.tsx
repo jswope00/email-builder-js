@@ -18,6 +18,7 @@ import { Text, TextPropsSchema } from '@usewaypoint/block-text';
 import { FeaturedStoryXml, FeaturedStoryXmlPropsSchema } from '@usewaypoint/block-featured-story-xml';
 import { NewsPanelXml, NewsPanelXmlPropsSchema } from '@usewaypoint/block-news-panel-xml';
 import { TherapeuticUpdateXml, TherapeuticUpdateXmlPropsSchema } from '@usewaypoint/block-therapeutic-update-xml';
+import { VideoPosterXml, VideoPosterXmlPropsSchema } from '@usewaypoint/block-video-poster-xml';
 import { VideoXml, VideoXmlPropsSchema } from '@usewaypoint/block-video-xml';
 import {
   buildBlockComponent,
@@ -140,6 +141,14 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     Component: (props) => (
       <EditorBlockWrapper>
         <TherapeuticUpdateXml {...props} />
+      </EditorBlockWrapper>
+    ),
+  },
+  VideoPosterXml: {
+    schema: VideoPosterXmlPropsSchema,
+    Component: (props) => (
+      <EditorBlockWrapper>
+        <VideoPosterXml {...props} />
       </EditorBlockWrapper>
     ),
   },
