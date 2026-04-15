@@ -6,6 +6,7 @@ import { ADVERTISEMENT_72890_XML_FEED_URL } from '@usewaypoint/block-advertiseme
 import { BLOG_XML_FEED_URL } from '@usewaypoint/block-blog-xml';
 import { CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL } from '@usewaypoint/block-conference-advertisement-300-250-xml';
 import { DAILY_DOWNLOAD_XML_FEED_URL } from '@usewaypoint/block-daily-download-xml';
+import { EMAIL_SURVEY_XML_FEED_URL } from '@usewaypoint/block-email-survey-xml';
 import { FEATURED_STORY_XML_FEED_URL } from '@usewaypoint/block-featured-story-xml';
 import { NEWS_PANEL_XML_FEED_URL } from '@usewaypoint/block-news-panel-xml';
 import { THERAPEUTIC_UPDATE_XML_FEED_URL } from '@usewaypoint/block-therapeutic-update-xml';
@@ -50,6 +51,7 @@ const XML_FEED_URL_BY_BLOCK_TYPE: Record<string, string> = {
   Advertisement300250Xml: ADVERTISEMENT_300250_XML_FEED_URL,
   ConferenceAdvertisement300250Xml: CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL,
   DailyDownloadXml: DAILY_DOWNLOAD_XML_FEED_URL,
+  EmailSurveyXml: EMAIL_SURVEY_XML_FEED_URL,
 };
 
 /** Matches typical email canvas width; column `<td>`s stack below this viewport width. */

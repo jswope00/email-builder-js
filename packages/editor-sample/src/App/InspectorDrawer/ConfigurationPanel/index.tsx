@@ -11,6 +11,7 @@ import Advertisement72890XmlSidebarPanel from './input-panels/Advertisement72890
 import AvatarSidebarPanel from './input-panels/AvatarSidebarPanel';
 import BlogXmlSidebarPanel from './input-panels/BlogXmlSidebarPanel';
 import DailyDownloadXmlSidebarPanel from './input-panels/DailyDownloadXmlSidebarPanel';
+import EmailSurveyXmlSidebarPanel from './input-panels/EmailSurveyXmlSidebarPanel';
 import ButtonSidebarPanel from './input-panels/ButtonSidebarPanel';
 import ColumnsContainerSidebarPanel from './input-panels/ColumnsContainerSidebarPanel';
 import ContainerSidebarPanel from './input-panels/ContainerSidebarPanel';
@@ -111,6 +112,10 @@ export default function ConfigurationPanel() {
     case 'DailyDownloadXml':
       return (
         <DailyDownloadXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
+      );
+    case 'EmailSurveyXml':
+      return (
+        <EmailSurveyXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
       );
     default:
       return <pre>{JSON.stringify(block, null, '  ')}</pre>;

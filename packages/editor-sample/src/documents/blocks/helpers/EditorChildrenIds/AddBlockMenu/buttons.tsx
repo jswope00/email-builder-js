@@ -14,6 +14,7 @@ import {
   MedicalServicesOutlined,
   NotesOutlined,
   OndemandVideoOutlined,
+  PollOutlined,
   WallpaperOutlined,
   SmartButtonOutlined,
   ViewColumnOutlined,
@@ -185,6 +186,19 @@ export const BUTTONS: TButtonProps[] = [
         style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
         props: {
           url: '',
+          numberOfItems: 3,
+        },
+      },
+    }),
+  },
+  {
+    label: 'Email Survey XML',
+    icon: <PollOutlined />,
+    block: () => ({
+      type: 'EmailSurveyXml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
           numberOfItems: 3,
         },
       },
