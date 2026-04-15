@@ -346,6 +346,21 @@ curl http://localhost:3001/api/templates
    cd packages/block-<name>
    npm run build
    ```
+   Or, to build all workspaces that have a build script:
+   ```bash
+   # from repo root
+   npm run build --workspaces --if-present
+   ```
+
+### Build Output Hygiene (Important)
+
+Some TypeScript/tsup commands can emit generated files directly into `src/` (for example `*.js`, `*.js.map`, `*.d.ts`, `*.d.ts.map`) if they are run with the wrong config/context.
+
+- Prefer package `npm run build` scripts over ad-hoc `tsc` commands.
+- For day-to-day work:
+  - run `npm run dev -w @usewaypoint/editor-sample` for the UI
+  - only rebuild packages that changed (or use `npm run build --workspaces --if-present` from root)
+- If you do accidentally generate source-folder artifacts, they are ignored by `.gitignore`, but you can still remove them locally if needed.
 
 ### Rebuilding Packages
 

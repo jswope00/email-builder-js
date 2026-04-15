@@ -20,6 +20,9 @@ export const BlogXmlPropsSchema = z.object({
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
     topicTid: z.number().int().positive().optional().nullable(),
     dashboardTagTid: z.number().int().positive().optional().nullable(),
+    createdStartDate: z.string().optional().nullable(),
+    createdEndDate: z.string().optional().nullable(),
+    createdRelativeDays: z.number().int().min(0).optional().nullable(),
   }).optional().nullable(),
 });
 
@@ -28,12 +31,16 @@ export type BlogXmlProps = z.infer<typeof BlogXmlPropsSchema>;
 export const BlogXmlPropsDefaults = {
   title: '',
   numberOfItems: 3,
+  createdStartDate: null,
+  createdEndDate: null,
+  createdRelativeDays: null,
 } as const;
 
 type BlogItem = {
   title: string;
   author: string;
   createdDate: string;
+  createdDateTime: string;
   image: string;
   body: string;
   type: string;
@@ -41,6 +48,12 @@ type BlogItem = {
   viewNode: string;
   showAuthor: boolean;
   articleType: string;
+};
+
+type DateFilterOptions = {
+  createdStartDate?: string | null;
+  createdEndDate?: string | null;
+  createdRelativeDays?: number | null;
 };
 
 function parseXmlTruthyBool(raw: unknown): boolean {
@@ -52,15 +65,54 @@ function parseXmlTruthyBool(raw: unknown): boolean {
   return false;
 }
 
-// Helper function to extract date from created field
-const extractDate = (created: string): string => {
-  if (!created) return '';
-  const match = created.match(/>([^<]+)<\/time>/);
-  if (match && match[1]) {
-    return match[1];
-  }
-  return created;
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+const parseCreatedField = (created: unknown): { createdDate: string; createdDateTime: string } => {
+  if (!created) return { createdDate: '', createdDateTime: '' };
+  const raw = typeof created === 'string' ? created : String(created);
+  const datetimeMatch = raw.match(/datetime=["']([^"']+)["']/i);
+  const dateTextMatch = raw.match(/>([^<]+)<\/time>/);
+  return {
+    createdDate: dateTextMatch && dateTextMatch[1] ? dateTextMatch[1] : raw,
+    createdDateTime: datetimeMatch && datetimeMatch[1] ? datetimeMatch[1] : '',
+  };
 };
+
+function parseDateStart(value: string): number | null {
+  const parsed = new Date(`${value}T00:00:00`).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseDateEnd(value: string): number | null {
+  const parsed = new Date(`${value}T23:59:59.999`).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function filterItemsByCreatedDate(
+  items: BlogItem[],
+  { createdStartDate, createdEndDate, createdRelativeDays }: DateFilterOptions
+): BlogItem[] {
+  const hasStart = typeof createdStartDate === 'string' && createdStartDate.trim() !== '';
+  const hasEnd = typeof createdEndDate === 'string' && createdEndDate.trim() !== '';
+  const hasRelative = typeof createdRelativeDays === 'number' && Number.isFinite(createdRelativeDays);
+  if (!hasStart && !hasEnd && !hasRelative) return items;
+
+  const startTs = hasStart ? parseDateStart(createdStartDate!) : null;
+  const endTs = hasEnd ? parseDateEnd(createdEndDate!) : null;
+  const now = new Date();
+  const relativeStartTs = hasRelative
+    ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() - createdRelativeDays! * DAY_IN_MS
+    : null;
+
+  return items.filter((item) => {
+    const itemTs = new Date(item.createdDateTime).getTime();
+    if (!Number.isFinite(itemTs)) return false;
+    if (startTs !== null && itemTs < startTs) return false;
+    if (endTs !== null && itemTs > endTs) return false;
+    if (relativeStartTs !== null && itemTs < relativeStartTs) return false;
+    return true;
+  });
+}
 
 // Helper function to get branding image URL based on article type
 const getBrandingImageUrl = (articleType: string): string | null => {
@@ -74,7 +126,11 @@ const getBrandingImageUrl = (articleType: string): string | null => {
 };
 
 // Helper function to parse XML and extract blog items
-function parseBlogXml(xmlText: string, numberOfItems: number): BlogItem[] {
+function parseBlogXml(
+  xmlText: string,
+  numberOfItems: number,
+  dateFilters: DateFilterOptions = {}
+): BlogItem[] {
   try {
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -114,7 +170,7 @@ function parseBlogXml(xmlText: string, numberOfItems: number): BlogItem[] {
     findItems(result);
 
     const mappedItems: BlogItem[] = foundItems.map((item: any) => {
-      const createdDate = extractDate(item.created || '');
+      const { createdDate, createdDateTime } = parseCreatedField(item.created);
       const image = item.field_media_image || item.field_media_image || '';
       const showAuthor = item.field_show_author == 1 || item.field_show_author === '1';
 
@@ -127,7 +183,8 @@ function parseBlogXml(xmlText: string, numberOfItems: number): BlogItem[] {
       return {
         title: item.title || '',
         author: item.field_author_attribution || '',
-        createdDate: createdDate,
+        createdDate,
+        createdDateTime,
         image: image,
         body: item.body || '',
         type: typeStr,
@@ -138,7 +195,8 @@ function parseBlogXml(xmlText: string, numberOfItems: number): BlogItem[] {
       };
     });
 
-    return mappedItems.slice(0, numberOfItems);
+    const filteredItems = filterItemsByCreatedDate(mappedItems, dateFilters);
+    return filteredItems.slice(0, numberOfItems);
   } catch (err) {
     console.error('Error parsing blog XML:', err);
     return [];
@@ -153,6 +211,11 @@ export function BlogXml({
   const url = buildTopicFilteredFeedUrl(BLOG_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? BlogXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? BlogXmlPropsDefaults.numberOfItems;
+  const dateFilters: DateFilterOptions = {
+    createdStartDate: props?.createdStartDate,
+    createdEndDate: props?.createdEndDate,
+    createdRelativeDays: props?.createdRelativeDays,
+  };
 
   // Try to get pre-fetched XML data from context
   // The renderToStaticMarkup function fetches XML data and makes it available globally
@@ -172,7 +235,9 @@ export function BlogXml({
   }
   
   // Parse pre-fetched data synchronously if available
-  const preFetchedItems = preFetchedXmlText ? parseBlogXml(preFetchedXmlText, numberOfItems) : null;
+  const preFetchedItems = preFetchedXmlText
+    ? parseBlogXml(preFetchedXmlText, numberOfItems, dateFilters)
+    : null;
 
   const [items, setItems] = useState<BlogItem[]>(preFetchedItems || []);
   const [loading, setLoading] = useState(false);
@@ -195,7 +260,7 @@ export function BlogXml({
         }
         const text = await response.text();
         
-        const parsedItems = parseBlogXml(text, numberOfItems);
+        const parsedItems = parseBlogXml(text, numberOfItems, dateFilters);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -206,7 +271,7 @@ export function BlogXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems]);
+  }, [url, numberOfItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   const padding = style?.padding;
   const wrapperStyle = {

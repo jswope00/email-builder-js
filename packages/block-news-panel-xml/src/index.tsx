@@ -20,6 +20,9 @@ export const NewsPanelXmlPropsSchema = z.object({
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
     topicTid: z.number().int().positive().optional().nullable(),
     dashboardTagTid: z.number().int().positive().optional().nullable(),
+    createdStartDate: z.string().optional().nullable(),
+    createdEndDate: z.string().optional().nullable(),
+    createdRelativeDays: z.number().int().min(0).optional().nullable(),
     /** When not `all`, only include that content type (up to `numberOfItems`). */
     itemTypeFilter: z.enum(['all', 'Article', 'Tweet']).optional().nullable(),
     /** Omit article/tweet thumbnails to save vertical space. */
@@ -32,6 +35,9 @@ export type NewsPanelXmlProps = z.infer<typeof NewsPanelXmlPropsSchema>;
 export const NewsPanelXmlPropsDefaults = {
   title: '',
   numberOfItems: 3,
+  createdStartDate: null,
+  createdEndDate: null,
+  createdRelativeDays: null,
   itemTypeFilter: 'all' as const,
   hideImages: false,
 } as const;
@@ -48,6 +54,7 @@ type ArticleItem = {
   title: string;
   author: string;
   createdDate: string;
+  createdDateTime: string;
   image: string;
   body: string;
   viewNode: string;
@@ -62,20 +69,64 @@ type TweetItem = {
   links: LinkItem[];
   authorName: string;
   createdDate: string;
+  createdDateTime: string;
   tweetId: string;
 };
 
 type NewsPanelItem = ArticleItem | TweetItem;
-
-// Helper function to extract date from created_1 field
-const extractDate = (created: string): string => {
-  if (!created) return '';
-  const match = created.match(/>([^<]+)<\/time>/);
-  if (match && match[1]) {
-    return match[1];
-  }
-  return created;
+type DateFilterOptions = {
+  createdStartDate?: string | null;
+  createdEndDate?: string | null;
+  createdRelativeDays?: number | null;
 };
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+function parseCreatedField(created: unknown): { createdDate: string; createdDateTime: string } {
+  if (!created) return { createdDate: '', createdDateTime: '' };
+  const raw = typeof created === 'string' ? created : String(created);
+  const datetimeMatch = raw.match(/datetime=["']([^"']+)["']/i);
+  const dateTextMatch = raw.match(/>([^<]+)<\/time>/);
+  return {
+    createdDate: dateTextMatch && dateTextMatch[1] ? dateTextMatch[1] : raw,
+    createdDateTime: datetimeMatch && datetimeMatch[1] ? datetimeMatch[1] : '',
+  };
+}
+
+function parseDateStart(value: string): number | null {
+  const parsed = new Date(`${value}T00:00:00`).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseDateEnd(value: string): number | null {
+  const parsed = new Date(`${value}T23:59:59.999`).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function filterItemsByCreatedDate(
+  items: NewsPanelItem[],
+  { createdStartDate, createdEndDate, createdRelativeDays }: DateFilterOptions
+): NewsPanelItem[] {
+  const hasStart = typeof createdStartDate === 'string' && createdStartDate.trim() !== '';
+  const hasEnd = typeof createdEndDate === 'string' && createdEndDate.trim() !== '';
+  const hasRelative = typeof createdRelativeDays === 'number' && Number.isFinite(createdRelativeDays);
+  if (!hasStart && !hasEnd && !hasRelative) return items;
+
+  const startTs = hasStart ? parseDateStart(createdStartDate!) : null;
+  const endTs = hasEnd ? parseDateEnd(createdEndDate!) : null;
+  const now = new Date();
+  const relativeStartTs = hasRelative
+    ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() - createdRelativeDays! * DAY_IN_MS
+    : null;
+
+  return items.filter((item) => {
+    const itemTs = new Date(item.createdDateTime).getTime();
+    if (!Number.isFinite(itemTs)) return false;
+    if (startTs !== null && itemTs < startTs) return false;
+    if (endTs !== null && itemTs > endTs) return false;
+    if (relativeStartTs !== null && itemTs < relativeStartTs) return false;
+    return true;
+  });
+}
 
 // Helper function to extract author from field_full_name (may contain HTML)
 const extractAuthor = (fullName: string): string => {
@@ -127,7 +178,8 @@ const parseLinks = (linksHtml: string): LinkItem[] => {
 function parseNewsPanelXml(
   xmlText: string,
   numberOfItems: number,
-  itemTypeFilter: NewsPanelItemTypeFilter = 'all'
+  itemTypeFilter: NewsPanelItemTypeFilter = 'all',
+  dateFilters: DateFilterOptions = {}
 ): NewsPanelItem[] {
   try {
     const parser = new XMLParser({
@@ -169,7 +221,7 @@ function parseNewsPanelXml(
 
     const mappedItems: NewsPanelItem[] = foundItems.map((item: any) => {
       const itemType = item.type || '';
-      const createdDate = extractDate(item.created_1 || '');
+      const { createdDate, createdDateTime } = parseCreatedField(item.created_1 || item.created);
 
       if (itemType.toLowerCase() === 'article') {
         const author = extractAuthor(item.field_full_name || '');
@@ -184,7 +236,8 @@ function parseNewsPanelXml(
           type: 'Article' as const,
           title: item.title || '',
           author: author,
-          createdDate: createdDate,
+          createdDate,
+          createdDateTime,
           image: item.field_media_image || '',
           body: item.body || '',
           viewNode: item.view_node || '',
@@ -201,18 +254,20 @@ function parseNewsPanelXml(
           tweetContent: item.field_tweet_content || '',
           links: links,
           authorName: item.field_social_author_name || '',
-          createdDate: createdDate,
+          createdDate,
+          createdDateTime,
           tweetId: item.field_tweet_id || '',
         };
       }
     });
 
-    const filtered =
+    const typeFiltered =
       itemTypeFilter === 'all'
         ? mappedItems
         : mappedItems.filter((i) => i.type === itemTypeFilter);
+    const dateFiltered = filterItemsByCreatedDate(typeFiltered, dateFilters);
 
-    return filtered.slice(0, numberOfItems);
+    return dateFiltered.slice(0, numberOfItems);
   } catch (err) {
     console.error('Failed to parse news panel XML:', err);
     return [];
@@ -230,6 +285,11 @@ export function NewsPanelXml({
   const itemTypeFilter: NewsPanelItemTypeFilter =
     props?.itemTypeFilter ?? NewsPanelXmlPropsDefaults.itemTypeFilter;
   const hideImages = props?.hideImages ?? NewsPanelXmlPropsDefaults.hideImages;
+  const dateFilters: DateFilterOptions = {
+    createdStartDate: props?.createdStartDate,
+    createdEndDate: props?.createdEndDate,
+    createdRelativeDays: props?.createdRelativeDays,
+  };
 
   // Try to get pre-fetched XML data from context
   // The renderToStaticMarkup function fetches XML data and makes it available globally
@@ -250,7 +310,7 @@ export function NewsPanelXml({
   
   // Parse pre-fetched data synchronously if available
   const preFetchedItems = preFetchedXmlText
-    ? parseNewsPanelXml(preFetchedXmlText, numberOfItems, itemTypeFilter)
+    ? parseNewsPanelXml(preFetchedXmlText, numberOfItems, itemTypeFilter, dateFilters)
     : null;
 
   const [items, setItems] = useState<NewsPanelItem[]>(preFetchedItems || []);
@@ -259,9 +319,9 @@ export function NewsPanelXml({
 
   useEffect(() => {
     if (preFetchedXmlText) {
-      setItems(parseNewsPanelXml(preFetchedXmlText, numberOfItems, itemTypeFilter));
+      setItems(parseNewsPanelXml(preFetchedXmlText, numberOfItems, itemTypeFilter, dateFilters));
     }
-  }, [preFetchedXmlText, numberOfItems, itemTypeFilter]);
+  }, [preFetchedXmlText, numberOfItems, itemTypeFilter, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   useEffect(() => {
     // Skip fetching if we already have pre-fetched data
@@ -280,7 +340,7 @@ export function NewsPanelXml({
         }
         const text = await response.text();
         
-        const parsedItems = parseNewsPanelXml(text, numberOfItems, itemTypeFilter);
+        const parsedItems = parseNewsPanelXml(text, numberOfItems, itemTypeFilter, dateFilters);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -291,7 +351,7 @@ export function NewsPanelXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, itemTypeFilter, preFetchedXmlText]);
+  }, [url, numberOfItems, itemTypeFilter, preFetchedXmlText, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   const padding = style?.padding;
   const wrapperStyle = {

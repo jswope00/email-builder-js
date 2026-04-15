@@ -20,6 +20,9 @@ export const FeaturedStoryXmlPropsSchema = z.object({
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
     topicTid: z.number().int().positive().optional().nullable(),
     dashboardTagTid: z.number().int().positive().optional().nullable(),
+    createdStartDate: z.string().optional().nullable(),
+    createdEndDate: z.string().optional().nullable(),
+    createdRelativeDays: z.number().int().min(0).optional().nullable(),
   }).optional().nullable(),
 });
 
@@ -28,11 +31,15 @@ export type FeaturedStoryXmlProps = z.infer<typeof FeaturedStoryXmlPropsSchema>;
 export const FeaturedStoryXmlPropsDefaults = {
   title: '',
   numberOfItems: 3,
+  createdStartDate: null,
+  createdEndDate: null,
+  createdRelativeDays: null,
 } as const;
 
 type FeaturedStoryItem = {
   title: string;
   createdDate: string;
+  createdDateTime: string;
   authorAttribution: string;
   image: string;
   body: string;
@@ -42,6 +49,61 @@ type FeaturedStoryItem = {
   showAuthor: boolean;
   viewNode: string;
 };
+
+type DateFilterOptions = {
+  createdStartDate?: string | null;
+  createdEndDate?: string | null;
+  createdRelativeDays?: number | null;
+};
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+function parseCreatedField(created: unknown): { createdDate: string; createdDateTime: string } {
+  if (!created) return { createdDate: '', createdDateTime: '' };
+  const raw = typeof created === 'string' ? created : String(created);
+  const datetimeMatch = raw.match(/datetime=["']([^"']+)["']/i);
+  const dateTextMatch = raw.match(/>([^<]+)<\/time>/);
+  return {
+    createdDate: dateTextMatch && dateTextMatch[1] ? dateTextMatch[1] : raw,
+    createdDateTime: datetimeMatch && datetimeMatch[1] ? datetimeMatch[1] : '',
+  };
+}
+
+function parseDateStart(value: string): number | null {
+  const parsed = new Date(`${value}T00:00:00`).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseDateEnd(value: string): number | null {
+  const parsed = new Date(`${value}T23:59:59.999`).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function filterItemsByCreatedDate<T extends { createdDateTime: string }>(
+  items: T[],
+  { createdStartDate, createdEndDate, createdRelativeDays }: DateFilterOptions
+): T[] {
+  const hasStart = typeof createdStartDate === 'string' && createdStartDate.trim() !== '';
+  const hasEnd = typeof createdEndDate === 'string' && createdEndDate.trim() !== '';
+  const hasRelative = typeof createdRelativeDays === 'number' && Number.isFinite(createdRelativeDays);
+  if (!hasStart && !hasEnd && !hasRelative) return items;
+
+  const startTs = hasStart ? parseDateStart(createdStartDate!) : null;
+  const endTs = hasEnd ? parseDateEnd(createdEndDate!) : null;
+  const relativeStartTs = hasRelative
+    ? new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime() -
+      createdRelativeDays! * DAY_IN_MS
+    : null;
+
+  return items.filter((item) => {
+    const itemTs = new Date(item.createdDateTime).getTime();
+    if (!Number.isFinite(itemTs)) return false;
+    if (startTs !== null && itemTs < startTs) return false;
+    if (endTs !== null && itemTs > endTs) return false;
+    if (relativeStartTs !== null && itemTs < relativeStartTs) return false;
+    return true;
+  });
+}
 
 function parseXmlTruthyBool(raw: unknown): boolean {
   if (raw === true || raw === 1) return true;
@@ -87,7 +149,11 @@ const PlayIcon = () => (
  * Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client),
  * and by other blocks (e.g. Heading wildcards) that need the same item shape.
  */
-export function parseFeaturedStoryXml(xmlText: string, numberOfItems: number): FeaturedStoryItem[] {
+export function parseFeaturedStoryXml(
+  xmlText: string,
+  numberOfItems: number,
+  dateFilters: DateFilterOptions = {}
+): FeaturedStoryItem[] {
   try {
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -127,15 +193,7 @@ export function parseFeaturedStoryXml(xmlText: string, numberOfItems: number): F
     findItems(result);
 
     const mappedItems = foundItems.map((item: any) => {
-      let createdDate = '';
-      if (item.created) {
-        const match = item.created.match(/>([^<]+)<\/time>/);
-        if (match && match[1]) {
-          createdDate = match[1];
-        } else {
-          createdDate = item.created;
-        }
-      }
+      const { createdDate, createdDateTime } = parseCreatedField(item.created);
       
       let authorAttribution = '';
       if (item.field_author_attribution) {
@@ -151,7 +209,8 @@ export function parseFeaturedStoryXml(xmlText: string, numberOfItems: number): F
 
       return {
         title: item.title || '',
-        createdDate: createdDate,
+        createdDate,
+        createdDateTime,
         authorAttribution: authorAttribution,
         image: item.field_media_image || '',
         body: item.body || '',
@@ -162,7 +221,8 @@ export function parseFeaturedStoryXml(xmlText: string, numberOfItems: number): F
       };
     });
 
-    return mappedItems.slice(0, numberOfItems);
+    const filteredItems = filterItemsByCreatedDate(mappedItems, dateFilters);
+    return filteredItems.slice(0, numberOfItems);
   } catch (err) {
     console.error('Failed to parse featured story XML:', err);
     return [];
@@ -191,6 +251,11 @@ export function FeaturedStoryXml({
   const url = buildFeaturedStoryFeedUrl(props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? FeaturedStoryXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? FeaturedStoryXmlPropsDefaults.numberOfItems;
+  const dateFilters: DateFilterOptions = {
+    createdStartDate: props?.createdStartDate,
+    createdEndDate: props?.createdEndDate,
+    createdRelativeDays: props?.createdRelativeDays,
+  };
 
   // Try to get pre-fetched XML data from context
   // The renderToStaticMarkup function fetches XML data and makes it available globally
@@ -210,7 +275,9 @@ export function FeaturedStoryXml({
   }
   
   // Parse pre-fetched data synchronously if available
-  const preFetchedItems = preFetchedXmlText ? parseFeaturedStoryXml(preFetchedXmlText, numberOfItems) : null;
+  const preFetchedItems = preFetchedXmlText
+    ? parseFeaturedStoryXml(preFetchedXmlText, numberOfItems, dateFilters)
+    : null;
 
   const [items, setItems] = useState<FeaturedStoryItem[]>(preFetchedItems || []);
   const [loading, setLoading] = useState(false);
@@ -233,7 +300,7 @@ export function FeaturedStoryXml({
         }
         const text = await response.text();
         
-        const parsedItems = parseFeaturedStoryXml(text, numberOfItems);
+        const parsedItems = parseFeaturedStoryXml(text, numberOfItems, dateFilters);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -244,7 +311,7 @@ export function FeaturedStoryXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems]);
+  }, [url, numberOfItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   const padding = style?.padding;
   const wrapperStyle = {

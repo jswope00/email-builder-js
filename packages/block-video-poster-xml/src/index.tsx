@@ -27,6 +27,9 @@ export const VideoPosterXmlPropsSchema = z.object({
       numberOfItems: z.number().min(1).max(10).optional().nullable(),
       topicTid: z.number().int().positive().optional().nullable(),
       dashboardTagTid: z.number().int().positive().optional().nullable(),
+      createdStartDate: z.string().optional().nullable(),
+      createdEndDate: z.string().optional().nullable(),
+      createdRelativeDays: z.number().int().min(0).optional().nullable(),
     })
     .optional()
     .nullable(),
@@ -37,11 +40,15 @@ export type VideoPosterXmlProps = z.infer<typeof VideoPosterXmlPropsSchema>;
 export const VideoPosterXmlPropsDefaults = {
   title: '',
   numberOfItems: 1,
+  createdStartDate: null,
+  createdEndDate: null,
+  createdRelativeDays: null,
 } as const;
 
 type PosterItem = {
   title: string;
   createdDate: string;
+  createdDateTime: string;
   /** Primary author line from `field_full_name` or `field_author_attribution`. */
   authorLine: string;
   sponsoredByText: string;
@@ -50,6 +57,12 @@ type PosterItem = {
   viewNode: string;
   isSponsored: boolean;
   showAuthor: boolean;
+};
+
+type DateFilterOptions = {
+  createdStartDate?: string | null;
+  createdEndDate?: string | null;
+  createdRelativeDays?: number | null;
 };
 
 function stripHtml(s: string): string {
@@ -75,7 +88,60 @@ function normalizePosterBody(raw: unknown): string {
   return withoutCdata;
 }
 
-function parseVideoPosterXml(xmlText: string, numberOfItems: number): PosterItem[] {
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+function parseCreatedField(created: unknown): { createdDate: string; createdDateTime: string } {
+  if (!created) return { createdDate: '', createdDateTime: '' };
+  const raw = typeof created === 'string' ? created : String(created);
+  const datetimeMatch = raw.match(/datetime=["']([^"']+)["']/i);
+  const dateTextMatch = raw.match(/>([^<]+)<\/time>/);
+  return {
+    createdDate: dateTextMatch && dateTextMatch[1] ? dateTextMatch[1] : raw,
+    createdDateTime: datetimeMatch && datetimeMatch[1] ? datetimeMatch[1] : '',
+  };
+}
+
+function parseDateStart(value: string): number | null {
+  const parsed = new Date(`${value}T00:00:00`).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseDateEnd(value: string): number | null {
+  const parsed = new Date(`${value}T23:59:59.999`).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function filterItemsByCreatedDate(
+  items: PosterItem[],
+  { createdStartDate, createdEndDate, createdRelativeDays }: DateFilterOptions
+): PosterItem[] {
+  const hasStart = typeof createdStartDate === 'string' && createdStartDate.trim() !== '';
+  const hasEnd = typeof createdEndDate === 'string' && createdEndDate.trim() !== '';
+  const hasRelative = typeof createdRelativeDays === 'number' && Number.isFinite(createdRelativeDays);
+  if (!hasStart && !hasEnd && !hasRelative) return items;
+
+  const startTs = hasStart ? parseDateStart(createdStartDate!) : null;
+  const endTs = hasEnd ? parseDateEnd(createdEndDate!) : null;
+  const now = new Date();
+  const relativeStartTs = hasRelative
+    ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() - createdRelativeDays! * DAY_IN_MS
+    : null;
+
+  return items.filter((item) => {
+    const itemTs = new Date(item.createdDateTime).getTime();
+    if (!Number.isFinite(itemTs)) return false;
+    if (startTs !== null && itemTs < startTs) return false;
+    if (endTs !== null && itemTs > endTs) return false;
+    if (relativeStartTs !== null && itemTs < relativeStartTs) return false;
+    return true;
+  });
+}
+
+function parseVideoPosterXml(
+  xmlText: string,
+  numberOfItems: number,
+  dateFilters: DateFilterOptions = {}
+): PosterItem[] {
   try {
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -115,16 +181,7 @@ function parseVideoPosterXml(xmlText: string, numberOfItems: number): PosterItem
     findItems(result);
 
     const mappedItems = foundItems.map((item: any) => {
-      let createdDate = '';
-      if (item.created) {
-        const raw = typeof item.created === 'string' ? item.created : String(item.created);
-        const match = raw.match(/>([^<]+)<\/time>/);
-        if (match && match[1]) {
-          createdDate = match[1];
-        } else {
-          createdDate = raw;
-        }
-      }
+      const { createdDate, createdDateTime } = parseCreatedField(item.created);
 
       //const fullName = item.field_full_name != null ? stripHtml(String(item.field_full_name)) : '';
       const attribution =
@@ -140,6 +197,7 @@ function parseVideoPosterXml(xmlText: string, numberOfItems: number): PosterItem
       return {
         title: item.title || '',
         createdDate,
+        createdDateTime,
         authorLine,
         sponsoredByText,
         image: item.field_media_image || '',
@@ -150,7 +208,8 @@ function parseVideoPosterXml(xmlText: string, numberOfItems: number): PosterItem
       };
     });
 
-    return mappedItems.slice(0, numberOfItems);
+    const filteredItems = filterItemsByCreatedDate(mappedItems, dateFilters);
+    return filteredItems.slice(0, numberOfItems);
   } catch (err) {
     console.error('Failed to parse video poster XML:', err);
     return [];
@@ -169,6 +228,11 @@ export function VideoPosterXml({
   );
   const title = props?.title ?? VideoPosterXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? VideoPosterXmlPropsDefaults.numberOfItems;
+  const dateFilters: DateFilterOptions = {
+    createdStartDate: props?.createdStartDate,
+    createdEndDate: props?.createdEndDate,
+    createdRelativeDays: props?.createdRelativeDays,
+  };
 
   let preFetchedXmlText: string | null = null;
   try {
@@ -184,7 +248,9 @@ export function VideoPosterXml({
     // Context not available, will use useEffect fallback
   }
 
-  const preFetchedItems = preFetchedXmlText ? parseVideoPosterXml(preFetchedXmlText, numberOfItems) : null;
+  const preFetchedItems = preFetchedXmlText
+    ? parseVideoPosterXml(preFetchedXmlText, numberOfItems, dateFilters)
+    : null;
 
   const [items, setItems] = useState<PosterItem[]>(preFetchedItems || []);
   const [loading, setLoading] = useState(false);
@@ -206,7 +272,7 @@ export function VideoPosterXml({
         }
         const text = await response.text();
 
-        const parsedItems = parseVideoPosterXml(text, numberOfItems);
+        const parsedItems = parseVideoPosterXml(text, numberOfItems, dateFilters);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -217,7 +283,7 @@ export function VideoPosterXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems]);
+  }, [url, numberOfItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   const padding = style?.padding;
   const wrapperStyle = {

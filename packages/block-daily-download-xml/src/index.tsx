@@ -20,6 +20,9 @@ export const DailyDownloadXmlPropsSchema = z.object({
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
     topicTid: z.number().int().positive().optional().nullable(),
     dashboardTagTid: z.number().int().positive().optional().nullable(),
+    createdStartDate: z.string().optional().nullable(),
+    createdEndDate: z.string().optional().nullable(),
+    createdRelativeDays: z.number().int().min(0).optional().nullable(),
   }).optional().nullable(),
 });
 
@@ -28,16 +31,80 @@ export type DailyDownloadXmlProps = z.infer<typeof DailyDownloadXmlPropsSchema>;
 export const DailyDownloadXmlPropsDefaults = {
   title: '',
   numberOfItems: 3,
+  createdStartDate: null,
+  createdEndDate: null,
+  createdRelativeDays: null,
 } as const;
 
 type DownloadItem = {
   title: string;
+  createdDate: string;
+  createdDateTime: string;
   image: string;
   viewNode: string;
 };
 
+type DateFilterOptions = {
+  createdStartDate?: string | null;
+  createdEndDate?: string | null;
+  createdRelativeDays?: number | null;
+};
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+function parseCreatedField(created: unknown): { createdDate: string; createdDateTime: string } {
+  if (!created) return { createdDate: '', createdDateTime: '' };
+  const raw = typeof created === 'string' ? created : String(created);
+  const datetimeMatch = raw.match(/datetime=["']([^"']+)["']/i);
+  const dateTextMatch = raw.match(/>([^<]+)<\/time>/);
+  return {
+    createdDate: dateTextMatch && dateTextMatch[1] ? dateTextMatch[1] : raw,
+    createdDateTime: datetimeMatch && datetimeMatch[1] ? datetimeMatch[1] : '',
+  };
+}
+
+function parseDateStart(value: string): number | null {
+  const parsed = new Date(`${value}T00:00:00`).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseDateEnd(value: string): number | null {
+  const parsed = new Date(`${value}T23:59:59.999`).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function filterItemsByCreatedDate(
+  items: DownloadItem[],
+  { createdStartDate, createdEndDate, createdRelativeDays }: DateFilterOptions
+): DownloadItem[] {
+  const hasStart = typeof createdStartDate === 'string' && createdStartDate.trim() !== '';
+  const hasEnd = typeof createdEndDate === 'string' && createdEndDate.trim() !== '';
+  const hasRelative = typeof createdRelativeDays === 'number' && Number.isFinite(createdRelativeDays);
+  if (!hasStart && !hasEnd && !hasRelative) return items;
+
+  const startTs = hasStart ? parseDateStart(createdStartDate!) : null;
+  const endTs = hasEnd ? parseDateEnd(createdEndDate!) : null;
+  const now = new Date();
+  const relativeStartTs = hasRelative
+    ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() - createdRelativeDays! * DAY_IN_MS
+    : null;
+
+  return items.filter((item) => {
+    const itemTs = new Date(item.createdDateTime).getTime();
+    if (!Number.isFinite(itemTs)) return false;
+    if (startTs !== null && itemTs < startTs) return false;
+    if (endTs !== null && itemTs > endTs) return false;
+    if (relativeStartTs !== null && itemTs < relativeStartTs) return false;
+    return true;
+  });
+}
+
 // Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client)
-function parseDailyDownloadXml(xmlText: string, numberOfItems: number): DownloadItem[] {
+function parseDailyDownloadXml(
+  xmlText: string,
+  numberOfItems: number,
+  dateFilters: DateFilterOptions = {}
+): DownloadItem[] {
   try {
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -77,14 +144,18 @@ function parseDailyDownloadXml(xmlText: string, numberOfItems: number): Download
     findItems(result);
 
     const mappedItems: DownloadItem[] = foundItems.map((item: any) => {
+      const { createdDate, createdDateTime } = parseCreatedField(item.created);
       return {
         title: item.title || '',
+        createdDate,
+        createdDateTime,
         image: item.thumbnail__target_id || '',
         viewNode: item.view_node || '',
       };
     });
 
-    return mappedItems.slice(0, numberOfItems);
+    const filteredItems = filterItemsByCreatedDate(mappedItems, dateFilters);
+    return filteredItems.slice(0, numberOfItems);
   } catch (err) {
     console.error('Failed to parse daily download XML:', err);
     return [];
@@ -99,6 +170,11 @@ export function DailyDownloadXml({
   const url = buildTopicFilteredFeedUrl(DAILY_DOWNLOAD_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? DailyDownloadXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? DailyDownloadXmlPropsDefaults.numberOfItems;
+  const dateFilters: DateFilterOptions = {
+    createdStartDate: props?.createdStartDate,
+    createdEndDate: props?.createdEndDate,
+    createdRelativeDays: props?.createdRelativeDays,
+  };
 
   // Try to get pre-fetched XML data from context
   // The renderToStaticMarkup function fetches XML data and makes it available globally
@@ -118,7 +194,9 @@ export function DailyDownloadXml({
   }
   
   // Parse pre-fetched data synchronously if available
-  const preFetchedItems = preFetchedXmlText ? parseDailyDownloadXml(preFetchedXmlText, numberOfItems) : null;
+  const preFetchedItems = preFetchedXmlText
+    ? parseDailyDownloadXml(preFetchedXmlText, numberOfItems, dateFilters)
+    : null;
 
   const [items, setItems] = useState<DownloadItem[]>(preFetchedItems || []);
   const [loading, setLoading] = useState(false);
@@ -141,7 +219,7 @@ export function DailyDownloadXml({
         }
         const text = await response.text();
         
-        const parsedItems = parseDailyDownloadXml(text, numberOfItems);
+        const parsedItems = parseDailyDownloadXml(text, numberOfItems, dateFilters);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -152,7 +230,7 @@ export function DailyDownloadXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems]);
+  }, [url, numberOfItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   const padding = style?.padding;
   const wrapperStyle = {

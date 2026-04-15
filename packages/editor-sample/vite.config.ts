@@ -69,6 +69,54 @@ export default defineConfig({
         find: '@usewaypoint/block-text',
         replacement: path.resolve(__dirname, '../block-text/src/index.tsx'),
       },
+      {
+        find: '@usewaypoint/block-video-xml',
+        replacement: path.resolve(__dirname, '../block-video-xml/src/index.tsx'),
+      },
+      {
+        find: '@usewaypoint/block-therapeutic-update-xml',
+        replacement: path.resolve(__dirname, '../block-therapeutic-update-xml/src/index.tsx'),
+      },
+      {
+        find: '@usewaypoint/block-video-poster-xml',
+        replacement: path.resolve(__dirname, '../block-video-poster-xml/src/index.tsx'),
+      },
+      {
+        find: '@usewaypoint/block-featured-story-xml',
+        replacement: path.resolve(__dirname, '../block-featured-story-xml/src/index.tsx'),
+      },
+      {
+        find: '@usewaypoint/block-news-panel-xml',
+        replacement: path.resolve(__dirname, '../block-news-panel-xml/src/index.tsx'),
+      },
+      {
+        find: '@usewaypoint/block-blog-xml',
+        replacement: path.resolve(__dirname, '../block-blog-xml/src/index.tsx'),
+      },
+      {
+        find: '@usewaypoint/block-advertisement-728-90-xml',
+        replacement: path.resolve(__dirname, '../block-advertisement-728-90-xml/src/index.tsx'),
+      },
+      {
+        find: '@usewaypoint/block-advertisement-300-250-xml',
+        replacement: path.resolve(__dirname, '../block-advertisement-300-250-xml/src/index.tsx'),
+      },
+      {
+        find: '@usewaypoint/block-conference-advertisement-300-250-xml',
+        replacement: path.resolve(__dirname, '../block-conference-advertisement-300-250-xml/src/index.tsx'),
+      },
+      {
+        find: '@usewaypoint/block-daily-download-xml',
+        replacement: path.resolve(__dirname, '../block-daily-download-xml/src/index.tsx'),
+      },
+      {
+        find: '@usewaypoint/block-email-survey-xml',
+        replacement: path.resolve(__dirname, '../block-email-survey-xml/src/index.tsx'),
+      },
+      {
+        find: '@usewaypoint/rheumnow-xml-topic',
+        replacement: path.resolve(__dirname, '../rheumnow-xml-topic/src/index.ts'),
+      },
     ],
   },
   optimizeDeps: {
@@ -85,6 +133,18 @@ export default defineConfig({
       '@usewaypoint/block-image',
       '@usewaypoint/block-spacer',
       '@usewaypoint/block-text',
+      '@usewaypoint/block-video-xml',
+      '@usewaypoint/block-therapeutic-update-xml',
+      '@usewaypoint/block-video-poster-xml',
+      '@usewaypoint/block-featured-story-xml',
+      '@usewaypoint/block-news-panel-xml',
+      '@usewaypoint/block-blog-xml',
+      '@usewaypoint/block-advertisement-728-90-xml',
+      '@usewaypoint/block-advertisement-300-250-xml',
+      '@usewaypoint/block-conference-advertisement-300-250-xml',
+      '@usewaypoint/block-daily-download-xml',
+      '@usewaypoint/block-email-survey-xml',
+      '@usewaypoint/rheumnow-xml-topic',
     ],
   },
 });

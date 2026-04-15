@@ -11,3 +11,17 @@ yarn-debug.log*
 yarn-error.log*
 
 dist
+
+# accidental TypeScript/tsup emits in source folders
+database/*.d.ts
+database/*.d.ts.map
+packages/**/src/**/*.js
+packages/**/src/**/*.js.map
+packages/**/src/**/*.d.ts
+packages/**/src/**/*.d.ts.map
+packages/**/scripts/**/*.d.cts
+packages/**/scripts/**/*.d.cts.map
+packages/**/tsup.config.js
+packages/**/tsup.config.js.map
+packages/**/tsup.config.d.ts
+packages/**/tsup.config.d.ts.map

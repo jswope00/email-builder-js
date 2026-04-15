@@ -20,6 +20,9 @@ export const TherapeuticUpdateXmlPropsSchema = z.object({
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
     topicTid: z.number().int().positive().optional().nullable(),
     dashboardTagTid: z.number().int().positive().optional().nullable(),
+    createdStartDate: z.string().optional().nullable(),
+    createdEndDate: z.string().optional().nullable(),
+    createdRelativeDays: z.number().int().min(0).optional().nullable(),
   }).optional().nullable(),
 });
 
@@ -28,11 +31,15 @@ export type TherapeuticUpdateXmlProps = z.infer<typeof TherapeuticUpdateXmlProps
 export const TherapeuticUpdateXmlPropsDefaults = {
   title: '',
   numberOfItems: 3,
+  createdStartDate: null,
+  createdEndDate: null,
+  createdRelativeDays: null,
 } as const;
 
 type UpdateItem = {
   title: string;
   createdDate: string;
+  createdDateTime: string;
   authorAttribution: string;
   image: string;
   body: string;
@@ -42,6 +49,61 @@ type UpdateItem = {
   isSponsored: boolean;
   showAuthor: boolean;
 };
+
+type DateFilterOptions = {
+  createdStartDate?: string | null;
+  createdEndDate?: string | null;
+  createdRelativeDays?: number | null;
+};
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+function parseCreatedField(created: unknown): { createdDate: string; createdDateTime: string } {
+  if (!created) return { createdDate: '', createdDateTime: '' };
+  const raw = typeof created === 'string' ? created : String(created);
+  const datetimeMatch = raw.match(/datetime=["']([^"']+)["']/i);
+  const dateTextMatch = raw.match(/>([^<]+)<\/time>/);
+  return {
+    createdDate: dateTextMatch && dateTextMatch[1] ? dateTextMatch[1] : raw,
+    createdDateTime: datetimeMatch && datetimeMatch[1] ? datetimeMatch[1] : '',
+  };
+}
+
+function parseDateStart(value: string): number | null {
+  const parsed = new Date(`${value}T00:00:00`).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseDateEnd(value: string): number | null {
+  const parsed = new Date(`${value}T23:59:59.999`).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function filterItemsByCreatedDate(
+  items: UpdateItem[],
+  { createdStartDate, createdEndDate, createdRelativeDays }: DateFilterOptions
+): UpdateItem[] {
+  const hasStart = typeof createdStartDate === 'string' && createdStartDate.trim() !== '';
+  const hasEnd = typeof createdEndDate === 'string' && createdEndDate.trim() !== '';
+  const hasRelative = typeof createdRelativeDays === 'number' && Number.isFinite(createdRelativeDays);
+  if (!hasStart && !hasEnd && !hasRelative) return items;
+
+  const startTs = hasStart ? parseDateStart(createdStartDate!) : null;
+  const endTs = hasEnd ? parseDateEnd(createdEndDate!) : null;
+  const now = new Date();
+  const relativeStartTs = hasRelative
+    ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() - createdRelativeDays! * DAY_IN_MS
+    : null;
+
+  return items.filter((item) => {
+    const itemTs = new Date(item.createdDateTime).getTime();
+    if (!Number.isFinite(itemTs)) return false;
+    if (startTs !== null && itemTs < startTs) return false;
+    if (endTs !== null && itemTs > endTs) return false;
+    if (relativeStartTs !== null && itemTs < relativeStartTs) return false;
+    return true;
+  });
+}
 
 function parseXmlTruthyBool(raw: unknown): boolean {
   if (raw === true || raw === 1) return true;
@@ -53,7 +115,11 @@ function parseXmlTruthyBool(raw: unknown): boolean {
 }
 
 // Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client)
-function parseTherapeuticUpdateXml(xmlText: string, numberOfItems: number): UpdateItem[] {
+function parseTherapeuticUpdateXml(
+  xmlText: string,
+  numberOfItems: number,
+  dateFilters: DateFilterOptions = {}
+): UpdateItem[] {
   try {
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -93,15 +159,7 @@ function parseTherapeuticUpdateXml(xmlText: string, numberOfItems: number): Upda
     findItems(result);
 
     const mappedItems = foundItems.map((item: any) => {
-      let createdDate = '';
-      if (item.created) {
-        const match = item.created.match(/>([^<]+)<\/time>/);
-        if (match && match[1]) {
-          createdDate = match[1];
-        } else {
-          createdDate = item.created;
-        }
-      }
+      const { createdDate, createdDateTime } = parseCreatedField(item.created);
       
       let authorAttribution = '';
       if (item.field_author_attribution) {
@@ -117,7 +175,8 @@ function parseTherapeuticUpdateXml(xmlText: string, numberOfItems: number): Upda
 
       return {
         title: item.title || '',
-        createdDate: createdDate,
+        createdDate,
+        createdDateTime,
         authorAttribution: authorAttribution,
         image: item.field_media_image || '',
         body: item.body || '',
@@ -129,7 +188,8 @@ function parseTherapeuticUpdateXml(xmlText: string, numberOfItems: number): Upda
       };
     });
 
-    return mappedItems.slice(0, numberOfItems);
+    const filteredItems = filterItemsByCreatedDate(mappedItems, dateFilters);
+    return filteredItems.slice(0, numberOfItems);
   } catch (err) {
     console.error('Failed to parse therapeutic update XML:', err);
     return [];
@@ -148,6 +208,11 @@ export function TherapeuticUpdateXml({
   );
   const title = props?.title ?? TherapeuticUpdateXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? TherapeuticUpdateXmlPropsDefaults.numberOfItems;
+  const dateFilters: DateFilterOptions = {
+    createdStartDate: props?.createdStartDate,
+    createdEndDate: props?.createdEndDate,
+    createdRelativeDays: props?.createdRelativeDays,
+  };
 
   // Try to get pre-fetched XML data from context
   // The renderToStaticMarkup function fetches XML data and makes it available globally
@@ -167,7 +232,9 @@ export function TherapeuticUpdateXml({
   }
   
   // Parse pre-fetched data synchronously if available
-  const preFetchedItems = preFetchedXmlText ? parseTherapeuticUpdateXml(preFetchedXmlText, numberOfItems) : null;
+  const preFetchedItems = preFetchedXmlText
+    ? parseTherapeuticUpdateXml(preFetchedXmlText, numberOfItems, dateFilters)
+    : null;
 
   const [items, setItems] = useState<UpdateItem[]>(preFetchedItems || []);
   const [loading, setLoading] = useState(false);
@@ -190,7 +257,7 @@ export function TherapeuticUpdateXml({
         }
         const text = await response.text();
         
-        const parsedItems = parseTherapeuticUpdateXml(text, numberOfItems);
+        const parsedItems = parseTherapeuticUpdateXml(text, numberOfItems, dateFilters);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -201,7 +268,7 @@ export function TherapeuticUpdateXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems]);
+  }, [url, numberOfItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   const padding = style?.padding;
   const wrapperStyle = {

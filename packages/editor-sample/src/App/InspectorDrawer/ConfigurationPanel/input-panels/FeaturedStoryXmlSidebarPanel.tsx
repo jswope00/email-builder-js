@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { TextField } from '@mui/material';
 import { FeaturedStoryXmlProps, FeaturedStoryXmlPropsDefaults, FeaturedStoryXmlPropsSchema } from '@usewaypoint/block-featured-story-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
@@ -11,6 +12,12 @@ import MultiStylePropertyPanel from './helpers/style-inputs/MultiStylePropertyPa
 type FeaturedStoryXmlSidebarPanelProps = {
   data: FeaturedStoryXmlProps;
   setData: (v: FeaturedStoryXmlProps) => void;
+};
+
+type DateFilterFields = {
+  createdStartDate?: string | null;
+  createdEndDate?: string | null;
+  createdRelativeDays?: number | null;
 };
 
 export default function FeaturedStoryXmlSidebarPanel({ data, setData }: FeaturedStoryXmlSidebarPanelProps) {
@@ -28,6 +35,10 @@ export default function FeaturedStoryXmlSidebarPanel({ data, setData }: Featured
 
   const title = data.props?.title ?? FeaturedStoryXmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? FeaturedStoryXmlPropsDefaults.numberOfItems;
+  const dateFilterProps = (data.props ?? {}) as DateFilterFields;
+  const createdStartDate = dateFilterProps.createdStartDate ?? '';
+  const createdEndDate = dateFilterProps.createdEndDate ?? '';
+  const createdRelativeDays = dateFilterProps.createdRelativeDays;
 
   return (
     <BaseSidebarPanel title="Featured Story XML Block">
@@ -56,6 +67,52 @@ export default function FeaturedStoryXmlSidebarPanel({ data, setData }: Featured
             if (!isNaN(num)) {
                 updateData({ ...data, props: { ...data.props, numberOfItems: num } });
             }
+        }}
+      />
+      <TextField
+        fullWidth
+        size="small"
+        type="date"
+        label="Created start date"
+        value={createdStartDate}
+        InputLabelProps={{ shrink: true }}
+        onChange={(ev) =>
+          updateData({
+            ...data,
+            props: { ...data.props, createdStartDate: ev.target.value || null },
+          })
+        }
+      />
+      <TextField
+        fullWidth
+        size="small"
+        type="date"
+        label="Created end date"
+        value={createdEndDate}
+        InputLabelProps={{ shrink: true }}
+        onChange={(ev) =>
+          updateData({
+            ...data,
+            props: { ...data.props, createdEndDate: ev.target.value || null },
+          })
+        }
+      />
+      <TextField
+        fullWidth
+        size="small"
+        type="number"
+        label="Relative days (Today - N)"
+        value={typeof createdRelativeDays === 'number' ? createdRelativeDays : ''}
+        InputProps={{ inputProps: { min: 0, step: 1 } }}
+        onChange={(ev) => {
+          const raw = ev.target.value.trim();
+          if (raw === '') {
+            updateData({ ...data, props: { ...data.props, createdRelativeDays: null } });
+            return;
+          }
+          if (/^\d+$/.test(raw)) {
+            updateData({ ...data, props: { ...data.props, createdRelativeDays: parseInt(raw, 10) } });
+          }
         }}
       />
       <MultiStylePropertyPanel
