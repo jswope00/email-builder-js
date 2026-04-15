@@ -105,7 +105,11 @@ function parseAdvertisementXml(xmlText: string, numberOfItems: number): Advertis
   }
 }
 
-export function Advertisement72890Xml({ style, props }: Advertisement72890XmlProps) {
+export function Advertisement72890Xml({
+  style,
+  props,
+  showEmptyStateMessage = false,
+}: Advertisement72890XmlProps & { showEmptyStateMessage?: boolean }) {
   const url = buildTopicFilteredFeedUrl(ADVERTISEMENT_72890_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? Advertisement72890XmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? Advertisement72890XmlPropsDefaults.numberOfItems;
@@ -172,7 +176,11 @@ export function Advertisement72890Xml({ style, props }: Advertisement72890XmlPro
 
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading advertisements...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
-  if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No advertisements found.</div>;
+  if (items.length === 0) {
+    return showEmptyStateMessage
+      ? <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No advertisements found.</div>
+      : null;
+  }
 
   return (
     <div style={wrapperStyle}>

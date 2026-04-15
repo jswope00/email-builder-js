@@ -136,7 +136,11 @@ function parseTherapeuticUpdateXml(xmlText: string, numberOfItems: number): Upda
   }
 }
 
-export function TherapeuticUpdateXml({ style, props }: TherapeuticUpdateXmlProps) {
+export function TherapeuticUpdateXml({
+  style,
+  props,
+  showEmptyStateMessage = false,
+}: TherapeuticUpdateXmlProps & { showEmptyStateMessage?: boolean }) {
   const url = buildTopicFilteredFeedUrl(
     THERAPEUTIC_UPDATE_XML_FEED_URL,
     props?.topicTid,
@@ -207,7 +211,11 @@ export function TherapeuticUpdateXml({ style, props }: TherapeuticUpdateXmlProps
 
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading updates...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
-  if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No updates found.</div>;
+  if (items.length === 0) {
+    return showEmptyStateMessage
+      ? <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No updates found.</div>
+      : null;
+  }
 
   return (
     <div style={wrapperStyle}>

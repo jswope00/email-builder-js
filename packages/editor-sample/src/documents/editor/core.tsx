@@ -133,7 +133,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: VideoXmlPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <VideoXml {...props} />
+        <VideoXml {...({ ...props, showEmptyStateMessage: true } as any)} />
       </EditorBlockWrapper>
     ),
   },
@@ -141,7 +141,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: TherapeuticUpdateXmlPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <TherapeuticUpdateXml {...props} />
+        <TherapeuticUpdateXml {...({ ...props, showEmptyStateMessage: true } as any)} />
       </EditorBlockWrapper>
     ),
   },
@@ -149,7 +149,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: VideoPosterXmlPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <VideoPosterXml {...props} />
+        <VideoPosterXml {...({ ...props, showEmptyStateMessage: true } as any)} />
       </EditorBlockWrapper>
     ),
   },
@@ -157,7 +157,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: FeaturedStoryXmlPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <FeaturedStoryXml {...props} />
+        <FeaturedStoryXml {...({ ...props, showEmptyStateMessage: true } as any)} />
       </EditorBlockWrapper>
     ),
   },
@@ -165,7 +165,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: NewsPanelXmlPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <NewsPanelXml {...props} />
+        <NewsPanelXml {...({ ...props, showEmptyStateMessage: true } as any)} />
       </EditorBlockWrapper>
     ),
   },
@@ -173,7 +173,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: BlogXmlPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <BlogXml {...props} />
+        <BlogXml {...({ ...props, showEmptyStateMessage: true } as any)} />
       </EditorBlockWrapper>
     ),
   },
@@ -181,7 +181,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: Advertisement72890XmlPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <Advertisement72890Xml {...props} />
+        <Advertisement72890Xml {...({ ...props, showEmptyStateMessage: true } as any)} />
       </EditorBlockWrapper>
     ),
   },
@@ -189,7 +189,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: Advertisement300250XmlPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <Advertisement300250Xml {...props} />
+        <Advertisement300250Xml {...({ ...props, showEmptyStateMessage: true } as any)} />
       </EditorBlockWrapper>
     ),
   },
@@ -197,7 +197,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: ConferenceAdvertisement300250XmlPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <ConferenceAdvertisement300250Xml {...props} />
+        <ConferenceAdvertisement300250Xml {...({ ...props, showEmptyStateMessage: true } as any)} />
       </EditorBlockWrapper>
     ),
   },
@@ -205,7 +205,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: DailyDownloadXmlPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <DailyDownloadXml {...props} />
+        <DailyDownloadXml {...({ ...props, showEmptyStateMessage: true } as any)} />
       </EditorBlockWrapper>
     ),
   },
@@ -213,7 +213,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: EmailSurveyXmlPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <EmailSurveyXml {...props} />
+        <EmailSurveyXml {...({ ...props, showEmptyStateMessage: true } as any)} />
       </EditorBlockWrapper>
     ),
   },

@@ -106,7 +106,11 @@ function parseAdvertisementXml(xmlText: string, numberOfItems: number): Advertis
   }
 }
 
-export function ConferenceAdvertisement300250Xml({ style, props }: ConferenceAdvertisement300250XmlProps) {
+export function ConferenceAdvertisement300250Xml({
+  style,
+  props,
+  showEmptyStateMessage = false,
+}: ConferenceAdvertisement300250XmlProps & { showEmptyStateMessage?: boolean }) {
   const url = buildTopicFilteredFeedUrl(
     CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL,
     props?.topicTid,
@@ -177,7 +181,11 @@ export function ConferenceAdvertisement300250Xml({ style, props }: ConferenceAdv
 
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading advertisements...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
-  if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No advertisements found.</div>;
+  if (items.length === 0) {
+    return showEmptyStateMessage
+      ? <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No advertisements found.</div>
+      : null;
+  }
 
   return (
     <div style={wrapperStyle}>

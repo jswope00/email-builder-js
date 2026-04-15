@@ -94,7 +94,11 @@ function parseVideoXml(xmlText: string, numberOfItems: number): VideoItem[] {
   }
 }
 
-export function VideoXml({ style, props }: VideoXmlProps) {
+export function VideoXml({
+  style,
+  props,
+  showEmptyStateMessage = false,
+}: VideoXmlProps & { showEmptyStateMessage?: boolean }) {
   const url = buildTopicFilteredFeedUrl(VIDEO_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? VideoXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? VideoXmlPropsDefaults.numberOfItems;
@@ -160,7 +164,11 @@ export function VideoXml({ style, props }: VideoXmlProps) {
 
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading videos...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
-  if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No videos found.</div>;
+  if (items.length === 0) {
+    return showEmptyStateMessage
+      ? <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No videos found.</div>
+      : null;
+  }
 
   return (
     <div style={wrapperStyle}>

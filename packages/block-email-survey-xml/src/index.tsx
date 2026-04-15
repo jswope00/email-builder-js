@@ -273,7 +273,11 @@ export function buildEmailSurveyFeedUrl(
   return buildTopicFilteredFeedUrl(EMAIL_SURVEY_XML_FEED_URL, topicTid, dashboardTagTid);
 }
 
-export function EmailSurveyXml({ style, props }: EmailSurveyXmlProps) {
+export function EmailSurveyXml({
+  style,
+  props,
+  showEmptyStateMessage = false,
+}: EmailSurveyXmlProps & { showEmptyStateMessage?: boolean }) {
   const url = buildEmailSurveyFeedUrl(props?.topicTid, props?.dashboardTagTid);
   const sectionTitle = props?.title ?? EmailSurveyXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? EmailSurveyXmlPropsDefaults.numberOfItems;
@@ -344,9 +348,12 @@ export function EmailSurveyXml({ style, props }: EmailSurveyXmlProps) {
     );
   }
   if (items.length === 0) {
-    return (
-      <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No surveys found.</div>
-    );
+    if (showEmptyStateMessage) {
+      return (
+        <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No surveys found.</div>
+      );
+    }
+    return null;
   }
 
   return (

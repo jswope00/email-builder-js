@@ -219,7 +219,11 @@ function parseNewsPanelXml(
   }
 }
 
-export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
+export function NewsPanelXml({
+  style,
+  props,
+  showEmptyStateMessage = false,
+}: NewsPanelXmlProps & { showEmptyStateMessage?: boolean }) {
   const url = buildTopicFilteredFeedUrl(NEWS_PANEL_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? NewsPanelXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? NewsPanelXmlPropsDefaults.numberOfItems;
@@ -297,7 +301,11 @@ export function NewsPanelXml({ style, props }: NewsPanelXmlProps) {
 
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading news...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
-  if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No news items found.</div>;
+  if (items.length === 0) {
+    return showEmptyStateMessage
+      ? <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No news items found.</div>
+      : null;
+  }
 
   return (
     <div style={wrapperStyle}>

@@ -183,7 +183,11 @@ export function getFirstFeaturedStoryTitleFromXml(xmlText: string): string {
   return (items[0]?.title ?? '').trim();
 }
 
-export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
+export function FeaturedStoryXml({
+  style,
+  props,
+  showEmptyStateMessage = false,
+}: FeaturedStoryXmlProps & { showEmptyStateMessage?: boolean }) {
   const url = buildFeaturedStoryFeedUrl(props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? FeaturedStoryXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? FeaturedStoryXmlPropsDefaults.numberOfItems;
@@ -250,7 +254,11 @@ export function FeaturedStoryXml({ style, props }: FeaturedStoryXmlProps) {
 
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading stories...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
-  if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No stories found.</div>;
+  if (items.length === 0) {
+    return showEmptyStateMessage
+      ? <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No stories found.</div>
+      : null;
+  }
 
   return (
     <div style={wrapperStyle}>

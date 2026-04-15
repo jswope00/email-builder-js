@@ -157,7 +157,11 @@ function parseVideoPosterXml(xmlText: string, numberOfItems: number): PosterItem
   }
 }
 
-export function VideoPosterXml({ style, props }: VideoPosterXmlProps) {
+export function VideoPosterXml({
+  style,
+  props,
+  showEmptyStateMessage = false,
+}: VideoPosterXmlProps & { showEmptyStateMessage?: boolean }) {
   const url = buildTopicFilteredFeedUrl(
     VIDEO_POSTER_XML_FEED_URL,
     props?.topicTid,
@@ -234,9 +238,12 @@ export function VideoPosterXml({ style, props }: VideoPosterXmlProps) {
     );
   }
   if (items.length === 0) {
-    return (
-      <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No video posters found.</div>
-    );
+    if (showEmptyStateMessage) {
+      return (
+        <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No video posters found.</div>
+      );
+    }
+    return null;
   }
 
   return (

@@ -145,7 +145,11 @@ function parseBlogXml(xmlText: string, numberOfItems: number): BlogItem[] {
   }
 }
 
-export function BlogXml({ style, props }: BlogXmlProps) {
+export function BlogXml({
+  style,
+  props,
+  showEmptyStateMessage = false,
+}: BlogXmlProps & { showEmptyStateMessage?: boolean }) {
   const url = buildTopicFilteredFeedUrl(BLOG_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? BlogXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? BlogXmlPropsDefaults.numberOfItems;
@@ -212,7 +216,11 @@ export function BlogXml({ style, props }: BlogXmlProps) {
 
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading blog posts...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
-  if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No blog posts found.</div>;
+  if (items.length === 0) {
+    return showEmptyStateMessage
+      ? <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No blog posts found.</div>
+      : null;
+  }
 
   return (
     <div style={wrapperStyle}>

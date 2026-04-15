@@ -91,7 +91,11 @@ function parseDailyDownloadXml(xmlText: string, numberOfItems: number): Download
   }
 }
 
-export function DailyDownloadXml({ style, props }: DailyDownloadXmlProps) {
+export function DailyDownloadXml({
+  style,
+  props,
+  showEmptyStateMessage = false,
+}: DailyDownloadXmlProps & { showEmptyStateMessage?: boolean }) {
   const url = buildTopicFilteredFeedUrl(DAILY_DOWNLOAD_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? DailyDownloadXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? DailyDownloadXmlPropsDefaults.numberOfItems;
@@ -158,7 +162,11 @@ export function DailyDownloadXml({ style, props }: DailyDownloadXmlProps) {
 
   if (loading) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>Loading downloads...</div>;
   if (error) return <div style={{ ...wrapperStyle, color: 'red', textAlign: 'center', padding: '20px' }}>Error: {error}</div>;
-  if (items.length === 0) return <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No downloads found.</div>;
+  if (items.length === 0) {
+    return showEmptyStateMessage
+      ? <div style={{ ...wrapperStyle, textAlign: 'center', padding: '20px' }}>No downloads found.</div>
+      : null;
+  }
 
   return (
     <div style={wrapperStyle}>
