@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { TextField } from '@mui/material';
 import { Advertisement300250XmlProps, Advertisement300250XmlPropsDefaults, Advertisement300250XmlPropsSchema } from '@usewaypoint/block-advertisement-300-250-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
@@ -48,14 +49,21 @@ export default function Advertisement300250XmlSidebarPanel({ data, setData }: Ad
           updateData({ ...data, props: { ...data.props, dashboardTagTid: dashboardTagTid ?? null } })
         }
       />
-      <TextInput
+      <TextField
+        fullWidth
+        size="small"
+        type="number"
         label="Number of items"
-        defaultValue={numberOfItems.toString()}
-        onChange={(v) => {
-            const num = parseInt(v, 10);
-            if (!isNaN(num)) {
-                updateData({ ...data, props: { ...data.props, numberOfItems: num } });
+        value={numberOfItems}
+        InputProps={{ inputProps: { min: 1, step: 1 } }}
+        onChange={(ev) => {
+          const raw = ev.target.value.trim();
+          if (/^\d+$/.test(raw)) {
+            const num = parseInt(raw, 10);
+            if (num >= 1) {
+              updateData({ ...data, props: { ...data.props, numberOfItems: num } });
             }
+          }
         }}
       />
       <MultiStylePropertyPanel

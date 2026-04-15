@@ -95,14 +95,21 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
         }
         label="Hide images (save vertical space)"
       />
-      <TextInput
+      <TextField
+        fullWidth
+        size="small"
+        type="number"
         label="Number of items"
-        defaultValue={numberOfItems.toString()}
-        onChange={(v) => {
-            const num = parseInt(v, 10);
-            if (!isNaN(num)) {
-                updateData({ ...data, props: { ...data.props, numberOfItems: num } });
+        value={numberOfItems}
+        InputProps={{ inputProps: { min: 1, step: 1 } }}
+        onChange={(ev) => {
+          const raw = ev.target.value.trim();
+          if (/^\d+$/.test(raw)) {
+            const num = parseInt(raw, 10);
+            if (num >= 1) {
+              updateData({ ...data, props: { ...data.props, numberOfItems: num } });
             }
+          }
         }}
       />
       <TextField
