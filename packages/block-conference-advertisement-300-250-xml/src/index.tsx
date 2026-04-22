@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
 import { buildTopicFilteredFeedUrl } from '@usewaypoint/rheumnow-xml-topic';
@@ -21,6 +21,7 @@ export const ConferenceAdvertisement300250XmlPropsSchema = z.object({
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
     topicTid: z.number().int().positive().optional().nullable(),
     dashboardTagTid: z.number().int().positive().optional().nullable(),
+    restrictToNoTopicAdvertisements: z.boolean().optional().nullable(),
   }).optional().nullable(),
 });
 
@@ -49,8 +50,31 @@ function decodeHtmlEntities(s: string): string {
     .replace(/&nbsp;/gi, '\u00a0');
 }
 
+function getFieldTopicsValue(item: Record<string, unknown>): unknown {
+  const raw = item.field_topics;
+  if (raw && typeof raw === 'object' && '#text' in (raw as object)) {
+    return (raw as { '#text'?: string })['#text'];
+  }
+  return raw;
+}
+
+function isFieldTopicsEmpty(item: Record<string, unknown>): boolean {
+  const v = getFieldTopicsValue(item);
+  if (v == null) return true;
+  if (typeof v === 'string' && v.trim() === '') return true;
+  return false;
+}
+
+type ParseAdvertisementXmlOptions = {
+  restrictToNoTopicAdvertisements?: boolean;
+};
+
 // Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client)
-function parseAdvertisementXml(xmlText: string, numberOfItems: number): AdvertisementItem[] {
+function parseAdvertisementXml(
+  xmlText: string,
+  numberOfItems: number,
+  options?: ParseAdvertisementXmlOptions
+): AdvertisementItem[] {
   try {
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -89,7 +113,12 @@ function parseAdvertisementXml(xmlText: string, numberOfItems: number): Advertis
 
     findItems(result);
 
-    const mappedItems: AdvertisementItem[] = foundItems.map((item: any) => {
+    let itemNodes = foundItems;
+    if (options?.restrictToNoTopicAdvertisements) {
+      itemNodes = foundItems.filter((item: any) => isFieldTopicsEmpty(item as Record<string, unknown>));
+    }
+
+    const mappedItems: AdvertisementItem[] = itemNodes.map((item: any) => {
       // Extract alt text, stripping CDATA and HTML if present
       let altText = item.field_ad_image_1 || '';
       altText = decodeHtmlEntities(altText.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>?/gm, '').trim());
@@ -129,6 +158,11 @@ export function ConferenceAdvertisement300250Xml({
   );
   const title = props?.title ?? ConferenceAdvertisement300250XmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? ConferenceAdvertisement300250XmlPropsDefaults.numberOfItems;
+  const restrictToNoTopicAdvertisements = props?.restrictToNoTopicAdvertisements === true;
+  const parseOptions = useMemo(
+    () => ({ restrictToNoTopicAdvertisements }),
+    [restrictToNoTopicAdvertisements]
+  );
 
   // Try to get pre-fetched XML data from context
   // The renderToStaticMarkup function fetches XML data and makes it available globally
@@ -146,33 +180,33 @@ export function ConferenceAdvertisement300250Xml({
   } catch {
     // Context not available, will use useEffect fallback
   }
-  
-  // Parse pre-fetched data synchronously if available
-  const preFetchedItems = preFetchedXmlText ? parseAdvertisementXml(preFetchedXmlText, numberOfItems) : null;
 
-  const [items, setItems] = useState<AdvertisementItem[]>(preFetchedItems || []);
+  const [rawXml, setRawXml] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const xmlSource = preFetchedXmlText ?? rawXml;
+  const items = useMemo(() => {
+    if (!xmlSource) return [];
+    return parseAdvertisementXml(xmlSource, numberOfItems, parseOptions);
+  }, [xmlSource, numberOfItems, parseOptions]);
+
   useEffect(() => {
-    // Skip fetching if we already have pre-fetched data
-    if (preFetchedItems) {
+    if (preFetchedXmlText) {
       return;
     }
 
     const fetchData = async () => {
       setLoading(true);
       setError(null);
-      setItems([]);
+      setRawXml(null);
       try {
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`Status: ${response.status}`);
         }
         const text = await response.text();
-        
-        const parsedItems = parseAdvertisementXml(text, numberOfItems);
-        setItems(parsedItems);
+        setRawXml(text);
       } catch (err) {
         setError('Failed to load data');
         console.error(err);
@@ -182,7 +216,7 @@ export function ConferenceAdvertisement300250Xml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems]);
+  }, [url, preFetchedXmlText]);
 
   const padding = style?.padding;
   const wrapperStyle = {

@@ -104,11 +104,16 @@ services:
     profiles:
       - dev
     working_dir: /app
-    command: sh -c "npm install && npm install @rollup/rollup-linux-arm64-musl @swc/core-linux-arm64-musl --save-optional --no-save || true && cd packages/editor-sample && npm run dev -- --host"
+    # Clear Vite's dep-optimizer cache (node_modules/.vite) after each npm install. Anonymous
+    # node_modules volumes can otherwise keep stale chunk references and cause
+    # "The file does not exist at .../node_modules/.vite/deps/chunk-....js" in the browser.
+    command: sh -c "npm install && npm install @rollup/rollup-linux-arm64-musl @swc/core-linux-arm64-musl --save-optional --no-save || true && rm -rf node_modules/.vite packages/editor-sample/node_modules/.vite && cd packages/editor-sample && npm run dev -- --host"
     env_file:
       - .env
     environment:
       VITE_API_URL: ${VITE_API_URL}
+      # Reliable file watching for editor-sample sources bind-mounted from the host (Docker Desktop, etc.)
+      CHOKIDAR_USEPOLLING: "1"
     ports:
       - "${FRONTEND_PORT}:5173"
     volumes:

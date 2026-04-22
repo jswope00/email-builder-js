@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { TextField } from '@mui/material';
+import { Checkbox, FormControlLabel, TextField } from '@mui/material';
 import { ConferenceAdvertisement300250XmlProps, ConferenceAdvertisement300250XmlPropsDefaults, ConferenceAdvertisement300250XmlPropsSchema } from '@usewaypoint/block-conference-advertisement-300-250-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
@@ -29,6 +29,9 @@ export default function ConferenceAdvertisement300250XmlSidebarPanel({ data, set
 
   const title = data.props?.title ?? ConferenceAdvertisement300250XmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? ConferenceAdvertisement300250XmlPropsDefaults.numberOfItems;
+  const restrictToNoTopicAdvertisements =
+    (data.props as { restrictToNoTopicAdvertisements?: boolean | null } | undefined)
+      ?.restrictToNoTopicAdvertisements === true;
 
   return (
     <BaseSidebarPanel title="Conference Advertisement 300x250 XML Block">
@@ -36,6 +39,20 @@ export default function ConferenceAdvertisement300250XmlSidebarPanel({ data, set
         label="Title (optional)"
         defaultValue={title}
         onChange={(v) => updateData({ ...data, props: { ...data.props, title: v } })}
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={restrictToNoTopicAdvertisements}
+            onChange={(e) =>
+              updateData({
+                ...data,
+                props: { ...data.props, restrictToNoTopicAdvertisements: e.target.checked } as ConferenceAdvertisement300250XmlProps['props'],
+              })
+            }
+          />
+        }
+        label="Restrict to Advertisements with no Topic Specified"
       />
       <RheumnowTopicSelect
         value={data.props?.topicTid ?? null}
