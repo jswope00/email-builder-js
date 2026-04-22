@@ -28,21 +28,12 @@ cd email-builder-js
 docker compose up -d
 
 # 3. Access the application
-# Frontend: http://localhost
-# API: http://localhost:3001/api
-```
-
-**For development with hot reload:**
-```bash
-# Use the development docker-compose file
-docker compose -f docker-compose.dev.yml up
+Frontend: http://localhost:45173/email-builder-js/
 ```
 
 **Stop everything:**
 ```bash
 docker compose down
-# or for dev mode:
-docker compose -f docker-compose.dev.yml down
 ```
 
 **Note:** The production Docker setup builds optimized images. For development, use `docker-compose.dev.yml` which mounts your code and enables hot reload.
