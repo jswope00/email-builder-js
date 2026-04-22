@@ -65,6 +65,17 @@ type DateFilterOptions = {
   createdRelativeDays?: number | null;
 };
 
+function decodeHtmlEntities(s: string): string {
+  return s
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&#0?39;/g, "'")
+    .replace(/&nbsp;/gi, '\u00a0');
+}
+
 function stripHtml(s: string): string {
   return s.replace(/<[^>]*>?/gm, '').trim();
 }
@@ -416,7 +427,7 @@ export function VideoPosterXml({
 
           {item.body && (
             <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666' }}>
-              {String(item.body).replace(/<!\[CDATA\[|\]\]>/g, '')}
+              {decodeHtmlEntities(String(item.body).replace(/<!\[CDATA\[|\]\]>/g, ''))}
             </div>
           )}
 

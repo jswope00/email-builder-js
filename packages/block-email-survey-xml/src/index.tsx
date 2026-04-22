@@ -91,8 +91,9 @@ function decodeBasicEntities(input: string): string {
     .replace(/&lt;/gi, '<')
     .replace(/&gt;/gi, '>')
     .replace(/&quot;/gi, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/gi, ' ');
+    .replace(/&apos;/gi, "'")
+    .replace(/&#0?39;/g, "'")
+    .replace(/&nbsp;/gi, '\u00a0');
 }
 
 function parseChoiceList(raw: unknown): string[] {

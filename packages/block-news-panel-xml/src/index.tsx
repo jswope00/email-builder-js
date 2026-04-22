@@ -131,10 +131,20 @@ function filterItemsByCreatedDate(
 // Helper function to extract author from field_full_name (may contain HTML)
 const extractAuthor = (fullName: string): string => {
   if (!fullName) return '';
-  // Strip HTML tags
   const text = fullName.replace(/<[^>]*>?/gm, '');
-  return text.trim();
+  return decodeHtmlEntities(text.trim());
 };
+
+function decodeHtmlEntities(s: string): string {
+  return s
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&#039;/gi, "'")
+    .replace(/&nbsp;/gi, '\u00a0');
+}
 
 /** CDATA / mixed XML nodes sometimes parse as string or { '#text': string }. */
 const xmlFieldToString = (value: unknown): string => {
@@ -234,7 +244,7 @@ function parseNewsPanelXml(
 
         return {
           type: 'Article' as const,
-          title: item.title || '',
+          title: decodeHtmlEntities(xmlFieldToString(item.title)),
           author: author,
           createdDate,
           createdDateTime,
@@ -253,7 +263,7 @@ function parseNewsPanelXml(
           image: image,
           tweetContent: item.field_tweet_content || '',
           links: links,
-          authorName: item.field_social_author_name || '',
+          authorName: decodeHtmlEntities(xmlFieldToString(item.field_social_author_name)),
           createdDate,
           createdDateTime,
           tweetId: item.field_tweet_id || '',
@@ -428,7 +438,7 @@ export function NewsPanelXml({
 
                       {item.body && (
                         <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666' }}>
-                          {item.body.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>?/gm, '')}
+                          {decodeHtmlEntities(item.body.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>?/gm, ''))}
                         </div>
                       )}
 
@@ -481,12 +491,12 @@ export function NewsPanelXml({
                       {item.tweetId ? (
                         <a href={item.tweetId} target="_blank" style={{ textDecoration: 'none', color: 'inherit' }}>
                           <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666', marginBottom: 12 }}>
-                            {item.tweetContent.replace(/<!\[CDATA\[|\]\]>/g, '')}
+                            {decodeHtmlEntities(item.tweetContent.replace(/<!\[CDATA\[|\]\]>/g, ''))}
                           </div>
                         </a>
                       ) : (
                         <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666', marginBottom: 12 }}>
-                          {item.tweetContent.replace(/<!\[CDATA\[|\]\]>/g, '')}
+                          {decodeHtmlEntities(item.tweetContent.replace(/<!\[CDATA\[|\]\]>/g, ''))}
                         </div>
                       )}
 

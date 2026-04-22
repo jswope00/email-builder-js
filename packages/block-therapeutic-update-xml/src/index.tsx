@@ -58,6 +58,17 @@ type DateFilterOptions = {
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
+function decodeHtmlEntities(s: string): string {
+  return s
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&#0?39;/g, "'")
+    .replace(/&nbsp;/gi, '\u00a0');
+}
+
 function parseCreatedField(created: unknown): { createdDate: string; createdDateTime: string } {
   if (!created) return { createdDate: '', createdDateTime: '' };
   const raw = typeof created === 'string' ? created : String(created);
@@ -341,8 +352,7 @@ export function TherapeuticUpdateXml({
 
             {item.body && (
                 <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666' }}>
-                    {/* Render body, stripping CDATA wrapper if raw text or handle HTML safely if needed */}
-                    {item.body.replace(/<!\[CDATA\[|\]\]>/g, '')}
+                    {decodeHtmlEntities(item.body.replace(/<!\[CDATA\[|\]\]>/g, ''))}
                 </div>
             )}
 

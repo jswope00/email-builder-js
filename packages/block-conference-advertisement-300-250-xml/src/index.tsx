@@ -38,6 +38,17 @@ type AdvertisementItem = {
   trackingCode: string;
 };
 
+function decodeHtmlEntities(s: string): string {
+  return s
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&#0?39;/g, "'")
+    .replace(/&nbsp;/gi, '\u00a0');
+}
+
 // Extract XML parsing logic so it can be used both synchronously (SSR) and asynchronously (client)
 function parseAdvertisementXml(xmlText: string, numberOfItems: number): AdvertisementItem[] {
   try {
@@ -81,11 +92,11 @@ function parseAdvertisementXml(xmlText: string, numberOfItems: number): Advertis
     const mappedItems: AdvertisementItem[] = foundItems.map((item: any) => {
       // Extract alt text, stripping CDATA and HTML if present
       let altText = item.field_ad_image_1 || '';
-      altText = altText.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>?/gm, '').trim();
+      altText = decodeHtmlEntities(altText.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>?/gm, '').trim());
       
       // Extract destination URL, stripping CDATA
       let destinationUrl = item.field_destination_url || '';
-      destinationUrl = destinationUrl.replace(/<!\[CDATA\[|\]\]>/g, '').trim();
+      destinationUrl = decodeHtmlEntities(destinationUrl.replace(/<!\[CDATA\[|\]\]>/g, '').trim());
       
       // Extract tracking code as-is (may contain HTML)
       let trackingCode = item.field_tracking_code || '';

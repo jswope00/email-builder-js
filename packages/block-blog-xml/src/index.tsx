@@ -56,6 +56,17 @@ type DateFilterOptions = {
   createdRelativeDays?: number | null;
 };
 
+function decodeHtmlEntities(s: string): string {
+  return s
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&#0?39;/g, "'")
+    .replace(/&nbsp;/gi, '\u00a0');
+}
+
 function parseXmlTruthyBool(raw: unknown): boolean {
   if (raw === true || raw === 1) return true;
   if (typeof raw === 'string') {
@@ -361,7 +372,7 @@ export function BlogXml({
 
             {item.body && (
               <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666' }}>
-                {item.body.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>?/gm, '')}
+                {decodeHtmlEntities(item.body.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>?/gm, ''))}
               </div>
             )}
 
