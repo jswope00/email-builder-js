@@ -6,6 +6,7 @@ import { TEditorBlock } from '../../../documents/editor/core';
 import { setDocument, useDocument, useSelectedBlockId } from '../../../documents/editor/EditorContext';
 
 import Advertisement300250XmlSidebarPanel from './input-panels/Advertisement300250XmlSidebarPanel';
+import CoverageXmlSidebarPanel from './input-panels/CoverageXmlSidebarPanel';
 import ConferenceAdvertisement300250XmlSidebarPanel from './input-panels/ConferenceAdvertisement300250XmlSidebarPanel';
 import Advertisement72890XmlSidebarPanel from './input-panels/Advertisement72890XmlSidebarPanel';
 import AvatarSidebarPanel from './input-panels/AvatarSidebarPanel';
@@ -116,6 +117,10 @@ export default function ConfigurationPanel() {
     case 'EmailSurveyXml':
       return (
         <EmailSurveyXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
+      );
+    case 'CoverageXml':
+      return (
+        <CoverageXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
       );
     default:
       return <pre>{JSON.stringify(block, null, '  ')}</pre>;

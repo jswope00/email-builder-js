@@ -5,6 +5,7 @@ import { ADVERTISEMENT_300250_XML_FEED_URL } from '@usewaypoint/block-advertisem
 import { ADVERTISEMENT_72890_XML_FEED_URL } from '@usewaypoint/block-advertisement-728-90-xml';
 import { BLOG_XML_FEED_URL } from '@usewaypoint/block-blog-xml';
 import { CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL } from '@usewaypoint/block-conference-advertisement-300-250-xml';
+import { COVERAGE_XML_FEED_URLS } from '@usewaypoint/block-coverage-xml';
 import { DAILY_DOWNLOAD_XML_FEED_URL } from '@usewaypoint/block-daily-download-xml';
 import { EMAIL_SURVEY_XML_FEED_URL } from '@usewaypoint/block-email-survey-xml';
 import { FEATURED_STORY_XML_FEED_URL } from '@usewaypoint/block-featured-story-xml';
@@ -39,8 +40,9 @@ function buildTopicFilteredFeedUrl(
   return `${base}/${d!}`;
 }
 
-/** Maps XML-backed block types to their fixed feed URLs (see each block package). */
-const XML_FEED_URL_BY_BLOCK_TYPE: Record<string, string> = {
+/** Maps XML-backed block types to their fixed feed URL(s) (see each block package).
+ *  A block may specify an array of base URLs when it fetches from multiple feeds. */
+const XML_FEED_URL_BY_BLOCK_TYPE: Record<string, string | readonly string[]> = {
   VideoXml: VIDEO_XML_FEED_URL,
   TherapeuticUpdateXml: THERAPEUTIC_UPDATE_XML_FEED_URL,
   VideoPosterXml: VIDEO_POSTER_XML_FEED_URL,
@@ -52,6 +54,7 @@ const XML_FEED_URL_BY_BLOCK_TYPE: Record<string, string> = {
   ConferenceAdvertisement300250Xml: CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL,
   DailyDownloadXml: DAILY_DOWNLOAD_XML_FEED_URL,
   EmailSurveyXml: EMAIL_SURVEY_XML_FEED_URL,
+  CoverageXml: COVERAGE_XML_FEED_URLS,
 };
 
 /** Matches typical email canvas width; column `<td>`s stack below this viewport width. */
@@ -113,9 +116,12 @@ function extractXmlUrls(document: TReaderDocument): string[] {
 
     const feedUrl = XML_FEED_URL_BY_BLOCK_TYPE[block.type];
     if (feedUrl) {
-      urls.push(
-        buildTopicFilteredFeedUrl(feedUrl, topicTidFromProps(props), dashboardTagTidFromProps(props))
-      );
+      const baseUrls = Array.isArray(feedUrl) ? feedUrl : [feedUrl];
+      for (const base of baseUrls) {
+        urls.push(
+          buildTopicFilteredFeedUrl(base, topicTidFromProps(props), dashboardTagTidFromProps(props))
+        );
+      }
     }
 
     // Traverse children

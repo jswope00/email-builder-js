@@ -92,8 +92,9 @@ The agent enables developers, content creators, and AI systems to:
 | `ConferenceAdvertisement300250Xml` | `CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL` | `https://rheumnow.com/admin/conference_email_ad_300_250_xml` |
 | `DailyDownloadXml` | `DAILY_DOWNLOAD_XML_FEED_URL` | `https://rheumnow.com/admin/daily_download_xml` |
 | `EmailSurveyXml` | `EMAIL_SURVEY_XML_FEED_URL` (`block-email-survey-xml`) | `https://rheumnow.com/admin/promoted-survey-xml` |
+| `CoverageXml` | `COVERAGE_XML_FEED_URLS` (`block-coverage-xml`) — array of 4 base URLs | Videos: `https://rheumnow.com/admin/videos-xml`; News+Blogs→Articles: `https://rheumnow.com/admin/daily_news_xml` + `https://rheumnow.com/admin/blogs_xml`; Tweets: `https://rheumnow.com/admin/daily_news_xml`; Podcasts: `https://rheumnow.com/admin/podcasts_xml` |
 
-**SSR / static HTML:** `packages/email-builder/src/renderers/renderToStaticMarkup.tsx` walks the document and, for each XML block instance, prefetches the same effective URL the component would use (optional topic and/or dashboard tag segment). Prefetched XML is exposed as `__XML_DATA_CONTEXT__` on `global` / `window`, keyed by the **full fetch URL** string components use.
+**SSR / static HTML:** `packages/email-builder/src/renderers/renderToStaticMarkup.tsx` walks the document and, for each XML block instance, prefetches the same effective URL the component would use (optional topic and/or dashboard tag segment). Prefetched XML is exposed as `__XML_DATA_CONTEXT__` on `global` / `window`, keyed by the **full fetch URL** string components use. `XML_FEED_URL_BY_BLOCK_TYPE` maps each block type to its base URL(s) — value is `string` for single-feed blocks or `readonly string[]` for blocks that fetch from multiple feeds (e.g. `CoverageXml`). `extractXmlUrls` iterates both forms and builds the full filtered URL for each.
 
 **RheumNow / local samples:** `packages/editor-sample/src/getConfiguration/sample/rheumnow-daily*.ts` omit `props.url` for XML blocks. To point feeds at another host or path (e.g. local sample XML), change the exported `*_FEED_URL` in the relevant block package and rebuild its `dist`.
 
@@ -332,6 +333,63 @@ The agent should be aware of:
 - `@usewaypoint/email-builder`: Reader and renderer components; **`renderToStaticMarkup`** and **`XML_FEED_URL_BY_BLOCK_TYPE`** for XML prefetch
 - Block packages: Individual block implementations, Zod schemas, and **`*_FEED_URL` / `VIDEO_XML_FEED_URL`** exports for XML-backed blocks
 - Editor sample: Block inspector panels under `ConfigurationPanel/input-panels/` (XML URL inputs removed for the nine XML blocks above)
+
+---
+
+## New Block Creation — Build Order & Pitfalls
+
+When creating a new block package, follow this exact sequence to avoid common failures:
+
+### Correct build order
+
+```bash
+# 1. Build the new block package
+npm run build -w @usewaypoint/block-my-block
+
+# 2. Rebuild email-builder so its dist/ includes the new import
+npm run build -w @usewaypoint/email-builder
+
+# 3. Restart the Vite dev server (Docker dev mode)
+docker compose --profile dev restart frontend-dev
+```
+
+**Never run `npm run build --workspaces` or `npm run build --workspaces --if-present` from the repo root.** The root `package.json` build script is `npx tsc`, which compiles all TypeScript and emits `.js` artifact files directly into `packages/editor-sample/src/`. Vite then serves these stale pre-built `.js` files instead of transforming the `.tsx` sources, causing new code to be silently invisible.
+
+### Stale `.js` artifact recovery
+
+If you see the editor not reflecting recent source changes, or the browser console shows 404s for `.js` files in `src/`, stale tsc artifacts are the cause. Clean them with:
+
+```bash
+find packages/editor-sample/src -name "*.js" -not -path "*/node_modules/*" -delete
+find packages/editor-sample/src -name "*.js.map" -not -path "*/node_modules/*" -delete
+find packages/editor-sample/src -name "*.d.ts" -not -path "*/node_modules/*" -delete
+```
+
+Then restart the Vite dev server. The bind-mount means the container sees the deletion immediately.
+
+### Docker anonymous-volume gotcha
+
+The `frontend-dev` service stores `node_modules` in an anonymous Docker volume. When you add a new workspace package, the running container's volume won't have the symlink for it. Vite will fail with `Failed to resolve import "@usewaypoint/block-my-block"`.
+
+Fix: stop and fully remove the container (including its volumes), then recreate it so `npm install` runs fresh:
+
+```bash
+docker compose --profile dev stop frontend-dev
+docker compose --profile dev rm -f -v frontend-dev
+docker compose --profile dev up -d frontend-dev
+```
+
+The `-v` flag on `rm` drops the anonymous `node_modules` volume. The new container runs `npm install` from scratch and picks up all workspace symlinks.
+
+### email-builder must be rebuilt after every new block
+
+`packages/email-builder/dist/` is a pre-built artifact checked into the repo. It is what Vite (via the `frontend-dev` bind-mount) actually resolves when the editor imports from `@usewaypoint/email-builder`. Any new block added to `Reader/core.tsx` or `renderToStaticMarkup.tsx` **requires a rebuild** of `email-builder` before the change is visible in the browser, even in dev mode.
+
+```bash
+npm run build -w @usewaypoint/email-builder
+```
+
+After rebuilding, Vite picks up the updated `dist/index.mjs` automatically via its module watcher (no container restart required for this step alone).
 
 ## Success Criteria
 

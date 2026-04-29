@@ -6,6 +6,7 @@ import { ConferenceAdvertisement300250Xml, ConferenceAdvertisement300250XmlProps
 import { Advertisement72890Xml, Advertisement72890XmlPropsSchema } from '@usewaypoint/block-advertisement-728-90-xml';
 import { Avatar, AvatarPropsSchema } from '@usewaypoint/block-avatar';
 import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
+import { CoverageXml, CoverageXmlPropsSchema } from '@usewaypoint/block-coverage-xml';
 import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
 import { EmailSurveyXml, EmailSurveyXmlPropsSchema } from '@usewaypoint/block-email-survey-xml';
 import { Button, ButtonPropsSchema } from '@usewaypoint/block-button';
@@ -214,6 +215,14 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     Component: (props) => (
       <EditorBlockWrapper>
         <EmailSurveyXml {...({ ...props, showEmptyStateMessage: true } as any)} />
+      </EditorBlockWrapper>
+    ),
+  },
+  CoverageXml: {
+    schema: CoverageXmlPropsSchema,
+    Component: (props) => (
+      <EditorBlockWrapper>
+        <CoverageXml {...props} />
       </EditorBlockWrapper>
     ),
   },

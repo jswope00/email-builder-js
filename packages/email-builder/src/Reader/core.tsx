@@ -10,6 +10,7 @@ import { Advertisement72890Xml, Advertisement72890XmlPropsSchema } from '@useway
 import { Avatar, AvatarPropsSchema } from '@usewaypoint/block-avatar';
 import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
 import { Button, ButtonPropsSchema } from '@usewaypoint/block-button';
+import { CoverageXml, CoverageXmlPropsSchema } from '@usewaypoint/block-coverage-xml';
 import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
 import { EmailSurveyXml, EmailSurveyXmlPropsSchema } from '@usewaypoint/block-email-survey-xml';
 import { Divider, DividerPropsSchema } from '@usewaypoint/block-divider';
@@ -126,6 +127,10 @@ const READER_DICTIONARY = buildBlockConfigurationDictionary({
   EmailSurveyXml: {
     schema: EmailSurveyXmlPropsSchema,
     Component: EmailSurveyXml,
+  },
+  CoverageXml: {
+    schema: CoverageXmlPropsSchema,
+    Component: CoverageXml,
   },
 });
 

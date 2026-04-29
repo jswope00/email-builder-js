@@ -3,6 +3,7 @@ import React from 'react';
 import {
   AccountCircleOutlined,
   ArticleOutlined,
+  BarChartOutlined,
   CampaignOutlined,
   Crop32Outlined,
   DownloadOutlined,
@@ -281,6 +282,17 @@ export const BUTTONS: TButtonProps[] = [
           url: '',
           numberOfItems: 3,
         },
+      },
+    }),
+  },
+  {
+    label: 'Coverage XML',
+    icon: <BarChartOutlined />,
+    block: () => ({
+      type: 'CoverageXml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {},
       },
     }),
   },
