@@ -5,15 +5,15 @@ import { buildTopicFilteredFeedUrl } from '@usewaypoint/rheumnow-xml-topic';
 
 /** Fixed feed URLs used by this block (not editable in the inspector). */
 export const COVERAGE_VIDEO_XML_FEED_URL = 'https://rheumnow.com/admin/videos-xml';
-export const COVERAGE_NEWS_PANEL_XML_FEED_URL = 'https://rheumnow.com/admin/daily_news_xml';
-export const COVERAGE_BLOG_XML_FEED_URL = 'https://rheumnow.com/admin/blogs_xml';
+export const COVERAGE_ARTICLE_XML_FEED_URL = 'https://rheumnow.com/admin/article-xml';
+export const COVERAGE_TWEET_XML_FEED_URL = 'https://rheumnow.com/admin/tweet-xml';
 export const COVERAGE_PODCAST_XML_FEED_URL = 'https://rheumnow.com/admin/podcasts_xml';
 
 /** All base feed URLs this block fetches from (used for SSR prefetch). */
 export const COVERAGE_XML_FEED_URLS = [
   COVERAGE_VIDEO_XML_FEED_URL,
-  COVERAGE_NEWS_PANEL_XML_FEED_URL,
-  COVERAGE_BLOG_XML_FEED_URL,
+  COVERAGE_ARTICLE_XML_FEED_URL,
+  COVERAGE_TWEET_XML_FEED_URL,
   COVERAGE_PODCAST_XML_FEED_URL,
 ] as const;
 
@@ -40,6 +40,16 @@ export const CoverageXmlPropsSchema = z.object({
       createdStartDate: z.string().optional().nullable(),
       createdEndDate: z.string().optional().nullable(),
       createdRelativeDays: z.number().int().min(0).optional().nullable(),
+      // Tile appearance
+      tileBackgroundColor: z.string().optional().nullable(),
+      tileBorderColor: z.string().optional().nullable(),
+      tileBorderWidth: z.number().min(0).optional().nullable(),
+      tileTextColor: z.string().optional().nullable(),
+      // Per-tile image overrides (replaces built-in SVG icon when set)
+      videoImageUrl: z.string().optional().nullable(),
+      articleImageUrl: z.string().optional().nullable(),
+      tweetImageUrl: z.string().optional().nullable(),
+      podcastImageUrl: z.string().optional().nullable(),
     })
     .optional()
     .nullable(),
@@ -157,53 +167,6 @@ function countItemsInXml(xmlText: string, dateFilters: DateFilterOptions): numbe
   }
 }
 
-function countNewsPanelByType(
-  xmlText: string,
-  typeFilter: 'Article' | 'Tweet',
-  dateFilters: DateFilterOptions
-): number {
-  try {
-    const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_' });
-    const result = parser.parse(xmlText);
-
-    let foundItems: any[] = [];
-
-    const findItems = (obj: any) => {
-      if (foundItems.length > 0) return;
-      if (Array.isArray(obj)) {
-        const first = obj[0];
-        if (first && (first.title || first.field_media_image || first.nid || first.type)) {
-          foundItems = obj;
-          return;
-        }
-        for (const item of obj) findItems(item);
-      } else if (typeof obj === 'object' && obj !== null) {
-        if (obj.item && Array.isArray(obj.item)) {
-          foundItems = obj.item;
-          return;
-        }
-        if (obj.item && typeof obj.item === 'object') {
-          foundItems = [obj.item];
-          return;
-        }
-        for (const key in obj) findItems(obj[key]);
-      }
-    };
-
-    findItems(result);
-
-    return foundItems.filter((item: any) => {
-      const itemType = String(item.type ?? '').trim().toLowerCase();
-      if (itemType !== typeFilter.toLowerCase()) return false;
-      const createdRaw = item.created_1 ?? item.created;
-      const dt = parseCreatedField(createdRaw);
-      return passesDateFilter(dt, dateFilters);
-    }).length;
-  } catch {
-    return 0;
-  }
-}
-
 function getPreFetchedXml(url: string): string | null {
   try {
     const ctx =
@@ -257,12 +220,26 @@ const PodcastIcon = () => (
 
 type TileProps = {
   icon: React.ReactNode;
+  imageUrl?: string | null;
   count: number | null;
   label: string;
   loading: boolean;
+  backgroundColor?: string | null;
+  borderColor?: string | null;
+  borderWidth?: number | null;
+  textColor?: string | null;
 };
 
-function CoverageTile({ icon, count, label, loading }: TileProps) {
+function CoverageTile({ icon, imageUrl, count, label, loading, backgroundColor, borderColor, borderWidth, textColor }: TileProps) {
+  const bWidth = borderWidth ?? 1;
+  const border = bWidth === 0 ? 'none' : `${bWidth}px solid ${borderColor ?? '#e8eaed'}`;
+  const countColor = textColor ?? '#1a1a2e';
+  const labelColor = textColor ?? '#6b7280';
+
+  const iconContent = imageUrl
+    ? <img src={imageUrl} alt={label} width={32} height={32} style={{ display: 'block' }} />
+    : icon;
+
   return (
     <td
       width="25%"
@@ -274,21 +251,21 @@ function CoverageTile({ icon, count, label, loading }: TileProps) {
     >
       <div
         style={{
-          backgroundColor: '#f8f9fb',
+          backgroundColor: backgroundColor ?? '#f8f9fb',
           borderRadius: '8px',
           padding: '20px 12px',
-          border: '1px solid #e8eaed',
+          border,
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
-          {icon}
+          {iconContent}
         </div>
         <div
           style={{
             fontSize: '36px',
             fontWeight: 700,
             lineHeight: 1.1,
-            color: '#1a1a2e',
+            color: countColor,
             marginBottom: '6px',
             fontFamily: 'sans-serif',
           }}
@@ -299,7 +276,7 @@ function CoverageTile({ icon, count, label, loading }: TileProps) {
           style={{
             fontSize: '13px',
             fontWeight: 600,
-            color: '#6b7280',
+            color: labelColor,
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
             fontFamily: 'sans-serif',
@@ -334,24 +311,28 @@ export function CoverageXml({
     createdRelativeDays: props?.createdRelativeDays,
   };
 
+  const tileBackgroundColor = props?.tileBackgroundColor ?? null;
+  const tileBorderColor = props?.tileBorderColor ?? null;
+  const tileBorderWidth = props?.tileBorderWidth ?? null;
+  const tileTextColor = props?.tileTextColor ?? null;
+  const tileStyleProps = { backgroundColor: tileBackgroundColor, borderColor: tileBorderColor, borderWidth: tileBorderWidth, textColor: tileTextColor };
+
   const videoUrl = buildTopicFilteredFeedUrl(COVERAGE_VIDEO_XML_FEED_URL, topicTid, dashboardTagTid);
-  const newsUrl = buildTopicFilteredFeedUrl(COVERAGE_NEWS_PANEL_XML_FEED_URL, topicTid, dashboardTagTid);
-  const blogUrl = buildTopicFilteredFeedUrl(COVERAGE_BLOG_XML_FEED_URL, topicTid, dashboardTagTid);
+  const articleUrl = buildTopicFilteredFeedUrl(COVERAGE_ARTICLE_XML_FEED_URL, topicTid, dashboardTagTid);
+  const tweetUrl = buildTopicFilteredFeedUrl(COVERAGE_TWEET_XML_FEED_URL, topicTid, dashboardTagTid);
   const podcastUrl = buildTopicFilteredFeedUrl(COVERAGE_PODCAST_XML_FEED_URL, topicTid, dashboardTagTid);
 
   // Compute counts from pre-fetched SSR data if available
   function computeFromPrefetch(): Counts | null {
     const videoXml = getPreFetchedXml(videoUrl);
-    const newsXml = getPreFetchedXml(newsUrl);
-    const blogXml = getPreFetchedXml(blogUrl);
+    const articleXml = getPreFetchedXml(articleUrl);
+    const tweetXml = getPreFetchedXml(tweetUrl);
     const podcastXml = getPreFetchedXml(podcastUrl);
-    if (!videoXml && !newsXml && !blogXml && !podcastXml) return null;
+    if (!videoXml && !articleXml && !tweetXml && !podcastXml) return null;
     return {
       videos: videoXml ? countItemsInXml(videoXml, dateFilters) : 0,
-      articles:
-        (newsXml ? countNewsPanelByType(newsXml, 'Article', dateFilters) : 0) +
-        (blogXml ? countItemsInXml(blogXml, dateFilters) : 0),
-      tweets: newsXml ? countNewsPanelByType(newsXml, 'Tweet', dateFilters) : 0,
+      articles: articleXml ? countItemsInXml(articleXml, dateFilters) : 0,
+      tweets: tweetXml ? countItemsInXml(tweetXml, dateFilters) : 0,
       podcasts: podcastXml ? countItemsInXml(podcastXml, dateFilters) : 0,
     };
   }
@@ -373,10 +354,10 @@ export function CoverageXml({
 
     const run = async () => {
       try {
-        const [videoXml, newsXml, blogXml, podcastXml] = await Promise.allSettled([
+        const [videoXml, articleXml, tweetXml, podcastXml] = await Promise.allSettled([
           fetchXml(videoUrl),
-          fetchXml(newsUrl),
-          fetchXml(blogUrl),
+          fetchXml(articleUrl),
+          fetchXml(tweetUrl),
           fetchXml(podcastUrl),
         ]);
 
@@ -386,16 +367,14 @@ export function CoverageXml({
           r.status === 'fulfilled' ? r.value : null;
 
         const vXml = getVal(videoXml);
-        const nXml = getVal(newsXml);
-        const bXml = getVal(blogXml);
+        const aXml = getVal(articleXml);
+        const tXml = getVal(tweetXml);
         const pXml = getVal(podcastXml);
 
         setCounts({
           videos: vXml ? countItemsInXml(vXml, dateFilters) : 0,
-          articles:
-            (nXml ? countNewsPanelByType(nXml, 'Article', dateFilters) : 0) +
-            (bXml ? countItemsInXml(bXml, dateFilters) : 0),
-          tweets: nXml ? countNewsPanelByType(nXml, 'Tweet', dateFilters) : 0,
+          articles: aXml ? countItemsInXml(aXml, dateFilters) : 0,
+          tweets: tXml ? countItemsInXml(tXml, dateFilters) : 0,
           podcasts: pXml ? countItemsInXml(pXml, dateFilters) : 0,
         });
       } catch (err) {
@@ -410,8 +389,8 @@ export function CoverageXml({
     return () => { cancelled = true; };
   }, [
     videoUrl,
-    newsUrl,
-    blogUrl,
+    articleUrl,
+    tweetUrl,
     podcastUrl,
     dateFilters.createdStartDate,
     dateFilters.createdEndDate,
@@ -450,27 +429,35 @@ export function CoverageXml({
           <tr>
             <CoverageTile
               icon={<VideoIcon />}
+              imageUrl={props?.videoImageUrl}
               count={counts?.videos ?? null}
               label="Videos"
               loading={loading}
+              {...tileStyleProps}
             />
             <CoverageTile
               icon={<ArticleIcon />}
+              imageUrl={props?.articleImageUrl}
               count={counts?.articles ?? null}
               label="Articles"
               loading={loading}
+              {...tileStyleProps}
             />
             <CoverageTile
               icon={<TweetIcon />}
+              imageUrl={props?.tweetImageUrl}
               count={counts?.tweets ?? null}
               label="Tweets"
               loading={loading}
+              {...tileStyleProps}
             />
             <CoverageTile
               icon={<PodcastIcon />}
+              imageUrl={props?.podcastImageUrl}
               count={counts?.podcasts ?? null}
               label="Podcasts"
               loading={loading}
+              {...tileStyleProps}
             />
           </tr>
         </tbody>

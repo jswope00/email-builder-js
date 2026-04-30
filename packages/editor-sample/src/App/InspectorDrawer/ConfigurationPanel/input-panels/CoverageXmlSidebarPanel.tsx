@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { TextField } from '@mui/material';
+import { TextField, Typography } from '@mui/material';
 import { CoverageXmlProps, CoverageXmlPropsDefaults, CoverageXmlPropsSchema } from '@usewaypoint/block-coverage-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
@@ -33,6 +33,9 @@ export default function CoverageXmlSidebarPanel({ data, setData }: CoverageXmlSi
     }
   };
 
+  const updateProp = (key: string, value: unknown) =>
+    updateData({ ...data, props: { ...data.props, [key]: value } });
+
   const title = data.props?.title ?? CoverageXmlPropsDefaults.title;
   const dateFilterProps = (data.props ?? {}) as DateFilterFields;
   const createdStartDate = dateFilterProps.createdStartDate ?? '';
@@ -41,22 +44,22 @@ export default function CoverageXmlSidebarPanel({ data, setData }: CoverageXmlSi
 
   return (
     <BaseSidebarPanel title="Coverage XML Block">
+
+      {/* ── Content ─────────────────────────────────────────── */}
       <TextInput
         label="Title (optional)"
         defaultValue={title}
-        onChange={(v) => updateData({ ...data, props: { ...data.props, title: v } })}
+        onChange={(v) => updateProp('title', v)}
       />
+
+      {/* ── Filters ─────────────────────────────────────────── */}
       <RheumnowTopicSelect
         value={data.props?.topicTid ?? null}
-        onChange={(topicTid) =>
-          updateData({ ...data, props: { ...data.props, topicTid: topicTid ?? null } })
-        }
+        onChange={(topicTid) => updateProp('topicTid', topicTid ?? null)}
       />
       <RheumnowDashboardTagSelect
         value={data.props?.dashboardTagTid ?? null}
-        onChange={(dashboardTagTid) =>
-          updateData({ ...data, props: { ...data.props, dashboardTagTid: dashboardTagTid ?? null } })
-        }
+        onChange={(dashboardTagTid) => updateProp('dashboardTagTid', dashboardTagTid ?? null)}
       />
       <TextField
         fullWidth
@@ -65,12 +68,7 @@ export default function CoverageXmlSidebarPanel({ data, setData }: CoverageXmlSi
         label="Created start date"
         value={createdStartDate}
         InputLabelProps={{ shrink: true }}
-        onChange={(ev) =>
-          updateData({
-            ...data,
-            props: { ...data.props, createdStartDate: ev.target.value || null },
-          })
-        }
+        onChange={(ev) => updateProp('createdStartDate', ev.target.value || null)}
       />
       <TextField
         fullWidth
@@ -79,12 +77,7 @@ export default function CoverageXmlSidebarPanel({ data, setData }: CoverageXmlSi
         label="Created end date"
         value={createdEndDate}
         InputLabelProps={{ shrink: true }}
-        onChange={(ev) =>
-          updateData({
-            ...data,
-            props: { ...data.props, createdEndDate: ev.target.value || null },
-          })
-        }
+        onChange={(ev) => updateProp('createdEndDate', ev.target.value || null)}
       />
       <TextField
         fullWidth
@@ -95,18 +88,71 @@ export default function CoverageXmlSidebarPanel({ data, setData }: CoverageXmlSi
         InputProps={{ inputProps: { min: 0, step: 1 } }}
         onChange={(ev) => {
           const raw = ev.target.value.trim();
-          if (raw === '') {
-            updateData({ ...data, props: { ...data.props, createdRelativeDays: null } });
-            return;
-          }
-          if (/^\d+$/.test(raw)) {
-            updateData({
-              ...data,
-              props: { ...data.props, createdRelativeDays: parseInt(raw, 10) },
-            });
-          }
+          if (raw === '') { updateProp('createdRelativeDays', null); return; }
+          if (/^\d+$/.test(raw)) updateProp('createdRelativeDays', parseInt(raw, 10));
         }}
       />
+
+      {/* ── Tile appearance ─────────────────────────────────── */}
+      <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', mt: 1, display: 'block' }}>
+        Tile Style
+      </Typography>
+      <TextInput
+        label="Background color"
+        defaultValue={data.props?.tileBackgroundColor ?? ''}
+        onChange={(v) => updateProp('tileBackgroundColor', v || null)}
+      />
+      <TextInput
+        label="Text color"
+        defaultValue={data.props?.tileTextColor ?? ''}
+        onChange={(v) => updateProp('tileTextColor', v || null)}
+      />
+      <TextInput
+        label="Border color"
+        defaultValue={data.props?.tileBorderColor ?? ''}
+        onChange={(v) => updateProp('tileBorderColor', v || null)}
+      />
+      <TextField
+        fullWidth
+        size="small"
+        type="number"
+        label="Border width (px)"
+        value={typeof data.props?.tileBorderWidth === 'number' ? data.props.tileBorderWidth : ''}
+        InputProps={{ inputProps: { min: 0, step: 1 } }}
+        onChange={(ev) => {
+          const raw = ev.target.value.trim();
+          if (raw === '') { updateProp('tileBorderWidth', null); return; }
+          const n = parseFloat(raw);
+          if (Number.isFinite(n) && n >= 0) updateProp('tileBorderWidth', n);
+        }}
+      />
+
+      {/* ── Icon image overrides ─────────────────────────────── */}
+      <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', mt: 1, display: 'block' }}>
+        Icon Image Overrides
+      </Typography>
+      <TextInput
+        label="Videos image URL"
+        defaultValue={data.props?.videoImageUrl ?? ''}
+        onChange={(v) => updateProp('videoImageUrl', v || null)}
+      />
+      <TextInput
+        label="Articles image URL"
+        defaultValue={data.props?.articleImageUrl ?? ''}
+        onChange={(v) => updateProp('articleImageUrl', v || null)}
+      />
+      <TextInput
+        label="Tweets image URL"
+        defaultValue={data.props?.tweetImageUrl ?? ''}
+        onChange={(v) => updateProp('tweetImageUrl', v || null)}
+      />
+      <TextInput
+        label="Podcasts image URL"
+        defaultValue={data.props?.podcastImageUrl ?? ''}
+        onChange={(v) => updateProp('podcastImageUrl', v || null)}
+      />
+
+      {/* ── Layout ──────────────────────────────────────────── */}
       <MultiStylePropertyPanel
         names={['padding']}
         value={data.style}

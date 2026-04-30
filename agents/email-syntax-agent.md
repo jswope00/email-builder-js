@@ -92,7 +92,7 @@ The agent enables developers, content creators, and AI systems to:
 | `ConferenceAdvertisement300250Xml` | `CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL` | `https://rheumnow.com/admin/conference_email_ad_300_250_xml` |
 | `DailyDownloadXml` | `DAILY_DOWNLOAD_XML_FEED_URL` | `https://rheumnow.com/admin/daily_download_xml` |
 | `EmailSurveyXml` | `EMAIL_SURVEY_XML_FEED_URL` (`block-email-survey-xml`) | `https://rheumnow.com/admin/promoted-survey-xml` |
-| `CoverageXml` | `COVERAGE_XML_FEED_URLS` (`block-coverage-xml`) — array of 4 base URLs | Videos: `https://rheumnow.com/admin/videos-xml`; News+Blogs→Articles: `https://rheumnow.com/admin/daily_news_xml` + `https://rheumnow.com/admin/blogs_xml`; Tweets: `https://rheumnow.com/admin/daily_news_xml`; Podcasts: `https://rheumnow.com/admin/podcasts_xml` |
+| `CoverageXml` | `COVERAGE_XML_FEED_URLS` (`block-coverage-xml`) — array of 4 base URLs | Videos: `https://rheumnow.com/admin/videos-xml`; Articles: `https://rheumnow.com/admin/article-xml`; Tweets: `https://rheumnow.com/admin/tweet-xml`; Podcasts: `https://rheumnow.com/admin/podcasts_xml` |
 
 **SSR / static HTML:** `packages/email-builder/src/renderers/renderToStaticMarkup.tsx` walks the document and, for each XML block instance, prefetches the same effective URL the component would use (optional topic and/or dashboard tag segment). Prefetched XML is exposed as `__XML_DATA_CONTEXT__` on `global` / `window`, keyed by the **full fetch URL** string components use. `XML_FEED_URL_BY_BLOCK_TYPE` maps each block type to its base URL(s) — value is `string` for single-feed blocks or `readonly string[]` for blocks that fetch from multiple feeds (e.g. `CoverageXml`). `extractXmlUrls` iterates both forms and builds the full filtered URL for each.
 
