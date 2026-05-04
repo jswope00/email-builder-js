@@ -55,6 +55,7 @@ export default function SendToMailchimpDialog({
       const today = new Date();
       const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
       setTitle(`${templateName} ${dateStr}`);
+      setSubject(`[TEST] ${templateName} ${dateStr}`);
       setError(null);
     }
   }, [open, templateName]);
