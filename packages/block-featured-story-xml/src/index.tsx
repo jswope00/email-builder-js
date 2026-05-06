@@ -251,7 +251,7 @@ export function buildFeaturedStoryFeedUrl(
 /** First story title from raw XML (same ordering as the Featured Story block). */
 export function getFirstFeaturedStoryTitleFromXml(xmlText: string): string {
   const items = parseFeaturedStoryXml(xmlText, 1);
-  return (items[0]?.title ?? '').trim();
+  return decodeHtmlEntities((items[0]?.title ?? '').trim());
 }
 
 export function FeaturedStoryXml({
@@ -360,10 +360,10 @@ export function FeaturedStoryXml({
         <div key={index} style={{ marginBottom: 24, paddingBottom: 16, borderBottom: index < items.length - 1 ? '1px solid #eee' : 'none' }}>
             {item.viewNode ? (
                 <a href={item.viewNode} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                    <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4', color: '#333' }}>{item.title}</h3>
+                    <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4', color: '#333' }}>{decodeHtmlEntities(item.title)}</h3>
                 </a>
             ) : (
-                <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4' }}>{item.title}</h3>
+                <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4' }}>{decodeHtmlEntities(item.title)}</h3>
             )}
             
             <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
@@ -383,7 +383,7 @@ export function FeaturedStoryXml({
                 <a href={item.viewNode} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                     {item.image && (
                         <div style={{ position: 'relative', marginBottom: 12 }}>
-                            <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
+                            <img src={item.image} alt={decodeHtmlEntities(item.title)} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
                             {item.isVideoType && <PlayIcon />}
                         </div>
                     )}
@@ -392,7 +392,7 @@ export function FeaturedStoryXml({
                 <>
                     {item.image && (
                         <div style={{ position: 'relative', marginBottom: 12 }}>
-                            <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
+                            <img src={item.image} alt={decodeHtmlEntities(item.title)} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
                             {item.isVideoType && <PlayIcon />}
                         </div>
                     )}

@@ -53,6 +53,17 @@ type DateFilterOptions = {
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
+function decodeHtmlEntities(s: string): string {
+  return s
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&#0?39;/g, "'")
+    .replace(/&nbsp;/gi, '\u00a0');
+}
+
 function parseCreatedField(created: unknown): { createdDate: string; createdDateTime: string } {
   if (!created) return { createdDate: '', createdDateTime: '' };
   const raw = typeof created === 'string' ? created : String(created);
@@ -272,24 +283,24 @@ export function VideoXml({
                 <a href={item.link} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                      {item.image && (
                         <div style={{ marginBottom: 12 }}>
-                            <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
+                            <img src={item.image} alt={decodeHtmlEntities(item.title)} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
                         </div>
                     )}
                     <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4', color: '#333' }}>
                       <span style={{ marginRight: '6px', color: '#1585fe' }}>▶</span>
-                      {item.title}
+                      {decodeHtmlEntities(item.title)}
                     </h3>
                 </a>
             ) : (
                 <>
                     {item.image && (
                         <div style={{ marginBottom: 12 }}>
-                            <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
+                            <img src={item.image} alt={decodeHtmlEntities(item.title)} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
                         </div>
                     )}
                     <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4', color: '#333' }}>
                       <span style={{ marginRight: '6px', color: '#1585fe' }}>▶</span>
-                      {item.title}
+                      {decodeHtmlEntities(item.title)}
                     </h3>
                 </>
             )}

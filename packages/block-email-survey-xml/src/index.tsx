@@ -393,7 +393,7 @@ export function EmailSurveyXml({
                 color: item.isSponsoredPurple ? SPONSORED_TITLE_COLOR : DEFAULT_TITLE_COLOR,
               }}
             >
-              {item.title}
+              {decodeBasicEntities(item.title)}
             </h3>
           ) : null}
           {item.primaryQuestion ? (

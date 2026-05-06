@@ -52,6 +52,17 @@ type DateFilterOptions = {
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
+function decodeHtmlEntities(s: string): string {
+  return s
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&#0?39;/g, "'")
+    .replace(/&nbsp;/gi, '\u00a0');
+}
+
 function parseCreatedField(created: unknown): { createdDate: string; createdDateTime: string } {
   if (!created) return { createdDate: '', createdDateTime: '' };
   const raw = typeof created === 'string' ? created : String(created);
@@ -269,13 +280,13 @@ export function DailyDownloadXml({
           {item.viewNode ? (
             <a href={item.viewNode} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
               {item.image && (
-                <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 }} />
+                <img src={item.image} alt={decodeHtmlEntities(item.title)} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 }} />
               )}
             </a>
           ) : (
             <>
               {item.image && (
-                <img src={item.image} alt={item.title} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 }} />
+                <img src={item.image} alt={decodeHtmlEntities(item.title)} style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block', marginBottom: 12, borderRadius: 4 }} />
               )}
             </>
           )}

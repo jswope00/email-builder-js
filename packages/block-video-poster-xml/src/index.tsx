@@ -358,11 +358,11 @@ export function VideoPosterXml({
               rel="noreferrer"
             >
               <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4', color: '#333' }}>
-                {item.title}
+                {decodeHtmlEntities(item.title)}
               </h3>
             </a>
           ) : (
-            <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4' }}>{item.title}</h3>
+            <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4' }}>{decodeHtmlEntities(item.title)}</h3>
           )}
 
           <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
@@ -394,7 +394,7 @@ export function VideoPosterXml({
               {item.image && (
                 <img
                   src={item.image}
-                  alt={item.title}
+                  alt={decodeHtmlEntities(item.title)}
                   style={{
                     width: '100%',
                     maxWidth: '100%',
@@ -411,7 +411,7 @@ export function VideoPosterXml({
               {item.image && (
                 <img
                   src={item.image}
-                  alt={item.title}
+                  alt={decodeHtmlEntities(item.title)}
                   style={{
                     width: '100%',
                     maxWidth: '100%',
