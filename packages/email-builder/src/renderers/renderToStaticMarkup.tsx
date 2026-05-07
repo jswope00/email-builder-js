@@ -168,7 +168,7 @@ async function fetchXmlData(url: string): Promise<string> {
     // In Node.js environment, use node-fetch or similar
     // For browser environment, use fetch
     if (typeof fetch === 'function') {
-      const response = await fetch(url);
+      const response = await fetch(url, { cache: 'no-store' });
       if (!response.ok) {
         throw new Error(`Failed to fetch ${url}: ${response.status}`);
       }

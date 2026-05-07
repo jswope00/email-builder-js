@@ -262,7 +262,7 @@ export function TherapeuticUpdateXml({
       setError(null);
       setItems([]);
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, { cache: 'no-store' });
         if (!response.ok) {
           throw new Error(`Status: ${response.status}`);
         }

@@ -53,7 +53,7 @@ export default function HeadingReader(props: HeadingProps) {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(feedUrl);
+        const res = await fetch(feedUrl, { cache: 'no-store' });
         if (!res.ok) return;
         const text = await res.text();
         if (!cancelled) setFetchedTitle(getFirstFeaturedStoryTitleFromXml(text));

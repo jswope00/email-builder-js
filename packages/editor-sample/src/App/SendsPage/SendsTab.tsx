@@ -1313,7 +1313,7 @@ function SendFormDialog({
         const featuredBlock = findFirstFeaturedStoryInDoc(cfg, 'root');
         if (!featuredBlock) return;
         const feedUrl = buildFeaturedStoryFeedUrl(featuredBlock.topicTid, featuredBlock.dashboardTagTid);
-        const res = await fetch(feedUrl);
+        const res = await fetch(feedUrl, { cache: 'no-store' });
         if (cancelled || !res.ok) return;
         const xml = await res.text();
         if (!cancelled) setFeaturedTitlePreview(getFirstFeaturedStoryTitleFromXml(xml));

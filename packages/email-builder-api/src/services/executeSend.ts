@@ -94,7 +94,7 @@ async function expandSubjectWildcards(
     if (featuredBlock) {
       const feedUrl = buildFeaturedStoryFeedUrl(featuredBlock.topicTid, featuredBlock.dashboardTagTid);
       try {
-        const res = await fetch(feedUrl);
+        const res = await fetch(feedUrl, { cache: 'no-store' });
         if (res.ok) {
           featuredStoryTitle = getFirstFeaturedStoryTitleFromXml(await res.text());
         }

@@ -196,7 +196,7 @@ export function Advertisement72890Xml({
       setError(null);
       setRawXml(null);
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, { cache: 'no-store' });
         if (!response.ok) {
           throw new Error(`Status: ${response.status}`);
         }

@@ -179,7 +179,7 @@ function getPreFetchedXml(url: string): string | null {
 }
 
 async function fetchXml(url: string): Promise<string> {
-  const res = await fetch(url);
+  const res = await fetch(url, { cache: 'no-store' });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.text();
 }
