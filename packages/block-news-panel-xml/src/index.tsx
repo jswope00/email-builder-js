@@ -29,6 +29,8 @@ export const NewsPanelXmlPropsSchema = z.object({
     hideImages: z.boolean().optional().nullable(),
     /** When true, only include feed items where `field_is_featured` is exactly `1`. */
     isFeatured: z.boolean().optional().nullable(),
+    /** Full-width stacked layout (same as Featured Story block) instead of side-by-side thumbnails. */
+    largeImageStyle: z.boolean().optional().nullable(),
   }).optional().nullable(),
 });
 
@@ -43,6 +45,7 @@ export const NewsPanelXmlPropsDefaults = {
   itemTypeFilter: 'all' as const,
   hideImages: false,
   isFeatured: false,
+  largeImageStyle: false,
 } as const;
 
 export type NewsPanelItemTypeFilter = 'all' | 'Article' | 'Tweet';
@@ -137,6 +140,104 @@ const extractAuthor = (fullName: string): string => {
   const text = fullName.replace(/<[^>]*>?/gm, '');
   return decodeHtmlEntities(text.trim());
 };
+
+type NewsPanelItemImageProps = {
+  src: string;
+  alt: string;
+  variant: 'full' | 'thumb';
+  showPlayIcon?: boolean;
+  marginBottom?: number;
+};
+
+/**
+ * Renders feed images with a max 1:1 aspect ratio. Portrait images are cropped to a centered
+ * square (object-fit: cover); wider images keep their natural aspect ratio.
+ */
+function NewsPanelItemImage({
+  src,
+  alt,
+  variant,
+  showPlayIcon = false,
+  marginBottom = 12,
+}: NewsPanelItemImageProps) {
+  const [layout, setLayout] = useState<'natural' | 'square'>('natural');
+
+  const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const { naturalWidth, naturalHeight } = e.currentTarget;
+    setLayout(naturalHeight > naturalWidth ? 'square' : 'natural');
+  };
+
+  const frameWidth = variant === 'full' ? '100%' : '160px';
+  const isSquare = layout === 'square';
+  const frameStyle: React.CSSProperties = {
+    position: 'relative',
+    marginBottom,
+    width: frameWidth,
+    maxWidth: '100%',
+    containerType: 'inline-size',
+    ...(isSquare ? { aspectRatio: '1 / 1', overflow: 'hidden', borderRadius: 4 } : {}),
+  };
+
+  const imgStyle: React.CSSProperties = isSquare
+    ? {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        objectPosition: 'center',
+        display: 'block',
+      }
+    : {
+        width: variant === 'thumb' ? '160px' : '100%',
+        maxWidth: '100%',
+        height: 'auto',
+        maxHeight: variant === 'full' ? '100cqw' : 160,
+        display: 'block',
+        borderRadius: 4,
+      };
+
+  return (
+    <div style={frameStyle}>
+      <img
+        src={src}
+        alt={alt}
+        width={variant === 'thumb' ? 160 : undefined}
+        onLoad={handleLoad}
+        style={imgStyle}
+      />
+      {showPlayIcon && <PlayIcon />}
+    </div>
+  );
+}
+
+const PlayIcon = () => (
+  <div
+    style={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '48px',
+      height: '48px',
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      pointerEvents: 'none',
+    }}
+  >
+    <div
+      style={{
+        width: 0,
+        height: 0,
+        borderTop: '10px solid transparent',
+        borderBottom: '10px solid transparent',
+        borderLeft: '16px solid white',
+        marginLeft: '4px',
+      }}
+    />
+  </div>
+);
 
 function decodeHtmlEntities(s: string): string {
   return s
@@ -313,6 +414,7 @@ export function NewsPanelXml({
     props?.itemTypeFilter ?? NewsPanelXmlPropsDefaults.itemTypeFilter;
   const hideImages = props?.hideImages ?? NewsPanelXmlPropsDefaults.hideImages;
   const isFeatured = props?.isFeatured ?? NewsPanelXmlPropsDefaults.isFeatured;
+  const largeImageStyle = props?.largeImageStyle ?? NewsPanelXmlPropsDefaults.largeImageStyle;
   const dateFilters: DateFilterOptions = {
     createdStartDate: props?.createdStartDate,
     createdEndDate: props?.createdEndDate,
@@ -414,10 +516,96 @@ export function NewsPanelXml({
           </h2>
       )}
       {items.map((item, index) => {
-        if (item.type === 'Article') {
-          // Render Article
+        const itemWrapperStyle = {
+          marginBottom: 24,
+          paddingBottom: 16,
+          borderBottom: index < items.length - 1 ? '1px solid #eee' : 'none',
+        };
+
+        if (item.type === 'Article' && largeImageStyle) {
           return (
-            <div key={index} style={{ marginBottom: 24, paddingBottom: 16, borderBottom: index < items.length - 1 ? '1px solid #eee' : 'none' }}>
+            <div key={index} style={itemWrapperStyle}>
+              {item.viewNode ? (
+                <a href={item.viewNode} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                  <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4', color: '#333' }}>{item.title}</h3>
+                </a>
+              ) : (
+                <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4' }}>{item.title}</h3>
+              )}
+
+              <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                {item.showAuthor && item.author && (
+                  <>
+                    <span style={{ fontWeight: 'bold' }}>{item.author}</span>
+                    {item.createdDate && (
+                      <>
+                        <span style={{ margin: '0 8px' }}>•</span>
+                        <span>{item.createdDate}</span>
+                      </>
+                    )}
+                  </>
+                )}
+                {!item.showAuthor && item.createdDate && <span>{item.createdDate}</span>}
+              </div>
+
+              {item.viewNode ? (
+                <a href={item.viewNode} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                  {item.image && !hideImages && (
+                    <NewsPanelItemImage
+                      src={item.image}
+                      alt={item.title}
+                      variant="full"
+                      showPlayIcon={item.isVideoType}
+                    />
+                  )}
+                </a>
+              ) : (
+                <>
+                  {item.image && !hideImages && (
+                    <NewsPanelItemImage
+                      src={item.image}
+                      alt={item.title}
+                      variant="full"
+                      showPlayIcon={item.isVideoType}
+                    />
+                  )}
+                </>
+              )}
+
+              {item.body && (
+                <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666' }}>
+                  {decodeHtmlEntities(item.body.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>?/gm, ''))}
+                </div>
+              )}
+
+              {item.viewNode && (
+                <div style={{ marginTop: 12 }}>
+                  <a
+                    href={item.viewNode}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-block',
+                      backgroundColor: '#1585fe',
+                      color: '#ffffff',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      textDecoration: 'none',
+                      padding: '10px 20px',
+                      borderRadius: 4,
+                    }}
+                  >
+                    {item.isVideoType ? 'Watch Video' : 'Read Article'}
+                  </a>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        if (item.type === 'Article') {
+          return (
+            <div key={index} style={itemWrapperStyle}>
               <table width="100%" cellPadding="0" cellSpacing="0" style={{ borderCollapse: 'collapse' }}>
                 <tbody>
                   <tr>
@@ -425,10 +613,10 @@ export function NewsPanelXml({
                       <td width="160" valign="top" style={{ paddingRight: 16, paddingBottom: 0 }}>
                         {item.viewNode ? (
                           <a href={item.viewNode} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                            <img src={item.image} alt={item.title} width="160" style={{ width: '160px', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
+                            <NewsPanelItemImage src={item.image} alt={item.title} variant="thumb" marginBottom={0} />
                           </a>
                         ) : (
-                          <img src={item.image} alt={item.title} width="160" style={{ width: '160px', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
+                          <NewsPanelItemImage src={item.image} alt={item.title} variant="thumb" marginBottom={0} />
                         )}
                       </td>
                     )}
@@ -440,7 +628,7 @@ export function NewsPanelXml({
                       ) : (
                         <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', lineHeight: '1.4' }}>{item.title}</h3>
                       )}
-                      
+
                       <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
                         {item.showAuthor && item.author && (
                           <>
@@ -487,105 +675,189 @@ export function NewsPanelXml({
               </table>
             </div>
           );
-        } else {
-          // Render Tweet
+        }
+
+        if (largeImageStyle) {
           return (
-            <div key={index} style={{ marginBottom: 24, paddingBottom: 16, borderBottom: index < items.length - 1 ? '1px solid #eee' : 'none' }}>
-              <table width="100%" cellPadding="0" cellSpacing="0" style={{ borderCollapse: 'collapse' }}>
-                <tbody>
-                  <tr>
-                    {item.image && !hideImages && (
-                      <td width="160" valign="top" style={{ paddingRight: 16, paddingBottom: 0 }}>
-                        {item.tweetId ? (
-                          <a href={item.tweetId} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                            <img src={item.image} alt="Tweet" width="160" style={{ width: '160px', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
-                          </a>
-                        ) : (
-                          <img src={item.image} alt="Tweet" width="160" style={{ width: '160px', maxWidth: '100%', height: 'auto', display: 'block', borderRadius: 4 }} />
-                        )}
-                      </td>
+            <div key={index} style={itemWrapperStyle}>
+              {item.tweetId ? (
+                <a href={item.tweetId} target="_blank" style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666', marginBottom: 12 }}>
+                    {decodeHtmlEntities(item.tweetContent.replace(/<!\[CDATA\[|\]\]>/g, ''))}
+                  </div>
+                </a>
+              ) : (
+                <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666', marginBottom: 12 }}>
+                  {decodeHtmlEntities(item.tweetContent.replace(/<!\[CDATA\[|\]\]>/g, ''))}
+                </div>
+              )}
+
+              {item.links.length > 0 && (
+                <div style={{ marginTop: 4, marginBottom: 12, paddingLeft: 0, marginLeft: 0 }}>
+                  {item.links.map((link, linkIndex) => (
+                    <div
+                      key={linkIndex}
+                      style={{
+                        marginBottom: linkIndex < item.links.length - 1 ? 6 : 0,
+                        lineHeight: 1.45,
+                      }}
+                    >
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: '#1585fe',
+                          textDecoration: 'underline',
+                          fontSize: '14px',
+                          fontWeight: 500,
+                          wordBreak: 'break-word',
+                        }}
+                      >
+                        {link.text || link.href}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {item.image && !hideImages && (
+                item.tweetId ? (
+                  <a href={item.tweetId} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                    <NewsPanelItemImage src={item.image} alt="Tweet" variant="full" />
+                  </a>
+                ) : (
+                  <NewsPanelItemImage src={item.image} alt="Tweet" variant="full" />
+                )
+              )}
+
+              <div style={{ fontSize: '12px', color: '#666' }}>
+                <img
+                  src="https://rkrn-images.s3.us-east-1.amazonaws.com/x_logo.png"
+                  alt="Twitter/X"
+                  width="14"
+                  height="14"
+                  style={{
+                    width: '14px',
+                    height: '14px',
+                    display: 'inline-block',
+                    verticalAlign: 'middle',
+                    marginRight: '6px',
+                  }}
+                />
+                {item.authorName && (
+                  <>
+                    <span style={{ fontWeight: 'bold' }}>{item.authorName}</span>
+                    {item.createdDate && (
+                      <>
+                        <span style={{ margin: '0 8px' }}>•</span>
+                        <span>{item.createdDate}</span>
+                      </>
                     )}
-                    <td valign="top" style={{ paddingBottom: 0 }}>
-                      {item.tweetId ? (
-                        <a href={item.tweetId} target="_blank" style={{ textDecoration: 'none', color: 'inherit' }}>
-                          <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666', marginBottom: 12 }}>
-                            {decodeHtmlEntities(item.tweetContent.replace(/<!\[CDATA\[|\]\]>/g, ''))}
-                          </div>
-                        </a>
-                      ) : (
-                        <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666', marginBottom: 12 }}>
-                          {decodeHtmlEntities(item.tweetContent.replace(/<!\[CDATA\[|\]\]>/g, ''))}
-                        </div>
-                      )}
-
-                      {item.links.length > 0 && (
-                        <div
-                          style={{
-                            marginTop: 4,
-                            marginBottom: 12,
-                            paddingLeft: 0,
-                            marginLeft: 0,
-                          }}
-                        >
-                          {item.links.map((link, linkIndex) => (
-                            <div
-                              key={linkIndex}
-                              style={{
-                                marginBottom: linkIndex < item.links.length - 1 ? 6 : 0,
-                                lineHeight: 1.45,
-                              }}
-                            >
-                              <a
-                                href={link.href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                  color: '#1585fe',
-                                  textDecoration: 'underline',
-                                  fontSize: '14px',
-                                  fontWeight: 500,
-                                  wordBreak: 'break-word',
-                                }}
-                              >
-                                {link.text || link.href}
-                              </a>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      <div style={{ fontSize: '12px', color: '#666' }}>
-                        <img 
-                          src="https://rkrn-images.s3.us-east-1.amazonaws.com/x_logo.png" 
-                          alt="Twitter/X" 
-                          width="14" 
-                          height="14" 
-                          style={{ 
-                            width: '14px', 
-                            height: '14px', 
-                            display: 'inline-block',
-                            verticalAlign: 'middle',
-                            marginRight: '6px'
-                          }} 
-                        />
-                        {item.authorName && (
-                          <>
-                            <span style={{ fontWeight: 'bold' }}>{item.authorName}</span>{item.createdDate && (
-                              <><span style={{ margin: '0 8px' }}>•</span><span>{item.createdDate}</span></>
-                            )}
-                          </>
-                        )}
-                        {!item.authorName && item.createdDate && (
-                          <span>{item.createdDate}</span>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                  </>
+                )}
+                {!item.authorName && item.createdDate && <span>{item.createdDate}</span>}
+              </div>
             </div>
           );
         }
+
+        return (
+          <div key={index} style={itemWrapperStyle}>
+            <table width="100%" cellPadding="0" cellSpacing="0" style={{ borderCollapse: 'collapse' }}>
+              <tbody>
+                <tr>
+                  {item.image && !hideImages && (
+                    <td width="160" valign="top" style={{ paddingRight: 16, paddingBottom: 0 }}>
+                      {item.tweetId ? (
+                        <a href={item.tweetId} target="_blank" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                          <NewsPanelItemImage src={item.image} alt="Tweet" variant="thumb" marginBottom={0} />
+                        </a>
+                      ) : (
+                        <NewsPanelItemImage src={item.image} alt="Tweet" variant="thumb" marginBottom={0} />
+                      )}
+                    </td>
+                  )}
+                  <td valign="top" style={{ paddingBottom: 0 }}>
+                    {item.tweetId ? (
+                      <a href={item.tweetId} target="_blank" style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666', marginBottom: 12 }}>
+                          {decodeHtmlEntities(item.tweetContent.replace(/<!\[CDATA\[|\]\]>/g, ''))}
+                        </div>
+                      </a>
+                    ) : (
+                      <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#666', marginBottom: 12 }}>
+                        {decodeHtmlEntities(item.tweetContent.replace(/<!\[CDATA\[|\]\]>/g, ''))}
+                      </div>
+                    )}
+
+                    {item.links.length > 0 && (
+                      <div
+                        style={{
+                          marginTop: 4,
+                          marginBottom: 12,
+                          paddingLeft: 0,
+                          marginLeft: 0,
+                        }}
+                      >
+                        {item.links.map((link, linkIndex) => (
+                          <div
+                            key={linkIndex}
+                            style={{
+                              marginBottom: linkIndex < item.links.length - 1 ? 6 : 0,
+                              lineHeight: 1.45,
+                            }}
+                          >
+                            <a
+                              href={link.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                color: '#1585fe',
+                                textDecoration: 'underline',
+                                fontSize: '14px',
+                                fontWeight: 500,
+                                wordBreak: 'break-word',
+                              }}
+                            >
+                              {link.text || link.href}
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div style={{ fontSize: '12px', color: '#666' }}>
+                      <img
+                        src="https://rkrn-images.s3.us-east-1.amazonaws.com/x_logo.png"
+                        alt="Twitter/X"
+                        width="14"
+                        height="14"
+                        style={{
+                          width: '14px',
+                          height: '14px',
+                          display: 'inline-block',
+                          verticalAlign: 'middle',
+                          marginRight: '6px',
+                        }}
+                      />
+                      {item.authorName && (
+                        <>
+                          <span style={{ fontWeight: 'bold' }}>{item.authorName}</span>{item.createdDate && (
+                            <><span style={{ margin: '0 8px' }}>•</span><span>{item.createdDate}</span></>
+                          )}
+                        </>
+                      )}
+                      {!item.authorName && item.createdDate && (
+                        <span>{item.createdDate}</span>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        );
       })}
     </div>
   );

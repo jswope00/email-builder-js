@@ -46,6 +46,7 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
     data.props?.itemTypeFilter ?? NewsPanelXmlPropsDefaults.itemTypeFilter;
   const hideImages = data.props?.hideImages ?? NewsPanelXmlPropsDefaults.hideImages;
   const isFeatured = data.props?.isFeatured ?? NewsPanelXmlPropsDefaults.isFeatured;
+  const largeImageStyle = data.props?.largeImageStyle ?? NewsPanelXmlPropsDefaults.largeImageStyle;
   const dateFilterProps = (data.props ?? {}) as DateFilterFields;
   const createdStartDate = dateFilterProps.createdStartDate ?? '';
   const createdEndDate = dateFilterProps.createdEndDate ?? '';
@@ -170,6 +171,17 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
           />
         }
         label="Hide images (save vertical space)"
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={largeImageStyle}
+            onChange={(e) =>
+              updateData({ ...data, props: { ...data.props, largeImageStyle: e.target.checked } })
+            }
+          />
+        }
+        label="Large Image Style"
       />
       <MultiStylePropertyPanel
         names={['padding']}
