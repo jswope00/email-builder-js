@@ -27,6 +27,8 @@ export const NewsPanelXmlPropsSchema = z.object({
     itemTypeFilter: z.enum(['all', 'Article', 'Tweet']).optional().nullable(),
     /** Omit article/tweet thumbnails to save vertical space. */
     hideImages: z.boolean().optional().nullable(),
+    /** When true, only include feed items where `field_is_featured` is exactly `1`. */
+    isFeatured: z.boolean().optional().nullable(),
   }).optional().nullable(),
 });
 
@@ -40,6 +42,7 @@ export const NewsPanelXmlPropsDefaults = {
   createdRelativeDays: null,
   itemTypeFilter: 'all' as const,
   hideImages: false,
+  isFeatured: false,
 } as const;
 
 export type NewsPanelItemTypeFilter = 'all' | 'Article' | 'Tweet';
@@ -165,6 +168,13 @@ function parseXmlTruthyBool(raw: unknown): boolean {
   return false;
 }
 
+/** True only when the XML field is exactly `1` (not `true`, empty, or `0`). */
+function isXmlFieldExactlyOne(raw: unknown): boolean {
+  if (raw === 1) return true;
+  if (typeof raw === 'string') return raw.trim() === '1';
+  return false;
+}
+
 // Helper function to parse field_links HTML and extract link items
 const parseLinks = (linksHtml: string): LinkItem[] => {
   if (!linksHtml) return [];
@@ -189,7 +199,8 @@ function parseNewsPanelXml(
   xmlText: string,
   numberOfItems: number,
   itemTypeFilter: NewsPanelItemTypeFilter = 'all',
-  dateFilters: DateFilterOptions = {}
+  dateFilters: DateFilterOptions = {},
+  isFeatured = false
 ): NewsPanelItem[] {
   try {
     const parser = new XMLParser({
@@ -229,7 +240,13 @@ function parseNewsPanelXml(
 
     findItems(result);
 
-    const mappedItems: NewsPanelItem[] = foundItems.map((item: any) => {
+    const sourceItems = isFeatured
+      ? foundItems.filter((item: { field_is_featured?: unknown }) =>
+          isXmlFieldExactlyOne(item.field_is_featured)
+        )
+      : foundItems;
+
+    const mappedItems: NewsPanelItem[] = sourceItems.map((item: any) => {
       const itemType = item.type || '';
       const { createdDate, createdDateTime } = parseCreatedField(item.created_1 || item.created);
 
@@ -295,6 +312,7 @@ export function NewsPanelXml({
   const itemTypeFilter: NewsPanelItemTypeFilter =
     props?.itemTypeFilter ?? NewsPanelXmlPropsDefaults.itemTypeFilter;
   const hideImages = props?.hideImages ?? NewsPanelXmlPropsDefaults.hideImages;
+  const isFeatured = props?.isFeatured ?? NewsPanelXmlPropsDefaults.isFeatured;
   const dateFilters: DateFilterOptions = {
     createdStartDate: props?.createdStartDate,
     createdEndDate: props?.createdEndDate,
@@ -320,7 +338,7 @@ export function NewsPanelXml({
   
   // Parse pre-fetched data synchronously if available
   const preFetchedItems = preFetchedXmlText
-    ? parseNewsPanelXml(preFetchedXmlText, numberOfItems, itemTypeFilter, dateFilters)
+    ? parseNewsPanelXml(preFetchedXmlText, numberOfItems, itemTypeFilter, dateFilters, isFeatured)
     : null;
 
   const [items, setItems] = useState<NewsPanelItem[]>(preFetchedItems || []);
@@ -329,9 +347,9 @@ export function NewsPanelXml({
 
   useEffect(() => {
     if (preFetchedXmlText) {
-      setItems(parseNewsPanelXml(preFetchedXmlText, numberOfItems, itemTypeFilter, dateFilters));
+      setItems(parseNewsPanelXml(preFetchedXmlText, numberOfItems, itemTypeFilter, dateFilters, isFeatured));
     }
-  }, [preFetchedXmlText, numberOfItems, itemTypeFilter, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
+  }, [preFetchedXmlText, numberOfItems, itemTypeFilter, isFeatured, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   useEffect(() => {
     // Skip fetching if we already have pre-fetched data
@@ -350,7 +368,7 @@ export function NewsPanelXml({
         }
         const text = await response.text();
         
-        const parsedItems = parseNewsPanelXml(text, numberOfItems, itemTypeFilter, dateFilters);
+        const parsedItems = parseNewsPanelXml(text, numberOfItems, itemTypeFilter, dateFilters, isFeatured);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -361,7 +379,7 @@ export function NewsPanelXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, itemTypeFilter, preFetchedXmlText, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
+  }, [url, numberOfItems, itemTypeFilter, isFeatured, preFetchedXmlText, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   const padding = style?.padding;
   const wrapperStyle = {

@@ -45,6 +45,7 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
   const itemTypeFilter: NewsPanelItemTypeFilter =
     data.props?.itemTypeFilter ?? NewsPanelXmlPropsDefaults.itemTypeFilter;
   const hideImages = data.props?.hideImages ?? NewsPanelXmlPropsDefaults.hideImages;
+  const isFeatured = data.props?.isFeatured ?? NewsPanelXmlPropsDefaults.isFeatured;
   const dateFilterProps = (data.props ?? {}) as DateFilterFields;
   const createdStartDate = dateFilterProps.createdStartDate ?? '';
   const createdEndDate = dateFilterProps.createdEndDate ?? '';
@@ -88,13 +89,13 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
       <FormControlLabel
         control={
           <Checkbox
-            checked={hideImages}
+            checked={isFeatured}
             onChange={(e) =>
-              updateData({ ...data, props: { ...data.props, hideImages: e.target.checked } })
+              updateData({ ...data, props: { ...data.props, isFeatured: e.target.checked } })
             }
           />
         }
-        label="Hide images (save vertical space)"
+        label="Is Featured"
       />
       <TextField
         fullWidth
@@ -158,6 +159,17 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
             updateData({ ...data, props: { ...data.props, createdRelativeDays: parseInt(raw, 10) } });
           }
         }}
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={hideImages}
+            onChange={(e) =>
+              updateData({ ...data, props: { ...data.props, hideImages: e.target.checked } })
+            }
+          />
+        }
+        label="Hide images (save vertical space)"
       />
       <MultiStylePropertyPanel
         names={['padding']}
