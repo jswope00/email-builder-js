@@ -2,6 +2,7 @@
 
 export type TStyle = {
   backgroundColor?: any;
+  backgroundImageUrl?: any;
   borderColor?: any;
   borderRadius?: any;
   color?: any;

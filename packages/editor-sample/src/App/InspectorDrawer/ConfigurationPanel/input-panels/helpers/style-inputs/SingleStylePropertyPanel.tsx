@@ -10,6 +10,7 @@ import FontWeightInput from '../inputs/FontWeightInput';
 import PaddingInput from '../inputs/PaddingInput';
 import SliderInput from '../inputs/SliderInput';
 import TextAlignInput from '../inputs/TextAlignInput';
+import TextInput from '../inputs/TextInput';
 
 type StylePropertyPanelProps = {
   name: keyof TStyle;
@@ -26,6 +27,15 @@ export default function SingleStylePropertyPanel({ name, value, onChange }: Styl
   switch (name) {
     case 'backgroundColor':
       return <NullableColorInput label="Background color" defaultValue={defaultValue} onChange={handleChange} />;
+    case 'backgroundImageUrl':
+      return (
+        <TextInput
+          label="Background image URL"
+          defaultValue={defaultValue ?? ''}
+          helperText="Optional. Email clients that ignore background images will use the background color."
+          onChange={(v) => handleChange(v.trim() || null)}
+        />
+      );
     case 'borderColor':
       return <NullableColorInput label="Border color" defaultValue={defaultValue} onChange={handleChange} />;
     case 'borderRadius':
