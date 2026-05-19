@@ -30,6 +30,7 @@
     "packages/block-conference-advertisement-300-250-xml",
     "packages/block-daily-download-xml",
     "packages/block-email-survey-xml",
+    "packages/block-rheumiq-quiz-xml",
     "packages/document-core",
     "packages/rheumnow-xml-topic",
     "packages/email-builder",

@@ -7,6 +7,7 @@ export { default as EmailBuildingEnvironment } from './Reader/EmailBuildingEnvir
 export type { EmailBuildingEnvironmentProps } from './Reader/EmailBuildingEnvironment';
 
 export { default as HeadingReader } from './blocks/Heading/HeadingReader';
+export { default as TextReader } from './blocks/Text/TextReader';
 
 export {
   ReaderBlockSchema,

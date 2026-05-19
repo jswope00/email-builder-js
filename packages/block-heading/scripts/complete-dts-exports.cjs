@@ -11,10 +11,14 @@ const replacement = `declare function Heading({ props, style }: HeadingProps): R
 
 type HeadingWildcardExtrasValue = {
   featuredStoryFirstTitle?: string | null;
+  rheumIqQuizTitle?: string | null;
+  rheumIqQuizLink?: string | null;
 };
 declare const HeadingWildcardExtrasContext: React.Context<HeadingWildcardExtrasValue>;
 declare const HEADING_DATE_WILDCARD: string;
 declare const HEADING_FEATURED_STORY_TITLE_WILDCARD: string;
+declare const HEADING_RHEUMIQ_QUIZ_TITLE_WILDCARD: string;
+declare const HEADING_RHEUMIQ_QUIZ_LINK_WILDCARD: string;
 declare function expandHeadingWildcards(
   text: string,
   date?: Date,
@@ -22,12 +26,16 @@ declare function expandHeadingWildcards(
 ): string;
 type ExpandHeadingWildcardsOptions = {
   featuredStoryFirstTitle?: string | null;
+  rheumIqQuizTitle?: string | null;
+  rheumIqQuizLink?: string | null;
 };
 declare function formatHeadingWildcardDate(date: Date): string;
 
 export {
   HEADING_DATE_WILDCARD,
   HEADING_FEATURED_STORY_TITLE_WILDCARD,
+  HEADING_RHEUMIQ_QUIZ_LINK_WILDCARD,
+  HEADING_RHEUMIQ_QUIZ_TITLE_WILDCARD,
   Heading,
   type HeadingProps,
   HeadingPropsDefaults,
@@ -48,12 +56,16 @@ export { Heading, type HeadingProps, HeadingPropsDefaults, HeadingPropsSchema };
 for (const name of ['index.d.ts', 'index.d.mts']) {
   const file = path.join(distDir, name);
   let s = fs.readFileSync(file, 'utf8');
-  if (s.includes('HEADING_DATE_WILDCARD')) {
+  if (s.includes('HEADING_RHEUMIQ_QUIZ_TITLE_WILDCARD')) {
     continue;
   }
-  if (!s.includes(needle)) {
+  if (s.includes('HEADING_DATE_WILDCARD')) {
+    const existing = s.slice(s.indexOf('declare function Heading({ props, style }'));
+    s = s.replace(existing, replacement);
+  } else if (s.includes(needle)) {
+    s = s.replace(needle, replacement);
+  } else {
     throw new Error(`complete-dts-exports: unexpected ${name} shape; update needle in script`);
   }
-  s = s.replace(needle, replacement);
   fs.writeFileSync(file, s);
 }

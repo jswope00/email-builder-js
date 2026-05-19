@@ -31,7 +31,7 @@ export default function HeadingSidebarPanel({ data, setData }: HeadingSidebarPan
         label="Content"
         rows={3}
         helperText={
-          'Use %DATE% for today\'s date (e.g. "23 Mar 2026"). Use %FEATURED_STORY_TITLE% for the first Featured Story title (same feed as the Featured Story block).'
+          'Use %DATE% for today\'s date (e.g. "23 Mar 2026"). Use %FEATURED_STORY_TITLE%, %RHEUMIQ_QUIZ_TITLE%, or %RHEUMIQ_QUIZ_LINK% for XML-backed values from the first matching block.'
         }
         defaultValue={data.props?.text ?? HeadingPropsDefaults.text}
         onChange={(text) => {

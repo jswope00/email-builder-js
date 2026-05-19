@@ -12,13 +12,14 @@ import { EmailSurveyXml, EmailSurveyXmlPropsSchema } from '@usewaypoint/block-em
 import { Button, ButtonPropsSchema } from '@usewaypoint/block-button';
 import { Divider, DividerPropsSchema } from '@usewaypoint/block-divider';
 import { HeadingPropsSchema } from '@usewaypoint/block-heading';
-import { HeadingReader } from '@usewaypoint/email-builder';
+import { HeadingReader, TextReader } from '@usewaypoint/email-builder';
 import { Html, HtmlPropsSchema } from '@usewaypoint/block-html';
 import { Image, ImagePropsSchema } from '@usewaypoint/block-image';
 import { Spacer, SpacerPropsSchema } from '@usewaypoint/block-spacer';
-import { Text, TextPropsSchema } from '@usewaypoint/block-text';
+import { TextPropsSchema } from '@usewaypoint/block-text';
 import { FeaturedStoryXml, FeaturedStoryXmlPropsSchema } from '@usewaypoint/block-featured-story-xml';
 import { NewsPanelXml, NewsPanelXmlPropsSchema } from '@usewaypoint/block-news-panel-xml';
+import { RheumIqQuizXml, RheumIqQuizXmlPropsSchema } from '@usewaypoint/block-rheumiq-quiz-xml';
 import { TherapeuticUpdateXml, TherapeuticUpdateXmlPropsSchema } from '@usewaypoint/block-therapeutic-update-xml';
 import { VideoPosterXml, VideoPosterXmlPropsSchema } from '@usewaypoint/block-video-poster-xml';
 import { VideoXml, VideoXmlPropsSchema } from '@usewaypoint/block-video-xml';
@@ -106,7 +107,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: TextPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <Text {...props} />
+        <TextReader {...props} />
       </EditorBlockWrapper>
     ),
   },
@@ -215,6 +216,14 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     Component: (props) => (
       <EditorBlockWrapper>
         <EmailSurveyXml {...({ ...props, showEmptyStateMessage: true } as any)} />
+      </EditorBlockWrapper>
+    ),
+  },
+  RheumIqQuizXml: {
+    schema: RheumIqQuizXmlPropsSchema,
+    Component: (props) => (
+      <EditorBlockWrapper>
+        <RheumIqQuizXml {...({ ...props, showEmptyStateMessage: true } as any)} />
       </EditorBlockWrapper>
     ),
   },

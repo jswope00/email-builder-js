@@ -19,6 +19,7 @@ import { HeadingPropsSchema } from '@usewaypoint/block-heading';
 import { Html, HtmlPropsSchema } from '@usewaypoint/block-html';
 import { Image, ImagePropsSchema } from '@usewaypoint/block-image';
 import { NewsPanelXml, NewsPanelXmlPropsSchema } from '@usewaypoint/block-news-panel-xml';
+import { RheumIqQuizXml, RheumIqQuizXmlPropsSchema } from '@usewaypoint/block-rheumiq-quiz-xml';
 import { Spacer, SpacerPropsSchema } from '@usewaypoint/block-spacer';
 import { Text, TextPropsSchema } from '@usewaypoint/block-text';
 import { TherapeuticUpdateXml, TherapeuticUpdateXmlPropsSchema } from '@usewaypoint/block-therapeutic-update-xml';
@@ -37,6 +38,7 @@ import ContainerReader from '../blocks/Container/ContainerReader';
 import { EmailLayoutPropsSchema } from '../blocks/EmailLayout/EmailLayoutPropsSchema';
 import EmailLayoutReader from '../blocks/EmailLayout/EmailLayoutReader';
 import HeadingReader from '../blocks/Heading/HeadingReader';
+import TextReader from '../blocks/Text/TextReader';
 
 const READER_DICTIONARY = buildBlockConfigurationDictionary({
   ColumnsContainer: {
@@ -82,7 +84,7 @@ const READER_DICTIONARY = buildBlockConfigurationDictionary({
   },
   Text: {
     schema: TextPropsSchema,
-    Component: Text,
+    Component: TextReader,
   },
   VideoXml: {
     schema: VideoXmlPropsSchema,
@@ -127,6 +129,10 @@ const READER_DICTIONARY = buildBlockConfigurationDictionary({
   EmailSurveyXml: {
     schema: EmailSurveyXmlPropsSchema,
     Component: EmailSurveyXml,
+  },
+  RheumIqQuizXml: {
+    schema: RheumIqQuizXmlPropsSchema,
+    Component: RheumIqQuizXml,
   },
   CoverageXml: {
     schema: CoverageXmlPropsSchema,

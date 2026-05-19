@@ -2,9 +2,13 @@ import { renderToStaticMarkup, type TReaderDocument } from '@usewaypoint/email-b
 
 import {
   buildFeaturedStoryFeedUrl,
+  buildRheumIqQuizFeedUrl,
   expandHeadingWildcards,
   getFirstFeaturedStoryTitleFromXml,
+  getFirstRheumIqQuizWildcardValuesFromXml,
   HEADING_FEATURED_STORY_TITLE_WILDCARD,
+  HEADING_RHEUMIQ_QUIZ_LINK_WILDCARD,
+  HEADING_RHEUMIQ_QUIZ_TITLE_WILDCARD,
 } from '../utils/subjectWildcards';
 
 import { getTemplateById } from '../db/queries';
@@ -28,9 +32,10 @@ export interface SendRowForExecution {
   test_segment_id: number | null;
 }
 
-/** Breadth-first search for the first FeaturedStoryXml block in a template configuration. */
-function findFirstFeaturedStoryBlock(
+/** Breadth-first search for the first block of a given XML type in a template configuration. */
+function findFirstXmlBlock(
   config: Record<string, { type: string; data?: unknown }>,
+  blockType: string,
   rootId = 'root'
 ): { topicTid?: number | null; dashboardTagTid?: number | null } | null {
   const queue: string[] = [rootId];
@@ -44,7 +49,7 @@ function findFirstFeaturedStoryBlock(
     const block = config[id];
     if (!block) continue;
 
-    if (block.type === 'FeaturedStoryXml') {
+    if (block.type === blockType) {
       const props = (block.data as { props?: Record<string, unknown> } | undefined)?.props;
       return {
         topicTid: props?.topicTid as number | null | undefined,
@@ -82,15 +87,17 @@ function findFirstFeaturedStoryBlock(
   return null;
 }
 
-/** Resolves all wildcards (%DATE%, %FEATURED_STORY_TITLE%) in a subject line. */
+/** Resolves all wildcards in a subject line. */
 async function expandSubjectWildcards(
   rawSubject: string,
   templateConfig: Record<string, { type: string; data?: unknown }>
 ): Promise<string> {
   let featuredStoryTitle: string | undefined;
+  let rheumIqQuizTitle: string | undefined;
+  let rheumIqQuizLink: string | undefined;
 
   if (rawSubject.includes(HEADING_FEATURED_STORY_TITLE_WILDCARD)) {
-    const featuredBlock = findFirstFeaturedStoryBlock(templateConfig);
+    const featuredBlock = findFirstXmlBlock(templateConfig, 'FeaturedStoryXml');
     if (featuredBlock) {
       const feedUrl = buildFeaturedStoryFeedUrl(featuredBlock.topicTid, featuredBlock.dashboardTagTid);
       try {
@@ -104,7 +111,31 @@ async function expandSubjectWildcards(
     }
   }
 
-  return expandHeadingWildcards(rawSubject, new Date(), { featuredStoryFirstTitle: featuredStoryTitle });
+  if (
+    rawSubject.includes(HEADING_RHEUMIQ_QUIZ_TITLE_WILDCARD) ||
+    rawSubject.includes(HEADING_RHEUMIQ_QUIZ_LINK_WILDCARD)
+  ) {
+    const quizBlock = findFirstXmlBlock(templateConfig, 'RheumIqQuizXml');
+    if (quizBlock) {
+      const feedUrl = buildRheumIqQuizFeedUrl(quizBlock.topicTid, quizBlock.dashboardTagTid);
+      try {
+        const res = await fetch(feedUrl, { cache: 'no-store' });
+        if (res.ok) {
+          const values = getFirstRheumIqQuizWildcardValuesFromXml(await res.text());
+          rheumIqQuizTitle = values.title;
+          rheumIqQuizLink = values.link;
+        }
+      } catch {
+        // Leave the wildcard unexpanded rather than failing the whole send
+      }
+    }
+  }
+
+  return expandHeadingWildcards(rawSubject, new Date(), {
+    featuredStoryFirstTitle: featuredStoryTitle,
+    rheumIqQuizTitle,
+    rheumIqQuizLink,
+  });
 }
 
 export async function executeSendForMailchimp(send: SendRowForExecution, mode: ExecuteMode) {

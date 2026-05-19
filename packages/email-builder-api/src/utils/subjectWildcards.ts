@@ -11,8 +11,11 @@ import { XMLParser } from 'fast-xml-parser';
 
 export const HEADING_DATE_WILDCARD = '%DATE%';
 export const HEADING_FEATURED_STORY_TITLE_WILDCARD = '%FEATURED_STORY_TITLE%';
+export const HEADING_RHEUMIQ_QUIZ_TITLE_WILDCARD = '%RHEUMIQ_QUIZ_TITLE%';
+export const HEADING_RHEUMIQ_QUIZ_LINK_WILDCARD = '%RHEUMIQ_QUIZ_LINK%';
 
 const FEATURED_STORY_XML_FEED_URL = 'https://rheumnow.com/admin/featured-story-xml';
+const RHEUMIQ_QUIZ_XML_FEED_URL = 'https://rheumnow.com/admin/rheumiq-quiz-xml';
 
 // ─── Date formatting ──────────────────────────────────────────────────────────
 
@@ -28,6 +31,8 @@ function formatHeadingWildcardDate(date: Date): string {
 
 export type ExpandHeadingWildcardsOptions = {
   featuredStoryFirstTitle?: string | null;
+  rheumIqQuizTitle?: string | null;
+  rheumIqQuizLink?: string | null;
 };
 
 export function expandHeadingWildcards(
@@ -42,6 +47,14 @@ export function expandHeadingWildcards(
   if (out.includes(HEADING_FEATURED_STORY_TITLE_WILDCARD)) {
     const title = options?.featuredStoryFirstTitle ?? '';
     out = out.split(HEADING_FEATURED_STORY_TITLE_WILDCARD).join(title);
+  }
+  if (out.includes(HEADING_RHEUMIQ_QUIZ_TITLE_WILDCARD)) {
+    const title = options?.rheumIqQuizTitle ?? '';
+    out = out.split(HEADING_RHEUMIQ_QUIZ_TITLE_WILDCARD).join(title);
+  }
+  if (out.includes(HEADING_RHEUMIQ_QUIZ_LINK_WILDCARD)) {
+    const link = options?.rheumIqQuizLink ?? '';
+    out = out.split(HEADING_RHEUMIQ_QUIZ_LINK_WILDCARD).join(link);
   }
   return out;
 }
@@ -60,6 +73,23 @@ export function buildFeaturedStoryFeedUrl(
       ? Math.floor(dashboardTagTid)
       : null;
   if (t == null && d == null) return FEATURED_STORY_XML_FEED_URL;
+  if (t != null && d != null) return `${base}/${t},${d}`;
+  if (t != null) return `${base}/${t}`;
+  return `${base}/${d!}`;
+}
+
+export function buildRheumIqQuizFeedUrl(
+  topicTid?: number | null,
+  dashboardTagTid?: number | null
+): string {
+  const base = RHEUMIQ_QUIZ_XML_FEED_URL.replace(/\/+$/, '');
+  const t =
+    topicTid != null && Number.isFinite(topicTid) && topicTid > 0 ? Math.floor(topicTid) : null;
+  const d =
+    dashboardTagTid != null && Number.isFinite(dashboardTagTid) && dashboardTagTid > 0
+      ? Math.floor(dashboardTagTid)
+      : null;
+  if (t == null && d == null) return RHEUMIQ_QUIZ_XML_FEED_URL;
   if (t != null && d != null) return `${base}/${t},${d}`;
   if (t != null) return `${base}/${t}`;
   return `${base}/${d!}`;
@@ -94,5 +124,77 @@ export function getFirstFeaturedStoryTitleFromXml(xmlText: string): string {
     return (foundItems[0]?.title ?? '').toString().trim();
   } catch {
     return '';
+  }
+}
+
+function xmlTextContent(raw: unknown): string {
+  if (raw == null) return '';
+  if (typeof raw === 'string') return raw;
+  if (Array.isArray(raw)) {
+    for (const el of raw) {
+      const s = xmlTextContent(el).trim();
+      if (s) return s;
+    }
+    return '';
+  }
+  if (typeof raw === 'object' && raw !== null) {
+    const rec = raw as Record<string, unknown>;
+    if ('#text' in rec) return String(rec['#text'] ?? '');
+    if ('__cdata' in rec) return String(rec.__cdata ?? '');
+  }
+  return String(raw);
+}
+
+function decodeBasicEntities(input: string): string {
+  return input
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&#0?39;/g, "'")
+    .replace(/&nbsp;/gi, '\u00a0');
+}
+
+export function getFirstRheumIqQuizWildcardValuesFromXml(xmlText: string): {
+  title: string;
+  link: string;
+} {
+  try {
+    const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_' });
+    const result = parser.parse(xmlText);
+
+    let foundItems: any[] = [];
+
+    const findItems = (obj: any) => {
+      if (foundItems.length > 0) return;
+      if (Array.isArray(obj)) {
+        const first = obj[0];
+        if (
+          first &&
+          (first.label != null ||
+            first.questions_target_id != null ||
+            first.field_sponsored_text != null ||
+            first.quiz_link != null)
+        ) {
+          foundItems = obj;
+          return;
+        }
+        for (const item of obj) findItems(item);
+      } else if (typeof obj === 'object' && obj !== null) {
+        if (obj.item && Array.isArray(obj.item)) { foundItems = obj.item; return; }
+        if (obj.item && typeof obj.item === 'object') { foundItems = [obj.item]; return; }
+        for (const key in obj) findItems(obj[key]);
+      }
+    };
+
+    findItems(result);
+    const first = foundItems[0];
+    return {
+      title: decodeBasicEntities(xmlTextContent(first?.label).trim()),
+      link: xmlTextContent(first?.quiz_link).trim(),
+    };
+  } catch {
+    return { title: '', link: '' };
   }
 }

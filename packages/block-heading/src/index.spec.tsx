@@ -56,6 +56,27 @@ describe('Heading', () => {
     );
     expect(container.textContent).toBe('Spotlight: First headline');
   });
+
+  it('renders RheumIQ quiz wildcards from context', () => {
+    const { container } = render(
+      <HeadingWildcardExtrasContext.Provider
+        value={{
+          rheumIqQuizTitle: 'RheumIQ Weekly Quiz May - 15',
+          rheumIqQuizLink: 'https://rheumnow.com/game/87/start',
+        }}
+      >
+        <Heading
+          props={{
+            text: '%RHEUMIQ_QUIZ_TITLE%: %RHEUMIQ_QUIZ_LINK%',
+            level: 'h2',
+          }}
+        />
+      </HeadingWildcardExtrasContext.Provider>
+    );
+    expect(container.textContent).toBe(
+      'RheumIQ Weekly Quiz May - 15: https://rheumnow.com/game/87/start'
+    );
+  });
 });
 
 describe('expandHeadingWildcards', () => {
@@ -72,5 +93,14 @@ describe('expandHeadingWildcards', () => {
         featuredStoryFirstTitle: 'ACR Highlights',
       })
     ).toBe('Today: ACR Highlights');
+  });
+
+  it('replaces RheumIQ quiz wildcards when values are provided', () => {
+    expect(
+      expandHeadingWildcards('%RHEUMIQ_QUIZ_TITLE% -> %RHEUMIQ_QUIZ_LINK%', new Date(), {
+        rheumIqQuizTitle: 'RheumIQ Weekly Quiz May - 15',
+        rheumIqQuizLink: 'https://rheumnow.com/game/87/start',
+      })
+    ).toBe('RheumIQ Weekly Quiz May - 15 -> https://rheumnow.com/game/87/start');
   });
 });

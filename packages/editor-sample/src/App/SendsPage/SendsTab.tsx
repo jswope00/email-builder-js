@@ -5,9 +5,15 @@ import {
   getFirstFeaturedStoryTitleFromXml,
 } from '@usewaypoint/block-featured-story-xml';
 import {
+  buildRheumIqQuizFeedUrl,
+  getFirstRheumIqQuizWildcardValuesFromXml,
+} from '@usewaypoint/block-rheumiq-quiz-xml';
+import {
   expandHeadingWildcards,
   HEADING_DATE_WILDCARD,
   HEADING_FEATURED_STORY_TITLE_WILDCARD,
+  HEADING_RHEUMIQ_QUIZ_LINK_WILDCARD,
+  HEADING_RHEUMIQ_QUIZ_TITLE_WILDCARD,
 } from '@usewaypoint/block-heading';
 
 import {
@@ -665,9 +671,10 @@ function buildSendPayload(send: EmailSendListItem, schedules: SchedulePayload[])
   };
 }
 
-/** BFS to find the first FeaturedStoryXml block props in a template configuration. */
-function findFirstFeaturedStoryInDoc(
+/** BFS to find the first block of a given XML type in a template configuration. */
+function findFirstXmlBlockInDoc(
   config: Record<string, { type: string; data?: unknown }>,
+  blockType: string,
   rootId = 'root'
 ): { topicTid?: number | null; dashboardTagTid?: number | null } | null {
   const queue: string[] = [rootId];
@@ -678,7 +685,7 @@ function findFirstFeaturedStoryInDoc(
     visited.add(id);
     const block = config[id];
     if (!block) continue;
-    if (block.type === 'FeaturedStoryXml') {
+    if (block.type === blockType) {
       const props = (block.data as { props?: Record<string, unknown> } | undefined)?.props;
       return {
         topicTid: props?.topicTid as number | null | undefined,
@@ -1242,6 +1249,10 @@ function SendFormDialog({
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [featuredTitlePreview, setFeaturedTitlePreview] = useState<string>('');
+  const [rheumIqQuizPreview, setRheumIqQuizPreview] = useState<{ title: string; link: string }>({
+    title: '',
+    link: '',
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -1297,11 +1308,13 @@ function SendFormDialog({
   useEffect(() => {
     if (!open || !templateId) {
       setFeaturedTitlePreview('');
+      setRheumIqQuizPreview({ title: '', link: '' });
       return;
     }
     const slug = templates.find((t) => t.id === templateId)?.slug;
     if (!slug) {
       setFeaturedTitlePreview('');
+      setRheumIqQuizPreview({ title: '', link: '' });
       return;
     }
     let cancelled = false;
@@ -1310,13 +1323,26 @@ function SendFormDialog({
         const tmpl = await fetchTemplate(slug);
         if (cancelled) return;
         const cfg = tmpl.configuration as Record<string, { type: string; data?: unknown }>;
-        const featuredBlock = findFirstFeaturedStoryInDoc(cfg, 'root');
-        if (!featuredBlock) return;
-        const feedUrl = buildFeaturedStoryFeedUrl(featuredBlock.topicTid, featuredBlock.dashboardTagTid);
-        const res = await fetch(feedUrl, { cache: 'no-store' });
-        if (cancelled || !res.ok) return;
-        const xml = await res.text();
-        if (!cancelled) setFeaturedTitlePreview(getFirstFeaturedStoryTitleFromXml(xml));
+        const featuredBlock = findFirstXmlBlockInDoc(cfg, 'FeaturedStoryXml', 'root');
+        const quizBlock = findFirstXmlBlockInDoc(cfg, 'RheumIqQuizXml', 'root');
+        await Promise.all([
+          (async () => {
+            if (!featuredBlock) return;
+            const feedUrl = buildFeaturedStoryFeedUrl(featuredBlock.topicTid, featuredBlock.dashboardTagTid);
+            const res = await fetch(feedUrl, { cache: 'no-store' });
+            if (cancelled || !res.ok) return;
+            const xml = await res.text();
+            if (!cancelled) setFeaturedTitlePreview(getFirstFeaturedStoryTitleFromXml(xml));
+          })(),
+          (async () => {
+            if (!quizBlock) return;
+            const feedUrl = buildRheumIqQuizFeedUrl(quizBlock.topicTid, quizBlock.dashboardTagTid);
+            const res = await fetch(feedUrl, { cache: 'no-store' });
+            if (cancelled || !res.ok) return;
+            const xml = await res.text();
+            if (!cancelled) setRheumIqQuizPreview(getFirstRheumIqQuizWildcardValuesFromXml(xml));
+          })(),
+        ]);
       } catch {
         // preview is best-effort; leave empty on error
       }
@@ -1327,11 +1353,20 @@ function SendFormDialog({
   }, [open, templateId, templates]);
 
   const subjectPreview = useMemo(() => {
-    if (!subject.includes(HEADING_DATE_WILDCARD) && !subject.includes(HEADING_FEATURED_STORY_TITLE_WILDCARD)) {
+    if (
+      !subject.includes(HEADING_DATE_WILDCARD) &&
+      !subject.includes(HEADING_FEATURED_STORY_TITLE_WILDCARD) &&
+      !subject.includes(HEADING_RHEUMIQ_QUIZ_TITLE_WILDCARD) &&
+      !subject.includes(HEADING_RHEUMIQ_QUIZ_LINK_WILDCARD)
+    ) {
       return null;
     }
-    return expandHeadingWildcards(subject, new Date(), { featuredStoryFirstTitle: featuredTitlePreview });
-  }, [subject, featuredTitlePreview]);
+    return expandHeadingWildcards(subject, new Date(), {
+      featuredStoryFirstTitle: featuredTitlePreview,
+      rheumIqQuizTitle: rheumIqQuizPreview.title,
+      rheumIqQuizLink: rheumIqQuizPreview.link,
+    });
+  }, [subject, featuredTitlePreview, rheumIqQuizPreview]);
 
   const handleSubmit = async () => {
     setFormError(null);

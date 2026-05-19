@@ -25,6 +25,7 @@ import SpacerSidebarPanel from './input-panels/SpacerSidebarPanel';
 import TextSidebarPanel from './input-panels/TextSidebarPanel';
 import FeaturedStoryXmlSidebarPanel from './input-panels/FeaturedStoryXmlSidebarPanel';
 import NewsPanelXmlSidebarPanel from './input-panels/NewsPanelXmlSidebarPanel';
+import RheumIqQuizXmlSidebarPanel from './input-panels/RheumIqQuizXmlSidebarPanel';
 import TherapeuticUpdateXmlSidebarPanel from './input-panels/TherapeuticUpdateXmlSidebarPanel';
 import VideoPosterXmlSidebarPanel from './input-panels/VideoPosterXmlSidebarPanel';
 import VideoXmlSidebarPanel from './input-panels/VideoXmlSidebarPanel';
@@ -117,6 +118,10 @@ export default function ConfigurationPanel() {
     case 'EmailSurveyXml':
       return (
         <EmailSurveyXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
+      );
+    case 'RheumIqQuizXml':
+      return (
+        <RheumIqQuizXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
       );
     case 'CoverageXml':
       return (

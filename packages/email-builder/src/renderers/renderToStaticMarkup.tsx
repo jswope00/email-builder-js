@@ -10,6 +10,7 @@ import { DAILY_DOWNLOAD_XML_FEED_URL } from '@usewaypoint/block-daily-download-x
 import { EMAIL_SURVEY_XML_FEED_URL } from '@usewaypoint/block-email-survey-xml';
 import { FEATURED_STORY_XML_FEED_URL } from '@usewaypoint/block-featured-story-xml';
 import { NEWS_PANEL_XML_FEED_URL } from '@usewaypoint/block-news-panel-xml';
+import { RHEUMIQ_QUIZ_XML_FEED_URL } from '@usewaypoint/block-rheumiq-quiz-xml';
 import { THERAPEUTIC_UPDATE_XML_FEED_URL } from '@usewaypoint/block-therapeutic-update-xml';
 import { VIDEO_POSTER_XML_FEED_URL } from '@usewaypoint/block-video-poster-xml';
 import { VIDEO_XML_FEED_URL } from '@usewaypoint/block-video-xml';
@@ -54,6 +55,7 @@ const XML_FEED_URL_BY_BLOCK_TYPE: Record<string, string | readonly string[]> = {
   ConferenceAdvertisement300250Xml: CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL,
   DailyDownloadXml: DAILY_DOWNLOAD_XML_FEED_URL,
   EmailSurveyXml: EMAIL_SURVEY_XML_FEED_URL,
+  RheumIqQuizXml: RHEUMIQ_QUIZ_XML_FEED_URL,
   CoverageXml: COVERAGE_XML_FEED_URLS,
 };
 

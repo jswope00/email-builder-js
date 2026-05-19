@@ -31,12 +31,10 @@ function collectChildBlockIds(data: Record<string, unknown> | undefined): string
   return ids;
 }
 
-/**
- * Breadth-first search from `rootBlockId` for the first Featured Story block (document order).
- */
-export function findFirstFeaturedStoryBlockData(
+function findFirstXmlBlockData(
   document: DocumentLike,
-  rootBlockId: string
+  rootBlockId: string,
+  blockType: string
 ): { topicTid?: number | null; dashboardTagTid?: number | null } | null {
   const queue: string[] = [rootBlockId];
   const visited = new Set<string>();
@@ -49,7 +47,7 @@ export function findFirstFeaturedStoryBlockData(
     const block = document[id];
     if (!block) continue;
 
-    if (block.type === 'FeaturedStoryXml') {
+    if (block.type === blockType) {
       const props = (block.data as { props?: Record<string, unknown> } | undefined)?.props;
       return {
         topicTid: props?.topicTid as number | null | undefined,
@@ -64,4 +62,24 @@ export function findFirstFeaturedStoryBlockData(
   }
 
   return null;
+}
+
+/**
+ * Breadth-first search from `rootBlockId` for the first Featured Story block (document order).
+ */
+export function findFirstFeaturedStoryBlockData(
+  document: DocumentLike,
+  rootBlockId: string
+): { topicTid?: number | null; dashboardTagTid?: number | null } | null {
+  return findFirstXmlBlockData(document, rootBlockId, 'FeaturedStoryXml');
+}
+
+/**
+ * Breadth-first search from `rootBlockId` for the first RheumIQ Quiz block (document order).
+ */
+export function findFirstRheumIqQuizBlockData(
+  document: DocumentLike,
+  rootBlockId: string
+): { topicTid?: number | null; dashboardTagTid?: number | null } | null {
+  return findFirstXmlBlockData(document, rootBlockId, 'RheumIqQuizXml');
 }

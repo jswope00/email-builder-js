@@ -29,6 +29,9 @@ export default function TextSidebarPanel({ data, setData }: TextSidebarPanelProp
       <TextInput
         label="Content"
         rows={5}
+        helperText={
+          'Use %DATE%, %FEATURED_STORY_TITLE%, %RHEUMIQ_QUIZ_TITLE%, or %RHEUMIQ_QUIZ_LINK% for dynamic values.'
+        }
         defaultValue={data.props?.text ?? ''}
         onChange={(text) => updateData({ ...data, props: { ...data.props, text } })}
       />

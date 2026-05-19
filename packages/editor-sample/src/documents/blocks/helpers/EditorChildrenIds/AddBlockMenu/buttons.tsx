@@ -16,6 +16,7 @@ import {
   NotesOutlined,
   OndemandVideoOutlined,
   PollOutlined,
+  QuizOutlined,
   WallpaperOutlined,
   SmartButtonOutlined,
   ViewColumnOutlined,
@@ -201,6 +202,24 @@ export const BUTTONS: TButtonProps[] = [
         style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
         props: {
           numberOfItems: 3,
+        },
+      },
+    }),
+  },
+  {
+    label: 'RheumIQ Quiz XML',
+    icon: <QuizOutlined />,
+    block: () => ({
+      type: 'RheumIqQuizXml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
+          numberOfItems: 1,
+          showQuizTitle: true,
+          showQuestions: true,
+          showSponsoredText: true,
+          showQuizLink: true,
+          quizLinkText: 'Take the Quiz',
         },
       },
     }),

@@ -9,6 +9,8 @@ export type { HeadingWildcardExtrasValue } from './HeadingWildcardContext';
 export {
   HEADING_DATE_WILDCARD,
   HEADING_FEATURED_STORY_TITLE_WILDCARD,
+  HEADING_RHEUMIQ_QUIZ_LINK_WILDCARD,
+  HEADING_RHEUMIQ_QUIZ_TITLE_WILDCARD,
   expandHeadingWildcards,
   formatHeadingWildcardDate,
   type ExpandHeadingWildcardsOptions,
@@ -105,6 +107,8 @@ export function Heading({ props, style }: HeadingProps) {
   const extras = useContext(HeadingWildcardExtrasContext);
   const text = expandHeadingWildcards(props?.text ?? HeadingPropsDefaults.text, new Date(), {
     featuredStoryFirstTitle: extras.featuredStoryFirstTitle,
+    rheumIqQuizTitle: extras.rheumIqQuizTitle,
+    rheumIqQuizLink: extras.rheumIqQuizLink,
   });
   const hStyle: CSSProperties = {
     color: style?.color ?? undefined,
