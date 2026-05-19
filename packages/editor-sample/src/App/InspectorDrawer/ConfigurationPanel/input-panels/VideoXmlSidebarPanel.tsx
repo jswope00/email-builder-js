@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 
 import { TextField } from '@mui/material';
-import { VideoXmlProps, VideoXmlPropsDefaults, VideoXmlPropsSchema } from '@usewaypoint/block-video-xml';
+import {
+  VIDEO_XML_FEED_URL,
+  VideoXmlProps,
+  VideoXmlPropsDefaults,
+  VideoXmlPropsSchema,
+} from '@usewaypoint/block-video-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
 import RheumnowDashboardTagSelect from './helpers/RheumnowDashboardTagSelect';
@@ -41,7 +46,7 @@ export default function VideoXmlSidebarPanel({ data, setData }: VideoXmlSidebarP
   const createdRelativeDays = dateFilterProps.createdRelativeDays;
 
   return (
-    <BaseSidebarPanel title="Video XML Block">
+    <BaseSidebarPanel title="Video XML Block" subtitle={VIDEO_XML_FEED_URL}>
       <TextInput
         label="Title (optional)"
         defaultValue={title}

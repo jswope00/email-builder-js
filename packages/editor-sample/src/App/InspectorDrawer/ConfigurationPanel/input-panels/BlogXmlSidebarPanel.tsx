@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 
 import { TextField } from '@mui/material';
-import { BlogXmlProps, BlogXmlPropsDefaults, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
+import {
+  BLOG_XML_FEED_URL,
+  BlogXmlProps,
+  BlogXmlPropsDefaults,
+  BlogXmlPropsSchema,
+} from '@usewaypoint/block-blog-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
 import RheumnowDashboardTagSelect from './helpers/RheumnowDashboardTagSelect';
@@ -41,7 +46,7 @@ export default function BlogXmlSidebarPanel({ data, setData }: BlogXmlSidebarPan
   const createdRelativeDays = dateFilterProps.createdRelativeDays;
 
   return (
-    <BaseSidebarPanel title="Blog XML Block">
+    <BaseSidebarPanel title="Blog XML Block" subtitle={BLOG_XML_FEED_URL}>
       <TextInput
         label="Title (optional)"
         defaultValue={title}

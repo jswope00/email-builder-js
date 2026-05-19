@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import { TextField } from '@mui/material';
 import {
+  EMAIL_SURVEY_XML_FEED_URL,
   EmailSurveyXmlProps,
   EmailSurveyXmlPropsDefaults,
   EmailSurveyXmlPropsSchema,
@@ -36,7 +37,7 @@ export default function EmailSurveyXmlSidebarPanel({ data, setData }: EmailSurve
   const numberOfItems = data.props?.numberOfItems ?? EmailSurveyXmlPropsDefaults.numberOfItems;
 
   return (
-    <BaseSidebarPanel title="Email Survey XML Block">
+    <BaseSidebarPanel title="Email Survey XML Block" subtitle={EMAIL_SURVEY_XML_FEED_URL}>
       <TextInput
         label="Section title (optional)"
         defaultValue={title}

@@ -4,6 +4,7 @@ import { Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, 
 
 import {
   NewsPanelItemTypeFilter,
+  NEWS_PANEL_XML_FEED_URL,
   NewsPanelXmlProps,
   NewsPanelXmlPropsDefaults,
   NewsPanelXmlPropsSchema,
@@ -50,7 +51,7 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
   const createdRelativeDays = dateFilterProps.createdRelativeDays;
 
   return (
-    <BaseSidebarPanel title="News Panel XML Block">
+    <BaseSidebarPanel title="News Panel XML Block" subtitle={NEWS_PANEL_XML_FEED_URL}>
       <TextInput
         label="Title (optional)"
         defaultValue={title}

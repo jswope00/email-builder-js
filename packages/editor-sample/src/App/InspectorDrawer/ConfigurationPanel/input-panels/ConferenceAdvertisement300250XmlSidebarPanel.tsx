@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 
 import { Checkbox, FormControlLabel, TextField } from '@mui/material';
-import { ConferenceAdvertisement300250XmlProps, ConferenceAdvertisement300250XmlPropsDefaults, ConferenceAdvertisement300250XmlPropsSchema } from '@usewaypoint/block-conference-advertisement-300-250-xml';
+import {
+  CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL,
+  ConferenceAdvertisement300250XmlProps,
+  ConferenceAdvertisement300250XmlPropsDefaults,
+  ConferenceAdvertisement300250XmlPropsSchema,
+} from '@usewaypoint/block-conference-advertisement-300-250-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
 import RheumnowDashboardTagSelect from './helpers/RheumnowDashboardTagSelect';
@@ -34,7 +39,10 @@ export default function ConferenceAdvertisement300250XmlSidebarPanel({ data, set
       ?.restrictToNoTopicAdvertisements === true;
 
   return (
-    <BaseSidebarPanel title="Conference Advertisement 300x250 XML Block">
+    <BaseSidebarPanel
+      title="Conference Advertisement 300x250 XML Block"
+      subtitle={CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL}
+    >
       <TextInput
         label="Title (optional)"
         defaultValue={title}

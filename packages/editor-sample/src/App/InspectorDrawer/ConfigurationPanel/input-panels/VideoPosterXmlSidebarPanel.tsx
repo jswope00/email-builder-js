@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { TextField } from '@mui/material';
 import {
+  VIDEO_POSTER_XML_FEED_URL,
   VideoPosterXmlProps,
   VideoPosterXmlPropsDefaults,
   VideoPosterXmlPropsSchema,
@@ -45,7 +46,7 @@ export default function VideoPosterXmlSidebarPanel({ data, setData }: VideoPoste
   const createdRelativeDays = dateFilterProps.createdRelativeDays;
 
   return (
-    <BaseSidebarPanel title="Video Poster XML Block">
+    <BaseSidebarPanel title="Video Poster XML Block" subtitle={VIDEO_POSTER_XML_FEED_URL}>
       <TextInput
         label="Title (optional)"
         defaultValue={title}

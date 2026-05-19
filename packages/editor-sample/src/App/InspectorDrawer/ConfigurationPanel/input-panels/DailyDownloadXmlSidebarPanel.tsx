@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 
 import { TextField } from '@mui/material';
-import { DailyDownloadXmlProps, DailyDownloadXmlPropsDefaults, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
+import {
+  DAILY_DOWNLOAD_XML_FEED_URL,
+  DailyDownloadXmlProps,
+  DailyDownloadXmlPropsDefaults,
+  DailyDownloadXmlPropsSchema,
+} from '@usewaypoint/block-daily-download-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
 import RheumnowDashboardTagSelect from './helpers/RheumnowDashboardTagSelect';
@@ -41,7 +46,7 @@ export default function DailyDownloadXmlSidebarPanel({ data, setData }: DailyDow
   const createdRelativeDays = dateFilterProps.createdRelativeDays;
 
   return (
-    <BaseSidebarPanel title="Daily Download XML Block">
+    <BaseSidebarPanel title="Daily Download XML Block" subtitle={DAILY_DOWNLOAD_XML_FEED_URL}>
       <TextInput
         label="Title (optional)"
         defaultValue={title}

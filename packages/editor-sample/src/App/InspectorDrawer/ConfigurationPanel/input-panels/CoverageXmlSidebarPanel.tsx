@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 
-import { TextField, Typography } from '@mui/material';
-import { CoverageXmlProps, CoverageXmlPropsDefaults, CoverageXmlPropsSchema } from '@usewaypoint/block-coverage-xml';
+import { Stack, TextField, Typography } from '@mui/material';
+import {
+  COVERAGE_XML_FEED_URLS,
+  CoverageXmlProps,
+  CoverageXmlPropsDefaults,
+  CoverageXmlPropsSchema,
+} from '@usewaypoint/block-coverage-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
 import RheumnowDashboardTagSelect from './helpers/RheumnowDashboardTagSelect';
@@ -43,8 +48,23 @@ export default function CoverageXmlSidebarPanel({ data, setData }: CoverageXmlSi
   const createdRelativeDays = dateFilterProps.createdRelativeDays;
 
   return (
-    <BaseSidebarPanel title="Coverage XML Block">
-
+    <BaseSidebarPanel
+      title="Coverage XML Block"
+      subtitle={
+        <Stack spacing={0.25}>
+          {COVERAGE_XML_FEED_URLS.map((url) => (
+            <Typography
+              key={url}
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: 'block', wordBreak: 'break-all' }}
+            >
+              {url}
+            </Typography>
+          ))}
+        </Stack>
+      }
+    >
       {/* ── Content ─────────────────────────────────────────── */}
       <TextInput
         label="Title (optional)"

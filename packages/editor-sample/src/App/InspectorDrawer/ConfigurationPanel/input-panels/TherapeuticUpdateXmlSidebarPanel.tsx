@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 
 import { TextField } from '@mui/material';
-import { TherapeuticUpdateXmlProps, TherapeuticUpdateXmlPropsDefaults, TherapeuticUpdateXmlPropsSchema } from '@usewaypoint/block-therapeutic-update-xml';
+import {
+  THERAPEUTIC_UPDATE_XML_FEED_URL,
+  TherapeuticUpdateXmlProps,
+  TherapeuticUpdateXmlPropsDefaults,
+  TherapeuticUpdateXmlPropsSchema,
+} from '@usewaypoint/block-therapeutic-update-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
 import RheumnowDashboardTagSelect from './helpers/RheumnowDashboardTagSelect';
@@ -41,7 +46,7 @@ export default function TherapeuticUpdateXmlSidebarPanel({ data, setData }: Ther
   const createdRelativeDays = dateFilterProps.createdRelativeDays;
 
   return (
-    <BaseSidebarPanel title="Therapeutic Update XML Block">
+    <BaseSidebarPanel title="Therapeutic Update XML Block" subtitle={THERAPEUTIC_UPDATE_XML_FEED_URL}>
       <TextInput
         label="Title (optional)"
         defaultValue={title}

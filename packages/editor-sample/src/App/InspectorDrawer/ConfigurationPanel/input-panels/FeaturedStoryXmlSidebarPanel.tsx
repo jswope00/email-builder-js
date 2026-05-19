@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 
 import { TextField } from '@mui/material';
-import { FeaturedStoryXmlProps, FeaturedStoryXmlPropsDefaults, FeaturedStoryXmlPropsSchema } from '@usewaypoint/block-featured-story-xml';
+import {
+  FEATURED_STORY_XML_FEED_URL,
+  FeaturedStoryXmlProps,
+  FeaturedStoryXmlPropsDefaults,
+  FeaturedStoryXmlPropsSchema,
+} from '@usewaypoint/block-featured-story-xml';
 
 import BaseSidebarPanel from './helpers/BaseSidebarPanel';
 import RheumnowDashboardTagSelect from './helpers/RheumnowDashboardTagSelect';
@@ -41,7 +46,7 @@ export default function FeaturedStoryXmlSidebarPanel({ data, setData }: Featured
   const createdRelativeDays = dateFilterProps.createdRelativeDays;
 
   return (
-    <BaseSidebarPanel title="Featured Story XML Block">
+    <BaseSidebarPanel title="Featured Story XML Block" subtitle={FEATURED_STORY_XML_FEED_URL}>
       <TextInput
         label="Title (optional)"
         defaultValue={title}
