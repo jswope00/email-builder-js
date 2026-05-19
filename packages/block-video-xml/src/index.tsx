@@ -164,7 +164,7 @@ function parseVideoXml(
         createdDateTime,
         image: item.field_media_image || '',
         caption: item.field_captions || '',
-        link: item.field_media_video_embed_field || '',
+        link: item.view_node || '',
       };
     });
 
