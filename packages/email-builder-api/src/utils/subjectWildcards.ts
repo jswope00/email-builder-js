@@ -198,3 +198,39 @@ export function getFirstRheumIqQuizWildcardValuesFromXml(xmlText: string): {
     return { title: '', link: '' };
   }
 }
+
+export function rheumIqQuizXmlHasItems(xmlText: string): boolean {
+  try {
+    const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_' });
+    const result = parser.parse(xmlText);
+
+    let foundItems: any[] = [];
+
+    const findItems = (obj: any) => {
+      if (foundItems.length > 0) return;
+      if (Array.isArray(obj)) {
+        const first = obj[0];
+        if (
+          first &&
+          (first.label != null ||
+            first.questions_target_id != null ||
+            first.field_sponsored_text != null ||
+            first.quiz_link != null)
+        ) {
+          foundItems = obj;
+          return;
+        }
+        for (const item of obj) findItems(item);
+      } else if (typeof obj === 'object' && obj !== null) {
+        if (obj.item && Array.isArray(obj.item)) { foundItems = obj.item; return; }
+        if (obj.item && typeof obj.item === 'object') { foundItems = [obj.item]; return; }
+        for (const key in obj) findItems(obj[key]);
+      }
+    };
+
+    findItems(result);
+    return foundItems.length > 0;
+  } catch {
+    return false;
+  }
+}

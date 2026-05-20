@@ -9,6 +9,7 @@ import {
   HEADING_FEATURED_STORY_TITLE_WILDCARD,
   HEADING_RHEUMIQ_QUIZ_LINK_WILDCARD,
   HEADING_RHEUMIQ_QUIZ_TITLE_WILDCARD,
+  rheumIqQuizXmlHasItems,
 } from '../utils/subjectWildcards';
 
 import { getTemplateById } from '../db/queries';
@@ -16,6 +17,13 @@ import { AppError } from '../utils/errors';
 import { createAndSendCampaign } from './mailchimpCampaign';
 
 export type ExecuteMode = 'live' | 'test';
+
+export class SendAbortError extends AppError {
+  constructor(message: string, code = 'SEND_ABORTED') {
+    super(409, message, code);
+    this.name = 'SendAbortError';
+  }
+}
 
 export interface SendRowForExecution {
   id: string;
@@ -32,14 +40,20 @@ export interface SendRowForExecution {
   test_segment_id: number | null;
 }
 
-/** Breadth-first search for the first block of a given XML type in a template configuration. */
-function findFirstXmlBlock(
+type XmlBlockFeedConfig = {
+  topicTid?: number | null;
+  dashboardTagTid?: number | null;
+};
+
+/** Breadth-first search for blocks of a given XML type in a template configuration. */
+function findXmlBlocks(
   config: Record<string, { type: string; data?: unknown }>,
   blockType: string,
   rootId = 'root'
-): { topicTid?: number | null; dashboardTagTid?: number | null } | null {
+): XmlBlockFeedConfig[] {
   const queue: string[] = [rootId];
   const visited = new Set<string>();
+  const matches: XmlBlockFeedConfig[] = [];
 
   while (queue.length > 0) {
     const id = queue.shift()!;
@@ -51,10 +65,10 @@ function findFirstXmlBlock(
 
     if (block.type === blockType) {
       const props = (block.data as { props?: Record<string, unknown> } | undefined)?.props;
-      return {
+      matches.push({
         topicTid: props?.topicTid as number | null | undefined,
         dashboardTagTid: props?.dashboardTagTid as number | null | undefined,
-      };
+      });
     }
 
     const data = block.data as Record<string, unknown> | undefined;
@@ -84,7 +98,51 @@ function findFirstXmlBlock(
 
     queue.push(...childIds);
   }
-  return null;
+
+  return matches;
+}
+
+function findFirstXmlBlock(
+  config: Record<string, { type: string; data?: unknown }>,
+  blockType: string,
+  rootId = 'root'
+): XmlBlockFeedConfig | null {
+  return findXmlBlocks(config, blockType, rootId)[0] ?? null;
+}
+
+async function assertRheumIqQuizBlocksHaveItems(
+  templateConfig: Record<string, { type: string; data?: unknown }>
+): Promise<void> {
+  const quizBlocks = findXmlBlocks(templateConfig, 'RheumIqQuizXml');
+  if (quizBlocks.length === 0) return;
+
+  for (const quizBlock of quizBlocks) {
+    const feedUrl = buildRheumIqQuizFeedUrl(quizBlock.topicTid, quizBlock.dashboardTagTid);
+    let xml = '';
+    try {
+      const res = await fetch(feedUrl, { cache: 'no-store' });
+      if (!res.ok) {
+        throw new SendAbortError(
+          `RheumIQ Quiz feed could not be loaded (${res.status}); send aborted.`,
+          'RHEUMIQ_QUIZ_FEED_UNAVAILABLE'
+        );
+      }
+      xml = await res.text();
+    } catch (err) {
+      if (err instanceof SendAbortError) throw err;
+      throw new SendAbortError(
+        'RheumIQ Quiz feed could not be loaded; send aborted.',
+        'RHEUMIQ_QUIZ_FEED_UNAVAILABLE'
+      );
+    }
+
+    if (!rheumIqQuizXmlHasItems(xml)) {
+      throw new SendAbortError(
+        'RheumIQ Quiz block returned no results; send aborted.',
+        'RHEUMIQ_QUIZ_NO_RESULTS'
+      );
+    }
+  }
 }
 
 /** Resolves all wildcards in a subject line. */
@@ -166,6 +224,7 @@ export async function executeSendForMailchimp(send: SendRowForExecution, mode: E
   }
 
   const templateConfig = template.configuration as Record<string, { type: string; data?: unknown }>;
+  await assertRheumIqQuizBlocksHaveItems(templateConfig);
   const subject = await expandSubjectWildcards(rawSubject, templateConfig);
 
   const htmlContent = await renderToStaticMarkup(template.configuration as TReaderDocument, { rootBlockId: 'root' });

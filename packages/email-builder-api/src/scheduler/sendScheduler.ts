@@ -1,6 +1,35 @@
 import { fetchDueSchedules, updateScheduleRunState } from '../db/sendQueries';
-import { executeSendForMailchimp } from '../services/executeSend';
+import { executeSendForMailchimp, SendAbortError } from '../services/executeSend';
+import { SendScheduleRow } from '../types/send';
 import { nextRunAfterRecurringFire } from '../utils/scheduleNextRun';
+
+async function markScheduleRunComplete(schedule: SendScheduleRow, firedAt: Date): Promise<void> {
+  if (schedule.schedule_type === 'one_off') {
+    await updateScheduleRunState(schedule.id, {
+      nextRunAt: null,
+      lastRunAt: firedAt,
+      isActive: false,
+    });
+    return;
+  }
+
+  const next =
+    schedule.recurring_weekdays &&
+    schedule.recurring_time_local &&
+    schedule.timezone
+      ? nextRunAfterRecurringFire({
+          timezone: schedule.timezone,
+          weekdays: schedule.recurring_weekdays,
+          timeLocal: schedule.recurring_time_local,
+          firedAt,
+        })
+      : null;
+
+  await updateScheduleRunState(schedule.id, {
+    nextRunAt: next,
+    lastRunAt: firedAt,
+  });
+}
 
 export async function runScheduledSendTick(): Promise<void> {
   const now = new Date();
@@ -32,33 +61,16 @@ export async function runScheduledSendTick(): Promise<void> {
       );
 
       const firedAt = new Date();
-
-      if (schedule.schedule_type === 'one_off') {
-        await updateScheduleRunState(schedule.id, {
-          nextRunAt: null,
-          lastRunAt: firedAt,
-          isActive: false,
-        });
-      } else {
-        const next =
-          schedule.recurring_weekdays &&
-          schedule.recurring_time_local &&
-          schedule.timezone
-            ? nextRunAfterRecurringFire({
-                timezone: schedule.timezone,
-                weekdays: schedule.recurring_weekdays,
-                timeLocal: schedule.recurring_time_local,
-                firedAt,
-              })
-            : null;
-        await updateScheduleRunState(schedule.id, {
-          nextRunAt: next,
-          lastRunAt: firedAt,
-        });
-      }
+      await markScheduleRunComplete(schedule, firedAt);
 
       console.log(`[scheduler] Sent schedule ${schedule.id} (${schedule.schedule_kind}) for send ${send.id}`);
     } catch (err) {
+      if (err instanceof SendAbortError) {
+        const firedAt = new Date();
+        await markScheduleRunComplete(schedule, firedAt);
+        console.warn(`[scheduler] Skipped schedule ${schedule.id}: ${err.message}`);
+        continue;
+      }
       console.error(`[scheduler] Failed schedule ${schedule.id}:`, err);
     }
   }
