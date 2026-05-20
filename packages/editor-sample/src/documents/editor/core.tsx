@@ -9,12 +9,12 @@ import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
 import { CoverageXml, CoverageXmlPropsSchema } from '@usewaypoint/block-coverage-xml';
 import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
 import { EmailSurveyXml, EmailSurveyXmlPropsSchema } from '@usewaypoint/block-email-survey-xml';
-import { Button, ButtonPropsSchema } from '@usewaypoint/block-button';
+import { ButtonPropsSchema } from '@usewaypoint/block-button';
 import { Divider, DividerPropsSchema } from '@usewaypoint/block-divider';
 import { HeadingPropsSchema } from '@usewaypoint/block-heading';
-import { HeadingReader, TextReader } from '@usewaypoint/email-builder';
+import { ButtonReader, HeadingReader, ImageReader, TextReader } from '@usewaypoint/email-builder';
 import { Html, HtmlPropsSchema } from '@usewaypoint/block-html';
-import { Image, ImagePropsSchema } from '@usewaypoint/block-image';
+import { ImagePropsSchema } from '@usewaypoint/block-image';
 import { Spacer, SpacerPropsSchema } from '@usewaypoint/block-spacer';
 import { TextPropsSchema } from '@usewaypoint/block-text';
 import { FeaturedStoryXml, FeaturedStoryXmlPropsSchema } from '@usewaypoint/block-featured-story-xml';
@@ -50,7 +50,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     schema: ButtonPropsSchema,
     Component: (props) => (
       <EditorBlockWrapper>
-        <Button {...props} />
+        <ButtonReader {...props} />
       </EditorBlockWrapper>
     ),
   },
@@ -98,7 +98,7 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
       };
       return (
         <EditorBlockWrapper>
-          <Image {...props} />
+          <ImageReader {...props} />
         </EditorBlockWrapper>
       );
     },

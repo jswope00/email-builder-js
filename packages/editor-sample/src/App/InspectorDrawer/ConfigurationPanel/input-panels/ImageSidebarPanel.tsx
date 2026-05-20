@@ -49,6 +49,7 @@ export default function ImageSidebarPanel({ data, setData }: ImageSidebarPanelPr
       />
       <TextInput
         label="Click through URL"
+        helperText="Use %RHEUMIQ_QUIZ_LINK% for the first RheumIQ Quiz link."
         defaultValue={data.props?.linkHref ?? ''}
         onChange={(v) => {
           const linkHref = v.trim().length === 0 ? null : v.trim();

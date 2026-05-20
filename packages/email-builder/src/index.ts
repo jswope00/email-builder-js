@@ -6,7 +6,9 @@ export { useReaderDocument, useRootBlockId, type ReaderDocumentShape } from './R
 export { default as EmailBuildingEnvironment } from './Reader/EmailBuildingEnvironment';
 export type { EmailBuildingEnvironmentProps } from './Reader/EmailBuildingEnvironment';
 
+export { default as ButtonReader } from './blocks/Button/ButtonReader';
 export { default as HeadingReader } from './blocks/Heading/HeadingReader';
+export { default as ImageReader } from './blocks/Image/ImageReader';
 export { default as TextReader } from './blocks/Text/TextReader';
 
 export {

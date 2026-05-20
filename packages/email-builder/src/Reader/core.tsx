@@ -9,7 +9,7 @@ import { ConferenceAdvertisement300250Xml, ConferenceAdvertisement300250XmlProps
 import { Advertisement72890Xml, Advertisement72890XmlPropsSchema } from '@usewaypoint/block-advertisement-728-90-xml';
 import { Avatar, AvatarPropsSchema } from '@usewaypoint/block-avatar';
 import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
-import { Button, ButtonPropsSchema } from '@usewaypoint/block-button';
+import { ButtonPropsSchema } from '@usewaypoint/block-button';
 import { CoverageXml, CoverageXmlPropsSchema } from '@usewaypoint/block-coverage-xml';
 import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
 import { EmailSurveyXml, EmailSurveyXmlPropsSchema } from '@usewaypoint/block-email-survey-xml';
@@ -17,7 +17,7 @@ import { Divider, DividerPropsSchema } from '@usewaypoint/block-divider';
 import { FeaturedStoryXml, FeaturedStoryXmlPropsSchema } from '@usewaypoint/block-featured-story-xml';
 import { HeadingPropsSchema } from '@usewaypoint/block-heading';
 import { Html, HtmlPropsSchema } from '@usewaypoint/block-html';
-import { Image, ImagePropsSchema } from '@usewaypoint/block-image';
+import { ImagePropsSchema } from '@usewaypoint/block-image';
 import { NewsPanelXml, NewsPanelXmlPropsSchema } from '@usewaypoint/block-news-panel-xml';
 import { RheumIqQuizXml, RheumIqQuizXmlPropsSchema } from '@usewaypoint/block-rheumiq-quiz-xml';
 import { Spacer, SpacerPropsSchema } from '@usewaypoint/block-spacer';
@@ -37,7 +37,9 @@ import { ContainerPropsSchema } from '../blocks/Container/ContainerPropsSchema';
 import ContainerReader from '../blocks/Container/ContainerReader';
 import { EmailLayoutPropsSchema } from '../blocks/EmailLayout/EmailLayoutPropsSchema';
 import EmailLayoutReader from '../blocks/EmailLayout/EmailLayoutReader';
+import ButtonReader from '../blocks/Button/ButtonReader';
 import HeadingReader from '../blocks/Heading/HeadingReader';
+import ImageReader from '../blocks/Image/ImageReader';
 import TextReader from '../blocks/Text/TextReader';
 
 const READER_DICTIONARY = buildBlockConfigurationDictionary({
@@ -60,7 +62,7 @@ const READER_DICTIONARY = buildBlockConfigurationDictionary({
   },
   Button: {
     schema: ButtonPropsSchema,
-    Component: Button,
+    Component: ButtonReader,
   },
   Divider: {
     schema: DividerPropsSchema,
@@ -76,7 +78,7 @@ const READER_DICTIONARY = buildBlockConfigurationDictionary({
   },
   Image: {
     schema: ImagePropsSchema,
-    Component: Image,
+    Component: ImageReader,
   },
   Spacer: {
     schema: SpacerPropsSchema,

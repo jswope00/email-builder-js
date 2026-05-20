@@ -43,6 +43,7 @@ export default function ButtonSidebarPanel({ data, setData }: ButtonSidebarPanel
       />
       <TextInput
         label="Url"
+        helperText="Use %RHEUMIQ_QUIZ_LINK% for the first RheumIQ Quiz link."
         defaultValue={url}
         onChange={(url) => updateData({ ...data, props: { ...data.props, url } })}
       />
