@@ -71,11 +71,13 @@ CREATE TABLE IF NOT EXISTS email_sends (
   test_segment_id INTEGER,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  is_active BOOLEAN DEFAULT true
+  is_active BOOLEAN DEFAULT true,
+  sort_order INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS idx_email_sends_template_id ON email_sends(template_id);
 CREATE INDEX IF NOT EXISTS idx_email_sends_active ON email_sends(is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_email_sends_sort_order ON email_sends(sort_order);
 
 CREATE TABLE IF NOT EXISTS email_send_schedules (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

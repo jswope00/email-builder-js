@@ -8,6 +8,7 @@ import {
   getSendById,
   hardDeleteSend,
   listSends,
+  reorderSend,
   setScheduleActive,
   setSendActive,
   updateSend,
@@ -64,6 +65,10 @@ const ExecuteBodySchema = z.object({
 
 const PatchActiveSchema = z.object({
   isActive: z.boolean(),
+});
+
+const ReorderBodySchema = z.object({
+  direction: z.enum(['up', 'down', 'top', 'bottom']),
 });
 
 const SendScheduleParamsSchema = z.object({
@@ -219,6 +224,27 @@ router.put(
         throw new NotFoundError('Send not found');
       }
       res.json(updated);
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+router.post(
+  '/:id/reorder',
+  validateParams(UuidParamsSchema),
+  validateBody(ReorderBodySchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const { direction } = req.body as z.infer<typeof ReorderBodySchema>;
+      const includeInactive = req.query.includeInactive === 'true';
+      const ok = await reorderSend(id, direction, includeInactive);
+      if (!ok) {
+        throw new NotFoundError('Send not found');
+      }
+      const sends = await listSends(includeInactive);
+      res.json(sends);
     } catch (e) {
       next(e);
     }

@@ -52,7 +52,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { Add, DeleteOutline, Edit, ExpandMore, MoreVert, PlayArrow, PreviewOutlined } from '@mui/icons-material';
+import { Add, ArrowDownward, ArrowUpward, DeleteOutline, Edit, ExpandMore, MoreVert, PlayArrow, PreviewOutlined, VerticalAlignBottom, VerticalAlignTop } from '@mui/icons-material';
 import { DateTime } from 'luxon';
 
 import {
@@ -70,8 +70,10 @@ import {
   fetchSends,
   patchScheduleActive,
   patchSendActive,
+  reorderSend,
   updateSend,
   type EmailSendListItem,
+  type SendReorderDirection,
   type SchedulePayload,
   type ScheduleKind,
   type ScheduleType,
@@ -286,14 +288,18 @@ function ScheduleDetailPanel({
 
 type SendListCardProps = {
   row: EmailSendListItem;
+  listIndex: number;
+  listCount: number;
   isCompact: boolean;
   actionBusy: string | null;
   scheduleActionsDisabled: boolean;
   sendToggleBusy: boolean;
+  reorderBusy: boolean;
   scheduleToggleKey: string | null;
   onExecute: (id: string, mode: 'live' | 'test') => void;
   onEdit: (row: EmailSendListItem) => void;
   onDelete: (id: string) => void;
+  onReorder: (id: string, direction: SendReorderDirection) => void;
   onToggleSendActive: (sendId: string, active: boolean) => void;
   onScheduleAdd: (sendId: string) => void;
   onScheduleEdit: (sendId: string, scheduleId: string) => void;
@@ -304,14 +310,18 @@ type SendListCardProps = {
 
 function SendListCard({
   row,
+  listIndex,
+  listCount,
   isCompact,
   actionBusy,
   scheduleActionsDisabled,
   sendToggleBusy,
+  reorderBusy,
   scheduleToggleKey,
   onExecute,
   onEdit,
   onDelete,
+  onReorder,
   onToggleSendActive,
   onScheduleAdd,
   onScheduleEdit,
@@ -325,6 +335,9 @@ function SendListCard({
   const [schedulesAccordionOpen, setSchedulesAccordionOpen] = useState(false);
   const sendBtnSize = isCompact ? 'large' : 'small';
   const sendBtnFullWidth = isCompact;
+  const canMoveUp = listIndex > 0;
+  const canMoveDown = listIndex < listCount - 1;
+  const menuDisabled = actionBusy === row.id || reorderBusy;
 
   return (
     <Card
@@ -440,11 +453,60 @@ function SendListCard({
                 size="small"
                 aria-label="Send actions"
                 onClick={(e) => setSendMenuAnchor(e.currentTarget)}
-                disabled={actionBusy === row.id}
+                disabled={actionBusy === row.id || reorderBusy}
               >
                 <MoreVert fontSize="small" />
               </IconButton>
               <Menu anchorEl={sendMenuAnchor} open={sendMenuOpen} onClose={() => setSendMenuAnchor(null)}>
+                <MenuItem
+                  onClick={() => {
+                    onReorder(row.id, 'top');
+                    setSendMenuAnchor(null);
+                  }}
+                  disabled={!canMoveUp || menuDisabled}
+                >
+                  <ListItemIcon>
+                    <VerticalAlignTop fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Move to top</ListItemText>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    onReorder(row.id, 'up');
+                    setSendMenuAnchor(null);
+                  }}
+                  disabled={!canMoveUp || menuDisabled}
+                >
+                  <ListItemIcon>
+                    <ArrowUpward fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Move up</ListItemText>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    onReorder(row.id, 'down');
+                    setSendMenuAnchor(null);
+                  }}
+                  disabled={!canMoveDown || menuDisabled}
+                >
+                  <ListItemIcon>
+                    <ArrowDownward fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Move down</ListItemText>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    onReorder(row.id, 'bottom');
+                    setSendMenuAnchor(null);
+                  }}
+                  disabled={!canMoveDown || menuDisabled}
+                >
+                  <ListItemIcon>
+                    <VerticalAlignBottom fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Move to bottom</ListItemText>
+                </MenuItem>
+                <Divider />
                 <MenuItem
                   onClick={() => {
                     onEdit(row);
@@ -966,6 +1028,7 @@ export default function SendsTab({ isCompact = false }: { isCompact?: boolean })
   } | null>(null);
   const [scheduleActionBusy, setScheduleActionBusy] = useState<string | null>(null);
   const [sendToggleBusy, setSendToggleBusy] = useState<string | null>(null);
+  const [reorderBusy, setReorderBusy] = useState<string | null>(null);
   const [scheduleToggleKey, setScheduleToggleKey] = useState<string | null>(null);
 
   const load = useCallback(async (opts?: { silent?: boolean }) => {
@@ -1050,6 +1113,18 @@ export default function SendsTab({ isCompact = false }: { isCompact?: boolean })
       setError(e instanceof Error ? e.message : 'Failed to update send');
     } finally {
       setSendToggleBusy(null);
+    }
+  };
+
+  const handleReorder = async (sendId: string, direction: SendReorderDirection) => {
+    setReorderBusy(sendId);
+    try {
+      const updated = await reorderSend(sendId, direction, includeInactive);
+      setSends(updated);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to reorder send');
+    } finally {
+      setReorderBusy(null);
     }
   };
 
@@ -1164,22 +1239,27 @@ export default function SendsTab({ isCompact = false }: { isCompact?: boolean })
         <Alert severity="info">No saved sends yet. Create one to reuse template, audience, and schedules.</Alert>
       ) : (
         <Stack spacing={2}>
-          {sends.map((row) => (
+          {sends.map((row, index) => (
             <SendListCard
               key={row.id}
               row={row}
+              listIndex={index}
+              listCount={sends.length}
               isCompact={isCompact}
               actionBusy={actionBusy}
               sendToggleBusy={sendToggleBusy === row.id}
+              reorderBusy={reorderBusy === row.id}
               scheduleToggleKey={scheduleToggleKey}
               scheduleActionsDisabled={
                 (scheduleDialog?.sendId === row.id && Boolean(scheduleDialog)) ||
                 scheduleActionBusy === row.id ||
-                sendToggleBusy === row.id
+                sendToggleBusy === row.id ||
+                reorderBusy === row.id
               }
               onExecute={handleExecute}
               onEdit={openEdit}
               onDelete={handleDelete}
+              onReorder={handleReorder}
               onToggleSendActive={handleToggleSendActive}
               onScheduleAdd={(sendId) => setScheduleDialog({ sendId, mode: 'add', scheduleId: null })}
               onScheduleEdit={(sendId, sid) => setScheduleDialog({ sendId, mode: 'edit', scheduleId: sid })}

@@ -48,8 +48,11 @@ export interface EmailSendListItem {
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
+  sortOrder: number;
   schedules: SendScheduleDTO[];
 }
+
+export type SendReorderDirection = 'up' | 'down' | 'top' | 'bottom';
 
 export interface CreateSendInput {
   name: string;

@@ -34,8 +34,11 @@ export interface EmailSendListItem {
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
+  sortOrder: number;
   schedules: SendScheduleDTO[];
 }
+
+export type SendReorderDirection = 'up' | 'down' | 'top' | 'bottom';
 
 export type SchedulePayload =
   | {
@@ -155,6 +158,24 @@ export async function deleteSchedule(sendId: string, scheduleId: string): Promis
   const response = await fetch(`${API_URL}/sends/${sendId}/schedules/${scheduleId}`, {
     method: 'DELETE',
     credentials: 'include',
+  });
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+  return response.json();
+}
+
+export async function reorderSend(
+  id: string,
+  direction: SendReorderDirection,
+  includeInactive = false
+): Promise<EmailSendListItem[]> {
+  const q = includeInactive ? '?includeInactive=true' : '';
+  const response = await fetch(`${API_URL}/sends/${id}/reorder${q}`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ direction }),
   });
   if (!response.ok) {
     throw new Error(await parseError(response));

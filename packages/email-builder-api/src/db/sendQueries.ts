@@ -3,6 +3,7 @@ import { computeInitialNextRunAt } from '../utils/scheduleNextRun';
 import type {
   CreateSendInput,
   EmailSendListItem,
+  SendReorderDirection,
   SendScheduleDTO,
   SendScheduleRow,
 } from '../types/send';
@@ -33,69 +34,26 @@ function mapScheduleRow(row: SendScheduleRow): SendScheduleDTO {
   };
 }
 
-export async function listSends(includeInactive = false): Promise<EmailSendListItem[]> {
-  const sendActiveClause = includeInactive ? '' : 'AND s.is_active = true';
-  const sendResult = await pool.query(
-    `SELECT s.*, t.name AS template_name, t.slug AS template_slug
-     FROM email_sends s
-     JOIN email_templates t ON t.id = s.template_id
-     WHERE t.is_active = true ${sendActiveClause}
-     ORDER BY s.updated_at DESC`
-  );
-
-  if (sendResult.rows.length === 0) return [];
-
-  const sendIds = sendResult.rows.map((r: { id: string }) => r.id);
-  const schedResult = await pool.query<SendScheduleRow>(
-    `SELECT * FROM email_send_schedules WHERE send_id = ANY($1::uuid[]) ORDER BY created_at ASC`,
-    [sendIds]
-  );
-
-  const bySend = new Map<string, SendScheduleDTO[]>();
-  for (const row of schedResult.rows) {
-    const list = bySend.get(row.send_id) ?? [];
-    list.push(mapScheduleRow(row));
-    bySend.set(row.send_id, list);
-  }
-
-  return sendResult.rows.map((row: any) => ({
-    id: row.id,
-    name: row.name,
-    templateId: row.template_id,
-    templateName: row.template_name,
-    templateSlug: row.template_slug,
-    subject: row.subject,
-    listId: row.list_id,
-    segmentId: row.segment_id,
-    fromName: row.from_name,
-    fromEmail: row.from_email,
-    replyTo: row.reply_to,
-    testSubject: row.test_subject,
-    testListId: row.test_list_id,
-    testSegmentId: row.test_segment_id,
-    createdAt: row.created_at.toISOString(),
-    updatedAt: row.updated_at.toISOString(),
-    isActive: row.is_active,
-    schedules: bySend.get(row.id) ?? [],
-  }));
-}
-
-export async function getSendById(id: string): Promise<EmailSendListItem | null> {
-  const sendResult = await pool.query(
-    `SELECT s.*, t.name AS template_name, t.slug AS template_slug
-     FROM email_sends s
-     JOIN email_templates t ON t.id = s.template_id
-     WHERE s.id = $1`,
-    [id]
-  );
-  if (sendResult.rows.length === 0) return null;
-  const row = sendResult.rows[0];
-
-  const schedResult = await pool.query<SendScheduleRow>(
-    `SELECT * FROM email_send_schedules WHERE send_id = $1 ORDER BY created_at ASC`,
-    [id]
-  );
-
+function mapSendRow(row: {
+  id: string;
+  name: string;
+  template_id: string;
+  template_name: string;
+  template_slug: string;
+  subject: string;
+  list_id: string;
+  segment_id: number | null;
+  from_name: string;
+  from_email: string;
+  reply_to: string;
+  test_subject: string | null;
+  test_list_id: string | null;
+  test_segment_id: number | null;
+  created_at: Date;
+  updated_at: Date;
+  is_active: boolean;
+  sort_order: number;
+}, schedules: SendScheduleDTO[]): EmailSendListItem {
   return {
     id: row.id,
     name: row.name,
@@ -114,8 +72,56 @@ export async function getSendById(id: string): Promise<EmailSendListItem | null>
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
     isActive: row.is_active,
-    schedules: schedResult.rows.map(mapScheduleRow),
+    sortOrder: row.sort_order,
+    schedules,
   };
+}
+
+export async function listSends(includeInactive = false): Promise<EmailSendListItem[]> {
+  const sendActiveClause = includeInactive ? '' : 'AND s.is_active = true';
+  const sendResult = await pool.query(
+    `SELECT s.*, t.name AS template_name, t.slug AS template_slug
+     FROM email_sends s
+     JOIN email_templates t ON t.id = s.template_id
+     WHERE t.is_active = true ${sendActiveClause}
+     ORDER BY s.sort_order ASC, s.created_at ASC`
+  );
+
+  if (sendResult.rows.length === 0) return [];
+
+  const sendIds = sendResult.rows.map((r: { id: string }) => r.id);
+  const schedResult = await pool.query<SendScheduleRow>(
+    `SELECT * FROM email_send_schedules WHERE send_id = ANY($1::uuid[]) ORDER BY created_at ASC`,
+    [sendIds]
+  );
+
+  const bySend = new Map<string, SendScheduleDTO[]>();
+  for (const row of schedResult.rows) {
+    const list = bySend.get(row.send_id) ?? [];
+    list.push(mapScheduleRow(row));
+    bySend.set(row.send_id, list);
+  }
+
+  return sendResult.rows.map((row: any) => mapSendRow(row, bySend.get(row.id) ?? []));
+}
+
+export async function getSendById(id: string): Promise<EmailSendListItem | null> {
+  const sendResult = await pool.query(
+    `SELECT s.*, t.name AS template_name, t.slug AS template_slug
+     FROM email_sends s
+     JOIN email_templates t ON t.id = s.template_id
+     WHERE s.id = $1`,
+    [id]
+  );
+  if (sendResult.rows.length === 0) return null;
+  const row = sendResult.rows[0];
+
+  const schedResult = await pool.query<SendScheduleRow>(
+    `SELECT * FROM email_send_schedules WHERE send_id = $1 ORDER BY created_at ASC`,
+    [id]
+  );
+
+  return mapSendRow(row, schedResult.rows.map(mapScheduleRow));
 }
 
 async function insertSchedules(client: import('pg').PoolClient, sendId: string, schedules: ScheduleInsertRow[]) {
@@ -148,12 +154,16 @@ export async function createSend(
   let sendId: string;
   try {
     await client.query('BEGIN');
+    const nextSort = await client.query<{ next: number }>(
+      `SELECT COALESCE(MAX(sort_order), -1) + 1 AS next FROM email_sends`
+    );
+    const sortOrder = nextSort.rows[0]?.next ?? 0;
     const ins = await client.query(
       `INSERT INTO email_sends (
         name, template_id, subject, list_id, segment_id,
         from_name, from_email, reply_to,
-        test_subject, test_list_id, test_segment_id
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+        test_subject, test_list_id, test_segment_id, sort_order
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
       RETURNING id`,
       [
         input.name.trim() || 'Untitled send',
@@ -167,6 +177,7 @@ export async function createSend(
         input.testSubject ?? null,
         input.testListId ?? null,
         input.testSegmentId ?? null,
+        sortOrder,
       ]
     );
     sendId = ins.rows[0].id as string;
@@ -259,6 +270,101 @@ export async function setSendActive(id: string, isActive: boolean): Promise<bool
     isActive,
   ]);
   return r.rowCount !== null && r.rowCount > 0;
+}
+
+type OrderedSendRow = { id: string; is_active: boolean };
+
+async function fetchAllOrderedSendRows(): Promise<OrderedSendRow[]> {
+  const result = await pool.query<OrderedSendRow>(
+    `SELECT s.id, s.is_active
+     FROM email_sends s
+     JOIN email_templates t ON t.id = s.template_id
+     WHERE t.is_active = true
+     ORDER BY s.sort_order ASC, s.created_at ASC`
+  );
+  return result.rows;
+}
+
+function mergeVisibleReorder(
+  fullRows: OrderedSendRow[],
+  includeInactive: boolean,
+  sendId: string,
+  direction: SendReorderDirection
+): string[] | null {
+  const fullIds = fullRows.map((r) => r.id);
+  if (!fullIds.includes(sendId)) return null;
+
+  const visibleIds = includeInactive
+    ? fullIds
+    : fullRows.filter((r) => r.is_active).map((r) => r.id);
+
+  const visibleIdx = visibleIds.indexOf(sendId);
+  if (visibleIdx === -1) return null;
+
+  let targetVisibleIdx = visibleIdx;
+  switch (direction) {
+    case 'up':
+      targetVisibleIdx = Math.max(0, visibleIdx - 1);
+      break;
+    case 'down':
+      targetVisibleIdx = Math.min(visibleIds.length - 1, visibleIdx + 1);
+      break;
+    case 'top':
+      targetVisibleIdx = 0;
+      break;
+    case 'bottom':
+      targetVisibleIdx = visibleIds.length - 1;
+      break;
+  }
+
+  if (targetVisibleIdx === visibleIdx) return fullIds;
+
+  const reorderedVisible = [...visibleIds];
+  const [moved] = reorderedVisible.splice(visibleIdx, 1);
+  reorderedVisible.splice(targetVisibleIdx, 0, moved);
+
+  const newFullIds: string[] = [];
+  let visibleQueue = [...reorderedVisible];
+  for (const row of fullRows) {
+    if (includeInactive || row.is_active) {
+      const nextId = visibleQueue.shift();
+      if (nextId) newFullIds.push(nextId);
+    } else {
+      newFullIds.push(row.id);
+    }
+  }
+
+  return newFullIds;
+}
+
+export async function reorderSend(
+  id: string,
+  direction: SendReorderDirection,
+  includeInactive = false
+): Promise<boolean> {
+  const fullRows = await fetchAllOrderedSendRows();
+  const newOrder = mergeVisibleReorder(fullRows, includeInactive, id, direction);
+  if (!newOrder) return false;
+
+  const oldOrder = fullRows.map((r) => r.id);
+  if (newOrder.length !== oldOrder.length || newOrder.every((id, i) => id === oldOrder[i])) {
+    return fullRows.some((r) => r.id === id);
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    for (let i = 0; i < newOrder.length; i++) {
+      await client.query(`UPDATE email_sends SET sort_order = $2 WHERE id = $1`, [newOrder[i], i]);
+    }
+    await client.query('COMMIT');
+    return true;
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
+  }
 }
 
 export async function setScheduleActive(
