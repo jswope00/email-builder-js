@@ -1,4 +1,8 @@
-import { fetchDueSchedules, updateScheduleRunState } from '../db/sendQueries';
+import {
+  claimDueSchedules,
+  restoreScheduleClaim,
+  updateScheduleRunState,
+} from '../db/sendQueries';
 import { executeSendForMailchimp, SendAbortError } from '../services/executeSend';
 import { SendScheduleRow } from '../types/send';
 import { nextRunAfterRecurringFire } from '../utils/scheduleNextRun';
@@ -33,13 +37,13 @@ async function markScheduleRunComplete(schedule: SendScheduleRow, firedAt: Date)
 
 export async function runScheduledSendTick(): Promise<void> {
   const now = new Date();
-  const due = await fetchDueSchedules(now);
+  const due = await claimDueSchedules(now);
 
   if (process.env.SCHEDULER_DEBUG === 'true' || process.env.SCHEDULER_DEBUG === '1') {
     console.log('[scheduler] tick', { dueCount: due.length, at: now.toISOString() });
   }
 
-  for (const { schedule, send } of due) {
+  for (const { schedule, send, claimedRunAt } of due) {
     try {
       const mode = schedule.schedule_kind === 'test' ? 'test' : 'live';
       await executeSendForMailchimp(
@@ -72,6 +76,11 @@ export async function runScheduledSendTick(): Promise<void> {
         continue;
       }
       console.error(`[scheduler] Failed schedule ${schedule.id}:`, err);
+      try {
+        await restoreScheduleClaim(schedule.id, claimedRunAt);
+      } catch (restoreErr) {
+        console.error(`[scheduler] Failed to restore schedule ${schedule.id} for retry:`, restoreErr);
+      }
     }
   }
 }
@@ -86,8 +95,22 @@ export function startSendScheduler(): NodeJS.Timeout | null {
   const intervalMs = parseInt(process.env.SCHEDULER_INTERVAL_MS || '60000', 10);
   console.log(`[scheduler] Running every ${intervalMs}ms`);
 
+  let tickInProgress = false;
+
   const tick = () => {
-    runScheduledSendTick().catch((e) => console.error('[scheduler] tick error', e));
+    if (tickInProgress) {
+      if (process.env.SCHEDULER_DEBUG === 'true' || process.env.SCHEDULER_DEBUG === '1') {
+        console.log('[scheduler] skipping tick, previous still running');
+      }
+      return;
+    }
+
+    tickInProgress = true;
+    runScheduledSendTick()
+      .catch((e) => console.error('[scheduler] tick error', e))
+      .finally(() => {
+        tickInProgress = false;
+      });
   };
 
   tick();

@@ -404,6 +404,8 @@ export async function deleteScheduleRow(sendId: string, scheduleId: string): Pro
 
 export interface DueScheduleBundle {
   schedule: SendScheduleRow;
+  /** The next_run_at value cleared when this schedule was claimed. */
+  claimedRunAt: Date;
   send: {
     id: string;
     name: string;
@@ -420,74 +422,111 @@ export interface DueScheduleBundle {
   };
 }
 
-export async function fetchDueSchedules(before: Date): Promise<DueScheduleBundle[]> {
-  const result = await pool.query(
-    `SELECT
-      sch.id AS sch_id,
-      sch.send_id AS sch_send_id,
-      sch.schedule_kind AS sch_schedule_kind,
-      sch.schedule_type AS sch_schedule_type,
-      sch.is_active AS sch_is_active,
-      sch.timezone AS sch_timezone,
-      sch.one_off_at AS sch_one_off_at,
-      sch.recurring_weekdays AS sch_recurring_weekdays,
-      sch.recurring_time_local AS sch_recurring_time_local,
-      sch.next_run_at AS sch_next_run_at,
-      sch.last_run_at AS sch_last_run_at,
-      sch.created_at AS sch_created_at,
-      sch.updated_at AS sch_updated_at,
-      s.id AS send_id,
-      s.name AS send_name,
-      s.template_id AS send_template_id,
-      s.subject AS send_subject,
-      s.list_id AS send_list_id,
-      s.segment_id AS send_segment_id,
-      s.from_name AS send_from_name,
-      s.from_email AS send_from_email,
-      s.reply_to AS send_reply_to,
-      s.test_subject AS send_test_subject,
-      s.test_list_id AS send_test_list_id,
-      s.test_segment_id AS send_test_segment_id
-     FROM email_send_schedules sch
-     JOIN email_sends s ON s.id = sch.send_id
-     WHERE sch.is_active = true
-       AND sch.next_run_at IS NOT NULL
-       AND sch.next_run_at <= $1
-       AND s.is_active = true`,
-    [before]
-  );
-
-  return result.rows.map((row: any) => ({
+function mapDueScheduleRow(row: Record<string, unknown>): DueScheduleBundle {
+  const claimedRunAt = row.sch_next_run_at as Date;
+  return {
+    claimedRunAt,
     schedule: {
-      id: row.sch_id,
-      send_id: row.sch_send_id,
-      schedule_kind: row.sch_schedule_kind,
-      schedule_type: row.sch_schedule_type,
-      is_active: row.sch_is_active,
-      timezone: row.sch_timezone,
-      one_off_at: row.sch_one_off_at,
-      recurring_weekdays: row.sch_recurring_weekdays,
-      recurring_time_local: row.sch_recurring_time_local,
-      next_run_at: row.sch_next_run_at,
-      last_run_at: row.sch_last_run_at,
-      created_at: row.sch_created_at,
-      updated_at: row.sch_updated_at,
-    } as SendScheduleRow,
-    send: {
-      id: row.send_id,
-      name: row.send_name,
-      template_id: row.send_template_id,
-      subject: row.send_subject,
-      list_id: row.send_list_id,
-      segment_id: row.send_segment_id,
-      from_name: row.send_from_name,
-      from_email: row.send_from_email,
-      reply_to: row.send_reply_to,
-      test_subject: row.send_test_subject,
-      test_list_id: row.send_test_list_id,
-      test_segment_id: row.send_test_segment_id,
+      id: row.sch_id as string,
+      send_id: row.sch_send_id as string,
+      schedule_kind: row.sch_schedule_kind as SendScheduleRow['schedule_kind'],
+      schedule_type: row.sch_schedule_type as SendScheduleRow['schedule_type'],
+      is_active: row.sch_is_active as boolean,
+      timezone: row.sch_timezone as string,
+      one_off_at: row.sch_one_off_at as Date | null,
+      recurring_weekdays: row.sch_recurring_weekdays as number[] | null,
+      recurring_time_local: row.sch_recurring_time_local as string | null,
+      next_run_at: null,
+      last_run_at: row.sch_last_run_at as Date | null,
+      created_at: row.sch_created_at as Date,
+      updated_at: row.sch_updated_at as Date,
     },
-  }));
+    send: {
+      id: row.send_id as string,
+      name: row.send_name as string,
+      template_id: row.send_template_id as string,
+      subject: row.send_subject as string,
+      list_id: row.send_list_id as string,
+      segment_id: row.send_segment_id as number | null,
+      from_name: row.send_from_name as string,
+      from_email: row.send_from_email as string,
+      reply_to: row.send_reply_to as string,
+      test_subject: row.send_test_subject as string | null,
+      test_list_id: row.send_test_list_id as string | null,
+      test_segment_id: row.send_test_segment_id as number | null,
+    },
+  };
+}
+
+const DUE_SCHEDULE_SELECT = `
+  SELECT
+    sch.id AS sch_id,
+    sch.send_id AS sch_send_id,
+    sch.schedule_kind AS sch_schedule_kind,
+    sch.schedule_type AS sch_schedule_type,
+    sch.is_active AS sch_is_active,
+    sch.timezone AS sch_timezone,
+    sch.one_off_at AS sch_one_off_at,
+    sch.recurring_weekdays AS sch_recurring_weekdays,
+    sch.recurring_time_local AS sch_recurring_time_local,
+    sch.next_run_at AS sch_next_run_at,
+    sch.last_run_at AS sch_last_run_at,
+    sch.created_at AS sch_created_at,
+    sch.updated_at AS sch_updated_at,
+    s.id AS send_id,
+    s.name AS send_name,
+    s.template_id AS send_template_id,
+    s.subject AS send_subject,
+    s.list_id AS send_list_id,
+    s.segment_id AS send_segment_id,
+    s.from_name AS send_from_name,
+    s.from_email AS send_from_email,
+    s.reply_to AS send_reply_to,
+    s.test_subject AS send_test_subject,
+    s.test_list_id AS send_test_list_id,
+    s.test_segment_id AS send_test_segment_id
+  FROM email_send_schedules sch
+  JOIN email_sends s ON s.id = sch.send_id
+  WHERE sch.is_active = true
+    AND sch.next_run_at IS NOT NULL
+    AND sch.next_run_at <= $1
+    AND s.is_active = true`;
+
+/**
+ * Atomically claims due schedules by clearing next_run_at so other workers/ticks
+ * cannot pick them up while the send is in progress.
+ */
+export async function claimDueSchedules(before: Date): Promise<DueScheduleBundle[]> {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const due = await client.query(`${DUE_SCHEDULE_SELECT} FOR UPDATE OF sch SKIP LOCKED`, [before]);
+    if (due.rows.length === 0) {
+      await client.query('COMMIT');
+      return [];
+    }
+
+    const ids = due.rows.map((row: { sch_id: string }) => row.sch_id);
+    await client.query(
+      `UPDATE email_send_schedules SET next_run_at = NULL, updated_at = NOW() WHERE id = ANY($1::uuid[])`,
+      [ids]
+    );
+    await client.query('COMMIT');
+    return due.rows.map((row) => mapDueScheduleRow(row));
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
+  }
+}
+
+/** Restores a claimed schedule so it can be retried after a transient failure. */
+export async function restoreScheduleClaim(scheduleId: string, nextRunAt: Date): Promise<void> {
+  await pool.query(
+    `UPDATE email_send_schedules SET next_run_at = $2, updated_at = NOW() WHERE id = $1`,
+    [scheduleId, nextRunAt]
+  );
 }
 
 export async function updateScheduleRunState(
