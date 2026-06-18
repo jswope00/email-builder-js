@@ -6,6 +6,8 @@ import { useInspectorDrawerOpen, useSamplesDrawerOpen, useCurrentView } from '..
 
 import InspectorDrawer, { INSPECTOR_DRAWER_WIDTH } from './InspectorDrawer';
 import SamplesDrawer, { SAMPLES_DRAWER_WIDTH } from './SamplesDrawer';
+import MobileNavBar from './SamplesDrawer/MobileNavBar';
+import { MOBILE_NAV_BAR_HEIGHT, useIsMobileNav } from './SamplesDrawer/useMobileNav';
 import TemplatePanel from './TemplatePanel';
 import MailchimpPage from './MailchimpPage';
 import SendExecutionsPage from './SendExecutionsPage';
@@ -23,19 +25,26 @@ export default function App() {
   const inspectorDrawerOpen = useInspectorDrawerOpen();
   const samplesDrawerOpen = useSamplesDrawerOpen();
   const currentView = useCurrentView();
+  const isMobileNav = useIsMobileNav();
+  const showMobileNavBar = isMobileNav;
 
   const marginLeftTransition = useDrawerTransition('margin-left', samplesDrawerOpen);
   const marginRightTransition = useDrawerTransition('margin-right', inspectorDrawerOpen);
+
+  const contentMarginLeft =
+    !isMobileNav && samplesDrawerOpen ? `${SAMPLES_DRAWER_WIDTH}px` : 0;
 
   return (
     <>
       <InspectorDrawer />
       <SamplesDrawer />
+      {showMobileNavBar && <MobileNavBar />}
 
       <Stack
         sx={{
           marginRight: inspectorDrawerOpen ? `${INSPECTOR_DRAWER_WIDTH}px` : 0,
-          marginLeft: samplesDrawerOpen ? `${SAMPLES_DRAWER_WIDTH}px` : 0,
+          marginLeft: contentMarginLeft,
+          paddingTop: showMobileNavBar ? `${MOBILE_NAV_BAR_HEIGHT}px` : 0,
           transition: [marginLeftTransition, marginRightTransition].join(', '),
         }}
       >

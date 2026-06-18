@@ -13,6 +13,7 @@ import {
 } from '../../documents/editor/EditorContext';
 import ToggleInspectorPanelButton from '../InspectorDrawer/ToggleInspectorPanelButton';
 import ToggleSamplesPanelButton from '../SamplesDrawer/ToggleSamplesPanelButton';
+import { MOBILE_NAV_BAR_HEIGHT, useIsMobileNav } from '../SamplesDrawer/useMobileNav';
 
 import DownloadJson from './DownloadJson';
 import HtmlPanel from './HtmlPanel';
@@ -27,6 +28,7 @@ export default function TemplatePanel() {
   const document = useDocument();
   const selectedMainTab = useSelectedMainTab();
   const selectedScreenSize = useSelectedScreenSize();
+  const isMobileNav = useIsMobileNav();
 
   let mainBoxSx: SxProps = {
     height: '100%',
@@ -85,7 +87,7 @@ export default function TemplatePanel() {
           borderColor: 'divider',
           backgroundColor: 'white',
           position: 'sticky',
-          top: 0,
+          top: isMobileNav ? MOBILE_NAV_BAR_HEIGHT : 0,
           zIndex: 'appBar',
           px: 1,
         }}
@@ -93,8 +95,16 @@ export default function TemplatePanel() {
         justifyContent="space-between"
         alignItems="center"
       >
-        <ToggleSamplesPanelButton />
-        <Stack px={2} direction="row" gap={2} width="100%" justifyContent="space-between" alignItems="center">
+        {!isMobileNav && <ToggleSamplesPanelButton />}
+        <Stack
+          px={2}
+          direction="row"
+          gap={2}
+          width="100%"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ overflow: 'auto', minWidth: 0 }}
+        >
           <Stack direction="row" spacing={2}>
             <MainTabsGroup />
           </Stack>

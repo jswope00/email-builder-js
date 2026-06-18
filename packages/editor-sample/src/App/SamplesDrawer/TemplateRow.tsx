@@ -15,9 +15,16 @@ interface TemplateRowProps {
   onTemplateDeleted: () => void;
   onTemplateDuplicated: () => void;
   onTemplateUpdated?: () => void;
+  onNavigate?: () => void;
 }
 
-export default function TemplateRow({ template, onTemplateDeleted, onTemplateDuplicated, onTemplateUpdated }: TemplateRowProps) {
+export default function TemplateRow({
+  template,
+  onTemplateDeleted,
+  onTemplateDuplicated,
+  onTemplateUpdated,
+  onNavigate,
+}: TemplateRowProps) {
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
@@ -37,6 +44,7 @@ export default function TemplateRow({ template, onTemplateDeleted, onTemplateDup
     const hash = `#template/${template.slug}`;
     window.location.hash = hash;
     loadTemplateFromHash(hash);
+    onNavigate?.();
   };
 
   const handleDuplicateClick = () => {

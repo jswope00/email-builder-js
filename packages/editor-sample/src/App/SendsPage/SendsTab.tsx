@@ -378,54 +378,58 @@ function SendListCard({
                   </Button>
                 </span>
               </Tooltip>
-              <Tooltip
-                title={
-                  !row.testSubject || !row.testListId
-                    ? 'Set test subject and test audience in Edit to enable'
-                    : 'Send a test to your test segment'
-                }
-              >
-                <span style={isCompact ? { display: 'block' } : undefined}>
-                  <Button
-                    fullWidth={sendBtnFullWidth}
-                    size={sendBtnSize}
-                    variant="outlined"
-                    onClick={() => onExecute(row.id, 'test')}
-                    disabled={
-                      !row.isActive ||
-                      !row.testSubject ||
-                      !row.testListId ||
-                      actionBusy === `${row.id}-test`
-                    }
-                    startIcon={
-                      actionBusy === `${row.id}-test` ? (
-                        <CircularProgress size={isCompact ? 22 : 14} />
-                      ) : (
-                        <PlayArrow fontSize={isCompact ? 'medium' : 'small'} />
-                      )
-                    }
-                  >
-                    Send test
-                  </Button>
-                </span>
-              </Tooltip>
-              <Button
-                fullWidth={sendBtnFullWidth}
-                size={sendBtnSize}
-                variant="contained"
-                color="secondary"
-                onClick={() => onExecute(row.id, 'live')}
-                disabled={!row.isActive || actionBusy === `${row.id}-live`}
-                startIcon={
-                  actionBusy === `${row.id}-live` ? (
-                    <CircularProgress size={isCompact ? 22 : 14} color="inherit" />
-                  ) : (
-                    <PlayArrow fontSize={isCompact ? 'medium' : 'small'} />
-                  )
-                }
-              >
-                Send live
-              </Button>
+              <Stack direction="row" spacing={1} sx={{ width: isCompact ? '100%' : 'auto' }}>
+                <Tooltip
+                  title={
+                    !row.testSubject || !row.testListId
+                      ? 'Set test subject and test audience in Edit to enable'
+                      : 'Send a test to your test segment'
+                  }
+                >
+                  <span style={isCompact ? { display: 'block', flex: 1, minWidth: 0 } : undefined}>
+                    <Button
+                      fullWidth={isCompact || sendBtnFullWidth}
+                      size={sendBtnSize}
+                      variant="outlined"
+                      onClick={() => onExecute(row.id, 'test')}
+                      disabled={
+                        !row.isActive ||
+                        !row.testSubject ||
+                        !row.testListId ||
+                        actionBusy === `${row.id}-test`
+                      }
+                      startIcon={
+                        actionBusy === `${row.id}-test` ? (
+                          <CircularProgress size={isCompact ? 22 : 14} />
+                        ) : (
+                          <PlayArrow fontSize={isCompact ? 'medium' : 'small'} />
+                        )
+                      }
+                      sx={isCompact ? { width: '100%' } : undefined}
+                    >
+                      Send test
+                    </Button>
+                  </span>
+                </Tooltip>
+                <Button
+                  fullWidth={isCompact || sendBtnFullWidth}
+                  size={sendBtnSize}
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => onExecute(row.id, 'live')}
+                  disabled={!row.isActive || actionBusy === `${row.id}-live`}
+                  startIcon={
+                    actionBusy === `${row.id}-live` ? (
+                      <CircularProgress size={isCompact ? 22 : 14} color="inherit" />
+                    ) : (
+                      <PlayArrow color="error" fontSize={isCompact ? 'medium' : 'small'} />
+                    )
+                  }
+                  sx={isCompact ? { flex: 1, minWidth: 0 } : undefined}
+                >
+                  Send live
+                </Button>
+              </Stack>
             </Stack>
             <Stack
               direction="row"
@@ -1195,9 +1199,10 @@ export default function SendsTab({ isCompact = false }: { isCompact?: boolean })
           Sends &amp; schedules
         </Typography>
         <Stack
-          direction={{ xs: 'column', sm: 'row' }}
+          direction="row"
           spacing={1.5}
-          alignItems={{ xs: 'stretch', sm: 'center' }}
+          alignItems="center"
+          justifyContent={{ xs: 'space-between', sm: 'flex-end' }}
           sx={{ width: { xs: '100%', sm: 'auto' } }}
         >
           <FormControlLabel
@@ -1209,7 +1214,7 @@ export default function SendsTab({ isCompact = false }: { isCompact?: boolean })
               />
             }
             label="Show inactive"
-            sx={{ mr: 0, ml: isCompact ? 0 : undefined }}
+            sx={{ mr: 0, ml: 0 }}
           />
           <Button
             variant="text"
@@ -1217,7 +1222,7 @@ export default function SendsTab({ isCompact = false }: { isCompact?: boolean })
             size="small"
             startIcon={<Add fontSize="small" />}
             onClick={openCreate}
-            sx={{ textTransform: 'none', fontWeight: 500, color: 'text.secondary' }}
+            sx={{ textTransform: 'none', fontWeight: 500, color: 'text.secondary', flexShrink: 0 }}
           >
             New send
           </Button>

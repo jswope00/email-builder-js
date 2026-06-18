@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
 import getConfiguration, { getConfigurationAsync } from '../../getConfiguration';
+import { getIsDesktopNav } from '../../App/SamplesDrawer/samplesDrawerViewport';
 
 import { TEditorConfiguration } from './core';
 
@@ -19,6 +20,14 @@ type TValue = {
   currentView: 'editor' | 'mailchimp' | 'sends' | 'sendExecutions';
 };
 
+function getInitialCurrentView(): TValue['currentView'] {
+  const hash = window.location.hash;
+  if (hash.startsWith('#template/') || hash.startsWith('#code/')) {
+    return 'editor';
+  }
+  return 'sends';
+}
+
 const editorStateStore = create<TValue>(() => ({
   document: getConfiguration(window.location.hash),
   isLoading: false,
@@ -29,8 +38,8 @@ const editorStateStore = create<TValue>(() => ({
   selectedScreenSize: 'desktop',
 
   inspectorDrawerOpen: false,
-  samplesDrawerOpen: true,
-  currentView: 'editor',
+  samplesDrawerOpen: getIsDesktopNav(),
+  currentView: getInitialCurrentView(),
 }));
 
 // Load template from API if needed
@@ -126,6 +135,14 @@ export function toggleSamplesDrawerOpen() {
   return editorStateStore.setState({ samplesDrawerOpen });
 }
 
+export function closeSamplesDrawer() {
+  return editorStateStore.setState({ samplesDrawerOpen: false });
+}
+
+export function openSamplesDrawer() {
+  return editorStateStore.setState({ samplesDrawerOpen: true });
+}
+
 export function setSelectedScreenSize(selectedScreenSize: TValue['selectedScreenSize']) {
   return editorStateStore.setState({ selectedScreenSize });
 }
@@ -135,7 +152,11 @@ export function useCurrentView() {
 }
 
 export function setCurrentView(currentView: TValue['currentView']) {
-  return editorStateStore.setState({ currentView });
+  const state: Partial<TValue> = { currentView };
+  if (getIsDesktopNav() && currentView !== 'editor') {
+    state.samplesDrawerOpen = true;
+  }
+  return editorStateStore.setState(state);
 }
 
 export function useIsLoading() {
