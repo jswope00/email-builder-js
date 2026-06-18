@@ -16,7 +16,7 @@ type TValue = {
 
   inspectorDrawerOpen: boolean;
   samplesDrawerOpen: boolean;
-  currentView: 'editor' | 'mailchimp' | 'sends';
+  currentView: 'editor' | 'mailchimp' | 'sends' | 'sendExecutions';
 };
 
 const editorStateStore = create<TValue>(() => ({

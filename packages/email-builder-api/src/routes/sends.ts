@@ -18,7 +18,9 @@ import type { CreateSendInput } from '../types/send';
 import { validateBody, validateParams } from '../middleware/validation';
 import { AppError, NotFoundError } from '../utils/errors';
 import { computeInitialNextRunAt } from '../utils/scheduleNextRun';
-import { executeSendForMailchimp } from '../services/executeSend';
+import { runSendWithExecutionLog } from '../services/sendExecution';
+import { listSendExecutions } from '../db/sendExecutionQueries';
+import type { SendExecutionStatus, SendExecutionTrigger } from '../types/send';
 
 const router = Router();
 
@@ -182,6 +184,29 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+router.get('/executions', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const limit = req.query.limit != null ? parseInt(String(req.query.limit), 10) : undefined;
+    const sendId = typeof req.query.sendId === 'string' ? req.query.sendId : undefined;
+    const triggerType =
+      req.query.triggerType === 'manual' || req.query.triggerType === 'scheduled'
+        ? (req.query.triggerType as SendExecutionTrigger)
+        : undefined;
+    const status =
+      req.query.status === 'started' ||
+      req.query.status === 'sent' ||
+      req.query.status === 'failed' ||
+      req.query.status === 'skipped'
+        ? (req.query.status as SendExecutionStatus)
+        : undefined;
+
+    const executions = await listSendExecutions({ limit, sendId, triggerType, status });
+    res.json(executions);
+  } catch (e) {
+    next(e);
+  }
+});
+
 router.get('/:id', validateParams(UuidParamsSchema), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const row = await getSendById(req.params.id);
@@ -333,24 +358,25 @@ router.post(
         throw new NotFoundError('Send not found');
       }
       const { mode } = req.body as z.infer<typeof ExecuteBodySchema>;
-      const result = await executeSendForMailchimp(
-        {
-          id: row.id,
-          name: row.name,
-          template_id: row.templateId,
-          subject: row.subject,
-          list_id: row.listId,
-          segment_id: row.segmentId,
-          from_name: row.fromName,
-          from_email: row.fromEmail,
-          reply_to: row.replyTo,
-          test_subject: row.testSubject,
-          test_list_id: row.testListId,
-          test_segment_id: row.testSegmentId,
-        },
-        mode
-      );
-      res.status(201).json(result);
+      const sendRow = {
+        id: row.id,
+        name: row.name,
+        template_id: row.templateId,
+        subject: row.subject,
+        list_id: row.listId,
+        segment_id: row.segmentId,
+        from_name: row.fromName,
+        from_email: row.fromEmail,
+        reply_to: row.replyTo,
+        test_subject: row.testSubject,
+        test_list_id: row.testListId,
+        test_segment_id: row.testSegmentId,
+      };
+      const run = await runSendWithExecutionLog(sendRow, mode, { triggerType: 'manual' });
+      if (run.outcome !== 'sent') {
+        throw new AppError(409, `Send was not executed: ${run.reason}`, 'SEND_NOT_EXECUTED');
+      }
+      res.status(201).json(run.result);
     } catch (e) {
       next(e);
     }

@@ -67,3 +67,23 @@ export interface CreateSendInput {
   testListId?: string | null;
   testSegmentId?: number | null;
 }
+
+export type SendExecutionTrigger = 'manual' | 'scheduled';
+export type SendExecutionStatus = 'started' | 'sent' | 'failed' | 'skipped';
+
+export interface SendExecutionDTO {
+  id: string;
+  sendId: string;
+  sendName: string;
+  scheduleId: string | null;
+  triggerType: SendExecutionTrigger;
+  mode: ScheduleKind;
+  intendedRunAt: string | null;
+  status: SendExecutionStatus;
+  mailchimpCampaignId: string | null;
+  errorMessage: string | null;
+  startedAt: string;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}

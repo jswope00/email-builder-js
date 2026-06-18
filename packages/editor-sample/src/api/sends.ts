@@ -198,3 +198,44 @@ export async function executeSend(
   }
   return response.json();
 }
+
+export type SendExecutionTrigger = 'manual' | 'scheduled';
+export type SendExecutionStatus = 'started' | 'sent' | 'failed' | 'skipped';
+
+export interface SendExecutionListItem {
+  id: string;
+  sendId: string;
+  sendName: string;
+  scheduleId: string | null;
+  triggerType: SendExecutionTrigger;
+  mode: ScheduleKind;
+  intendedRunAt: string | null;
+  status: SendExecutionStatus;
+  mailchimpCampaignId: string | null;
+  errorMessage: string | null;
+  startedAt: string;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function fetchSendExecutions(options?: {
+  limit?: number;
+  sendId?: string;
+  triggerType?: SendExecutionTrigger;
+  status?: SendExecutionStatus;
+}): Promise<SendExecutionListItem[]> {
+  const params = new URLSearchParams();
+  if (options?.limit != null) params.set('limit', String(options.limit));
+  if (options?.sendId) params.set('sendId', options.sendId);
+  if (options?.triggerType) params.set('triggerType', options.triggerType);
+  if (options?.status) params.set('status', options.status);
+  const q = params.toString();
+  const response = await fetch(`${API_URL}/sends/executions${q ? `?${q}` : ''}`, {
+    credentials: 'include',
+  });
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+  return response.json();
+}

@@ -3,7 +3,8 @@ import {
   restoreScheduleClaim,
   updateScheduleRunState,
 } from '../db/sendQueries';
-import { executeSendForMailchimp, SendAbortError } from '../services/executeSend';
+import { SendAbortError } from '../services/executeSend';
+import { runSendWithExecutionLog } from '../services/sendExecution';
 import { SendScheduleRow } from '../types/send';
 import { nextRunAfterRecurringFire } from '../utils/scheduleNextRun';
 
@@ -44,34 +45,49 @@ export async function runScheduledSendTick(): Promise<void> {
   }
 
   for (const { schedule, send, claimedRunAt } of due) {
+    const mode = schedule.schedule_kind === 'test' ? 'test' : 'live';
+    const sendRow = {
+      id: send.id,
+      name: send.name,
+      template_id: send.template_id,
+      subject: send.subject,
+      list_id: send.list_id,
+      segment_id: send.segment_id,
+      from_name: send.from_name,
+      from_email: send.from_email,
+      reply_to: send.reply_to,
+      test_subject: send.test_subject,
+      test_list_id: send.test_list_id,
+      test_segment_id: send.test_segment_id,
+    };
+
     try {
-      const mode = schedule.schedule_kind === 'test' ? 'test' : 'live';
-      await executeSendForMailchimp(
-        {
-          id: send.id,
-          name: send.name,
-          template_id: send.template_id,
-          subject: send.subject,
-          list_id: send.list_id,
-          segment_id: send.segment_id,
-          from_name: send.from_name,
-          from_email: send.from_email,
-          reply_to: send.reply_to,
-          test_subject: send.test_subject,
-          test_list_id: send.test_list_id,
-          test_segment_id: send.test_segment_id,
-        },
-        mode
-      );
+      const run = await runSendWithExecutionLog(sendRow, mode, {
+        triggerType: 'scheduled',
+        scheduleId: schedule.id,
+        intendedRunAt: claimedRunAt,
+      });
 
-      const firedAt = new Date();
-      await markScheduleRunComplete(schedule, firedAt);
+      if (run.outcome === 'skipped') {
+        if (run.reason === 'already_sent' || run.reason === 'already_skipped') {
+          await markScheduleRunComplete(schedule, new Date());
+          console.warn(
+            `[scheduler] Schedule ${schedule.id} already handled (${run.reason}); marked complete`
+          );
+        } else {
+          await restoreScheduleClaim(schedule.id, claimedRunAt);
+          console.warn(
+            `[scheduler] Skipped duplicate in-flight schedule ${schedule.id}: ${run.reason}`
+          );
+        }
+        continue;
+      }
 
+      await markScheduleRunComplete(schedule, new Date());
       console.log(`[scheduler] Sent schedule ${schedule.id} (${schedule.schedule_kind}) for send ${send.id}`);
     } catch (err) {
       if (err instanceof SendAbortError) {
-        const firedAt = new Date();
-        await markScheduleRunComplete(schedule, firedAt);
+        await markScheduleRunComplete(schedule, new Date());
         console.warn(`[scheduler] Skipped schedule ${schedule.id}: ${err.message}`);
         continue;
       }

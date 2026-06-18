@@ -8,6 +8,7 @@ import InspectorDrawer, { INSPECTOR_DRAWER_WIDTH } from './InspectorDrawer';
 import SamplesDrawer, { SAMPLES_DRAWER_WIDTH } from './SamplesDrawer';
 import TemplatePanel from './TemplatePanel';
 import MailchimpPage from './MailchimpPage';
+import SendExecutionsPage from './SendExecutionsPage';
 import SendsPage from './SendsPage';
 
 function useDrawerTransition(cssProperty: 'margin-left' | 'margin-right', open: boolean) {
@@ -42,6 +43,8 @@ export default function App() {
           <MailchimpPage />
         ) : currentView === 'sends' ? (
           <SendsPage />
+        ) : currentView === 'sendExecutions' ? (
+          <SendExecutionsPage />
         ) : (
           <TemplatePanel />
         )}

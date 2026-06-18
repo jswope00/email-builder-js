@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { Box, Button, CircularProgress, Drawer, Stack, Typography } from '@mui/material';
-import { EditOutlined, MailOutline, SendOutlined } from '@mui/icons-material';
+import { EditOutlined, History, SendOutlined, SettingsOutlined } from '@mui/icons-material';
 
 import { useSamplesDrawerOpen, setCurrentView } from '../../documents/editor/EditorContext';
 import { fetchTemplates, type TemplateListItem } from '../../api/templates';
@@ -146,9 +146,9 @@ export default function SamplesDrawer() {
         >
           <Stack spacing={1} alignItems="flex-start">
             <Stack direction="row" spacing={0.75} alignItems="center" sx={{ px: 0.25 }}>
-              <MailOutline sx={{ fontSize: 18, color: 'text.secondary' }} />
+              <SettingsOutlined sx={{ fontSize: 18, color: 'text.secondary' }} />
               <Typography variant="overline" color="text.secondary" sx={{ fontSize: '0.65rem', letterSpacing: '0.08em' }}>
-                Mailchimp
+                Administration
               </Typography>
             </Stack>
 
@@ -156,8 +156,16 @@ export default function SamplesDrawer() {
               size="small"
               variant="outlined"
               color="inherit"
+              onClick={() => setCurrentView('sendExecutions')}
+            >
+              Execution history
+            </Button>
+
+            <Button
+              size="small"
+              variant="outlined"
+              color="inherit"
               onClick={() => setCurrentView('mailchimp')}
-              sx={{ mt: 0.5 }}
             >
               Lists &amp; campaigns
             </Button>
