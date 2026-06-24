@@ -285,75 +285,137 @@ export function RheumIqQuizXml({
           {sectionTitle}
         </h2>
       ) : null}
-      {items.map((item, index) => (
-        <div
-          key={index}
-          style={{
-            color: '#ffffff',
-          }}
-        >
-          {showQuizTitle && item.label ? (
-            <h3
-              style={{
-                margin: '0 0 14px 0',
-                fontSize: '19px',
-                lineHeight: '1.35',
-                color: '#ffffff',
-              }}
-            >
-              {item.label}
-            </h3>
-          ) : null}
-          {showQuestions && item.questions.length > 0 ? (
-            <ul style={{ margin: '0 0 16px 0', paddingLeft: 22 }}>
-              {item.questions.map((question, questionIndex) => (
-                <li
-                  key={questionIndex}
-                  style={{
-                    marginBottom: questionIndex < item.questions.length - 1 ? 8 : 0,
-                    fontSize: '15px',
-                    lineHeight: '1.45',
-                    color: '#ffffff',
-                  }}
-                >
-                  {question}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {showSponsoredText && item.sponsoredText ? (
+      {items.map((item, index) => {
+        const hasMultipleQuestions = item.questions.length > 1;
+        return (
+          <div
+            key={index}
+            style={{
+              
+              padding: '28px 24px',
+              textAlign: 'center',
+              color: '#333333',
+              marginBottom: index < items.length - 1 ? 20 : 0,
+            }}
+          >
             <div
               style={{
-                margin: '0 0 16px 0',
-                fontSize: '13px',
-                lineHeight: '1.4',
-                color: '#dbeafe',
-              }}
-            >
-              {item.sponsoredText}
-            </div>
-          ) : null}
-          {showQuizLink && item.quizLink ? (
-            <a
-              href={item.quizLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-block',
+                width: 52,
+                height: 52,
+                lineHeight: '52px',
+                margin: '0 auto 12px auto',
+                borderRadius: '50%',
                 backgroundColor: '#1585fe',
-                borderRadius: 25,
                 color: '#ffffff',
-                fontSize: '16px',
-                fontWeight: 700,
-                padding: '10px 30px',
-                textDecoration: 'none',
+                fontSize: '30px',
+                fontWeight: 800,
+                textAlign: 'center',
               }}
             >
-              {quizLinkText}
-            </a>
-          ) : null}
-        </div>
-      ))}
+              ?
+            </div>
+            <div
+              style={{
+                fontSize: '12px',
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                fontWeight: 700,
+                color: '#1585fe',
+                margin: '0 0 14px 0',
+              }}
+            >
+              This week's first question:
+            </div>
+            {showQuizTitle && item.label ? (
+              <h3
+                style={{
+                  margin: '0 0 18px 0',
+                  fontSize: '18px',
+                  lineHeight: '1.35',
+                  fontWeight: 600,
+                  color: '#ffffff',
+                }}
+              >
+                {item.label}
+              </h3>
+            ) : null}
+            {showQuestions && item.questions.length > 0
+              ? item.questions.map((question, questionIndex) => (
+                  <div
+                    key={questionIndex}
+                    style={{
+                      border: '2px solid #ffffff',
+                      borderRadius: 14,
+                      padding: '20px 22px',
+                      margin:
+                        questionIndex < item.questions.length - 1 ? '0 0 12px 0' : '0 0 20px 0',
+                    }}
+                  >
+                    {hasMultipleQuestions ? (
+                      <div
+                        style={{
+                          display: 'inline-block',
+                          backgroundColor: '#1585fe',
+                          color: '#ffffff',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          letterSpacing: '1px',
+                          textTransform: 'uppercase',
+                          padding: '3px 12px',
+                          borderRadius: 12,
+                          marginBottom: 10,
+                        }}
+                      >
+                        {`Q${questionIndex + 1}`}
+                      </div>
+                    ) : null}
+                    <div
+                      style={{
+                        fontSize: '21px',
+                        lineHeight: '1.4',
+                        fontWeight: 700,
+                        color: '#ffffff',
+                      }}
+                    >
+                      {question}
+                    </div>
+                  </div>
+                ))
+              : null}
+            {showSponsoredText && item.sponsoredText ? (
+              <div
+                style={{
+                  margin: '0 0 18px 0',
+                  fontSize: '13px',
+                  lineHeight: '1.4',
+                  color: '#666666',
+                }}
+              >
+                {item.sponsoredText}
+              </div>
+            ) : null}
+            {showQuizLink && item.quizLink ? (
+              <a
+                href={item.quizLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-block',
+                  backgroundColor: '#1585fe',
+                  borderRadius: 25,
+                  color: '#ffffff',
+                  fontSize: '16px',
+                  fontWeight: 800,
+                  padding: '12px 34px',
+                  textDecoration: 'none',
+                }}
+              >
+                {`${quizLinkText} \u2192`}
+              </a>
+            ) : null}
+          </div>
+        );
+      })}
     </div>
   );
 }
