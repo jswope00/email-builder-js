@@ -25,6 +25,7 @@ export const RheumIqQuizXmlPropsSchema = z.object({
     .object({
       title: z.string().optional().nullable(),
       numberOfItems: z.number().min(1).max(10).optional().nullable(),
+      numberOfQuestions: z.number().min(1).max(10).optional().nullable(),
       topicTid: z.number().int().positive().optional().nullable(),
       dashboardTagTid: z.number().int().positive().optional().nullable(),
       showQuizTitle: z.boolean().optional().nullable(),
@@ -32,6 +33,7 @@ export const RheumIqQuizXmlPropsSchema = z.object({
       showSponsoredText: z.boolean().optional().nullable(),
       showQuizLink: z.boolean().optional().nullable(),
       quizLinkText: z.string().optional().nullable(),
+      questionEyebrow: z.string().optional().nullable(),
     })
     .optional()
     .nullable(),
@@ -42,11 +44,13 @@ export type RheumIqQuizXmlProps = z.infer<typeof RheumIqQuizXmlPropsSchema>;
 export const RheumIqQuizXmlPropsDefaults = {
   title: '',
   numberOfItems: 1,
+  numberOfQuestions: 1,
   showQuizTitle: true,
   showQuestions: true,
   showSponsoredText: true,
   showQuizLink: true,
   quizLinkText: 'Take the Quiz',
+  questionEyebrow: "This week's first question:",
 } as const;
 
 type RheumIqQuizItem = {
@@ -93,9 +97,13 @@ function stripTags(input: string): string {
   return decodeBasicEntities(input.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim());
 }
 
-function parseQuestionList(raw: unknown): string[] {
-  const html = stripCdata(xmlTextContent(raw));
+/** Split HTML in `questions_target_id` into individual question strings. */
+export function parseQuestionsFromTargetId(raw: unknown): string[] {
+  let html = stripCdata(xmlTextContent(raw));
   if (!html) return [];
+
+  // Some feeds ship encoded markup; decode before matching list tags.
+  html = decodeBasicEntities(html);
 
   const questions: string[] = [];
   const liRegex = /<li\b[^>]*>([\s\S]*?)<\/li>/gi;
@@ -104,8 +112,21 @@ function parseQuestionList(raw: unknown): string[] {
     const question = stripTags(match[1]);
     if (question) questions.push(question);
   }
-
   if (questions.length > 0) return questions;
+
+  const pRegex = /<p\b[^>]*>([\s\S]*?)<\/p>/gi;
+  while ((match = pRegex.exec(html)) !== null) {
+    const question = stripTags(match[1]);
+    if (question) questions.push(question);
+  }
+  if (questions.length > 0) return questions;
+
+  const brParts = html
+    .split(/<br\s*\/?>/gi)
+    .map((part) => stripTags(part))
+    .filter(Boolean);
+  if (brParts.length > 1) return brParts;
+
   const fallback = stripTags(html);
   return fallback ? [fallback] : [];
 }
@@ -146,7 +167,11 @@ function collectQuizItemNodes(parsed: unknown): any[] {
   return foundItems;
 }
 
-export function parseRheumIqQuizXml(xmlText: string, numberOfItems: number): RheumIqQuizItem[] {
+export function parseRheumIqQuizXml(
+  xmlText: string,
+  numberOfItems: number,
+  numberOfQuestions: number = RheumIqQuizXmlPropsDefaults.numberOfQuestions
+): RheumIqQuizItem[] {
   try {
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -158,7 +183,7 @@ export function parseRheumIqQuizXml(xmlText: string, numberOfItems: number): Rhe
     return foundItems
       .map((item: any) => ({
         label: decodeBasicEntities(xmlTextContent(item.label).trim()),
-        questions: parseQuestionList(item.questions_target_id),
+        questions: parseQuestionsFromTargetId(item.questions_target_id).slice(0, numberOfQuestions),
         sponsoredText: stripTags(stripCdata(xmlTextContent(item.field_sponsored_text))),
         quizLink: xmlTextContent(item.quiz_link).trim(),
       }))
@@ -195,12 +220,15 @@ export function RheumIqQuizXml({
   const url = buildRheumIqQuizFeedUrl(props?.topicTid, props?.dashboardTagTid);
   const sectionTitle = props?.title ?? RheumIqQuizXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? RheumIqQuizXmlPropsDefaults.numberOfItems;
+  const numberOfQuestions =
+    props?.numberOfQuestions ?? RheumIqQuizXmlPropsDefaults.numberOfQuestions;
   const showQuizTitle = props?.showQuizTitle ?? RheumIqQuizXmlPropsDefaults.showQuizTitle;
   const showQuestions = props?.showQuestions ?? RheumIqQuizXmlPropsDefaults.showQuestions;
   const showSponsoredText =
     props?.showSponsoredText ?? RheumIqQuizXmlPropsDefaults.showSponsoredText;
   const showQuizLink = props?.showQuizLink ?? RheumIqQuizXmlPropsDefaults.showQuizLink;
   const quizLinkText = props?.quizLinkText ?? RheumIqQuizXmlPropsDefaults.quizLinkText;
+  const questionEyebrow = props?.questionEyebrow ?? RheumIqQuizXmlPropsDefaults.questionEyebrow;
 
   let preFetchedXmlText: string | null = null;
   try {
@@ -214,7 +242,9 @@ export function RheumIqQuizXml({
     // fall through to client fetch
   }
 
-  const preFetchedItems = preFetchedXmlText ? parseRheumIqQuizXml(preFetchedXmlText, numberOfItems) : null;
+  const preFetchedItems = preFetchedXmlText
+    ? parseRheumIqQuizXml(preFetchedXmlText, numberOfItems, numberOfQuestions)
+    : null;
 
   const [items, setItems] = useState<RheumIqQuizItem[]>(preFetchedItems || []);
   const [loading, setLoading] = useState(false);
@@ -233,7 +263,7 @@ export function RheumIqQuizXml({
           throw new Error(`Status: ${response.status}`);
         }
         const text = await response.text();
-        setItems(parseRheumIqQuizXml(text, numberOfItems));
+        setItems(parseRheumIqQuizXml(text, numberOfItems, numberOfQuestions));
       } catch (err) {
         setError('Failed to load data');
         console.error(err);
@@ -243,7 +273,7 @@ export function RheumIqQuizXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems]);
+  }, [url, numberOfItems, numberOfQuestions, preFetchedItems]);
 
   const padding = style?.padding;
   const wrapperStyle: React.CSSProperties = {
@@ -314,18 +344,20 @@ export function RheumIqQuizXml({
             >
               ?
             </div>
-            <div
-              style={{
-                fontSize: '12px',
-                letterSpacing: '2px',
-                textTransform: 'uppercase',
-                fontWeight: 700,
-                color: '#1585fe',
-                margin: '0 0 14px 0',
-              }}
-            >
-              This week's first question:
-            </div>
+            {questionEyebrow ? (
+              <div
+                style={{
+                  fontSize: '12px',
+                  letterSpacing: '2px',
+                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                  color: '#1585fe',
+                  margin: '0 0 14px 0',
+                }}
+              >
+                {questionEyebrow}
+              </div>
+            ) : null}
             {showQuizTitle && item.label ? (
               <h3
                 style={{
@@ -344,9 +376,9 @@ export function RheumIqQuizXml({
                   <div
                     key={questionIndex}
                     style={{
-                      border: '2px solid #ffffff',
-                      borderRadius: 14,
-                      padding: '20px 22px',
+                      
+                      
+                      
                       margin:
                         questionIndex < item.questions.length - 1 ? '0 0 12px 0' : '0 0 20px 0',
                     }}

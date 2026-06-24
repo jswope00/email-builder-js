@@ -35,12 +35,15 @@ export default function RheumIqQuizXmlSidebarPanel({ data, setData }: RheumIqQui
 
   const title = data.props?.title ?? RheumIqQuizXmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? RheumIqQuizXmlPropsDefaults.numberOfItems;
+  const numberOfQuestions =
+    data.props?.numberOfQuestions ?? RheumIqQuizXmlPropsDefaults.numberOfQuestions;
   const showQuizTitle = data.props?.showQuizTitle ?? RheumIqQuizXmlPropsDefaults.showQuizTitle;
   const showQuestions = data.props?.showQuestions ?? RheumIqQuizXmlPropsDefaults.showQuestions;
   const showSponsoredText =
     data.props?.showSponsoredText ?? RheumIqQuizXmlPropsDefaults.showSponsoredText;
   const showQuizLink = data.props?.showQuizLink ?? RheumIqQuizXmlPropsDefaults.showQuizLink;
   const quizLinkText = data.props?.quizLinkText ?? RheumIqQuizXmlPropsDefaults.quizLinkText;
+  const questionEyebrow = data.props?.questionEyebrow ?? RheumIqQuizXmlPropsDefaults.questionEyebrow;
 
   return (
     <BaseSidebarPanel title="RheumIQ Quiz XML Block" subtitle={RHEUMIQ_QUIZ_XML_FEED_URL}>
@@ -77,6 +80,29 @@ export default function RheumIqQuizXmlSidebarPanel({ data, setData }: RheumIqQui
             }
           }
         }}
+      />
+      <TextField
+        fullWidth
+        size="small"
+        type="number"
+        label="Number of questions"
+        helperText="Questions are parsed from <li> tags in the XML feed."
+        value={numberOfQuestions}
+        InputProps={{ inputProps: { min: 1, max: 10, step: 1 } }}
+        onChange={(ev) => {
+          const raw = ev.target.value.trim();
+          if (/^\d+$/.test(raw)) {
+            const num = parseInt(raw, 10);
+            if (num >= 1 && num <= 10) {
+              updateData({ ...data, props: { ...data.props, numberOfQuestions: num } });
+            }
+          }
+        }}
+      />
+      <TextInput
+        label="Question eyebrow"
+        defaultValue={questionEyebrow}
+        onChange={(v) => updateData({ ...data, props: { ...data.props, questionEyebrow: v } })}
       />
       <FormControlLabel
         control={
