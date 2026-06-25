@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
-import { buildTopicFilteredFeedUrl } from '@usewaypoint/rheumnow-xml-topic';
+import { buildTopicFilteredFeedUrl, decodeHtmlEntities } from '@usewaypoint/rheumnow-xml-topic';
 
 /** Fixed feed URL for this block (not editable in the inspector). */
 export const EMAIL_SURVEY_XML_FEED_URL = 'https://rheumnow.com/admin/promoted-survey-xml';
@@ -84,24 +84,12 @@ function stripCdata(s: string): string {
   return s.replace(/<!\[CDATA\[|\]\]>/g, '').trim();
 }
 
-/** Minimal HTML entity decode for survey option text (e.g. &amp; → &). */
-function decodeBasicEntities(input: string): string {
-  return input
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/&quot;/gi, '"')
-    .replace(/&apos;/gi, "'")
-    .replace(/&#0?39;/g, "'")
-    .replace(/&nbsp;/gi, '\u00a0');
-}
-
 function parseChoiceList(raw: unknown): string[] {
   const s = stripCdata(xmlTextContent(raw));
   if (!s) return [];
   return s
     .split('||')
-    .map((part) => decodeBasicEntities(part.trim()))
+    .map((part) => decodeHtmlEntities(part.trim()))
     .filter(Boolean);
 }
 
@@ -117,7 +105,7 @@ export function extractPollChoicesFromPollHtml(html: string): string[] {
     /<[^>\s]+[^>]*\sclass\s*=\s*["'][^"']*chart-percent-title[^"']*["'][^>]*>([^<]*)<\/[^>]+>/gi;
   let m: RegExpExecArray | null;
   while ((m = re.exec(trimmed)) !== null) {
-    const label = decodeBasicEntities(m[1].trim());
+    const label = decodeHtmlEntities(m[1].trim());
     if (label) out.push(label);
   }
   return out;
@@ -125,7 +113,7 @@ export function extractPollChoicesFromPollHtml(html: string): string[] {
 
 function resolvePrimaryQuestion(item: Record<string, unknown>): string {
   const fromNew = String(item.field_primary_question_1 ?? '').trim();
-  if (fromNew) return decodeBasicEntities(fromNew);
+  if (fromNew) return decodeHtmlEntities(fromNew);
   return String(item.field_primary_question ?? '').trim();
 }
 
@@ -393,7 +381,7 @@ export function EmailSurveyXml({
                 color: item.isSponsoredPurple ? SPONSORED_TITLE_COLOR : DEFAULT_TITLE_COLOR,
               }}
             >
-              {decodeBasicEntities(item.title)}
+              {decodeHtmlEntities(item.title)}
             </h3>
           ) : null}
           {item.primaryQuestion ? (

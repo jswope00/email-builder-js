@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
-import { buildTopicFilteredFeedUrl } from '@usewaypoint/rheumnow-xml-topic';
+import { buildTopicFilteredFeedUrl, decodeHtmlEntities } from '@usewaypoint/rheumnow-xml-topic';
 
 /** Fixed feed URL for this block (not editable in the inspector). */
 export const BLOG_XML_FEED_URL = 'https://rheumnow.com/admin/blogs_xml';
@@ -55,17 +55,6 @@ type DateFilterOptions = {
   createdEndDate?: string | null;
   createdRelativeDays?: number | null;
 };
-
-function decodeHtmlEntities(s: string): string {
-  return s
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/&quot;/gi, '"')
-    .replace(/&apos;/gi, "'")
-    .replace(/&#0?39;/g, "'")
-    .replace(/&nbsp;/gi, '\u00a0');
-}
 
 function parseXmlTruthyBool(raw: unknown): boolean {
   if (raw === true || raw === 1) return true;

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
-import { buildTopicFilteredFeedUrl } from '@usewaypoint/rheumnow-xml-topic';
+import { buildTopicFilteredFeedUrl, decodeHtmlEntities } from '@usewaypoint/rheumnow-xml-topic';
 
 /** Fixed feed URL for this block (not editable in the inspector). */
 export const ADVERTISEMENT_300250_XML_FEED_URL = 'https://rheumnow.com/admin/email_ad_300_250_xml';
@@ -37,17 +37,6 @@ type AdvertisementItem = {
   destinationUrl: string;
   trackingCode: string;
 };
-
-function decodeHtmlEntities(s: string): string {
-  return s
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/&quot;/gi, '"')
-    .replace(/&apos;/gi, "'")
-    .replace(/&#0?39;/g, "'")
-    .replace(/&nbsp;/gi, '\u00a0');
-}
 
 function getFieldTopicsValue(item: Record<string, unknown>): unknown {
   const raw = item.field_topics;

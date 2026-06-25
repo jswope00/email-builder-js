@@ -146,13 +146,25 @@ function xmlTextContent(raw: unknown): string {
 }
 
 function decodeBasicEntities(input: string): string {
-  return input
+  const withNumeric = input
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex: string) => {
+      const code = parseInt(hex, 16);
+      return Number.isFinite(code) && code >= 0 ? String.fromCodePoint(code) : `&#x${hex};`;
+    })
+    .replace(/&#(\d+);/g, (_, dec: string) => {
+      const code = parseInt(dec, 10);
+      return Number.isFinite(code) && code >= 0 ? String.fromCodePoint(code) : `&#${dec};`;
+    });
+
+  return withNumeric
     .replace(/&amp;/gi, '&')
     .replace(/&lt;/gi, '<')
     .replace(/&gt;/gi, '>')
     .replace(/&quot;/gi, '"')
     .replace(/&apos;/gi, "'")
-    .replace(/&#0?39;/g, "'")
+    .replace(/&ndash;/gi, '\u2013')
+    .replace(/&mdash;/gi, '\u2014')
+    .replace(/&minus;/gi, '\u2212')
     .replace(/&nbsp;/gi, '\u00a0');
 }
 

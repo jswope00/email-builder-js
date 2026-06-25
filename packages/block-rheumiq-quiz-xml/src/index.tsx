@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
-import { buildTopicFilteredFeedUrl } from '@usewaypoint/rheumnow-xml-topic';
+import { buildTopicFilteredFeedUrl, decodeHtmlEntities } from '@usewaypoint/rheumnow-xml-topic';
 
 /** Fixed feed URL for this block (not editable in the inspector). */
 export const RHEUMIQ_QUIZ_XML_FEED_URL = 'https://rheumnow.com/admin/rheumiq-quiz-xml';
@@ -82,19 +82,8 @@ function stripCdata(s: string): string {
   return s.replace(/<!\[CDATA\[|\]\]>/g, '').trim();
 }
 
-function decodeBasicEntities(input: string): string {
-  return input
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/&quot;/gi, '"')
-    .replace(/&apos;/gi, "'")
-    .replace(/&#0?39;/g, "'")
-    .replace(/&nbsp;/gi, '\u00a0');
-}
-
 function stripTags(input: string): string {
-  return decodeBasicEntities(input.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim());
+  return decodeHtmlEntities(input.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim());
 }
 
 /** Split HTML in `questions_target_id` into individual question strings. */
@@ -103,7 +92,7 @@ export function parseQuestionsFromTargetId(raw: unknown): string[] {
   if (!html) return [];
 
   // Some feeds ship encoded markup; decode before matching list tags.
-  html = decodeBasicEntities(html);
+  html = decodeHtmlEntities(html);
 
   const questions: string[] = [];
   const liRegex = /<li\b[^>]*>([\s\S]*?)<\/li>/gi;
@@ -182,7 +171,7 @@ export function parseRheumIqQuizXml(
 
     return foundItems
       .map((item: any) => ({
-        label: decodeBasicEntities(xmlTextContent(item.label).trim()),
+        label: decodeHtmlEntities(xmlTextContent(item.label).trim()),
         questions: parseQuestionsFromTargetId(item.questions_target_id).slice(0, numberOfQuestions),
         sponsoredText: stripTags(stripCdata(xmlTextContent(item.field_sponsored_text))),
         quizLink: xmlTextContent(item.quiz_link).trim(),

@@ -1,5 +1,32 @@
 import { XMLParser } from 'fast-xml-parser';
 
+/**
+ * Decode HTML entities from RheumNow XML field text (named, decimal, and hex numeric refs).
+ * e.g. `&amp;`, `&#8216;`, `&#x2018;` → readable characters for email rendering.
+ */
+export function decodeHtmlEntities(input: string): string {
+  const withNumeric = input
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex: string) => {
+      const code = parseInt(hex, 16);
+      return Number.isFinite(code) && code >= 0 ? String.fromCodePoint(code) : `&#x${hex};`;
+    })
+    .replace(/&#(\d+);/g, (_, dec: string) => {
+      const code = parseInt(dec, 10);
+      return Number.isFinite(code) && code >= 0 ? String.fromCodePoint(code) : `&#${dec};`;
+    });
+
+  return withNumeric
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&ndash;/gi, '\u2013')
+    .replace(/&mdash;/gi, '\u2014')
+    .replace(/&minus;/gi, '\u2212')
+    .replace(/&nbsp;/gi, '\u00a0');
+}
+
 /** RheumNow taxonomy/terms XML (same source as documented in xml-topic-schma.md). */
 export const RHEUMNOW_TERMS_URL = 'https://rheumnow.com/admin/terms';
 

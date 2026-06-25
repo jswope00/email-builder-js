@@ -27,6 +27,12 @@ describe('parseQuestionsFromTargetId', () => {
 
     expect(parseQuestionsFromTargetId(encoded)).toEqual(['Question one?', 'Question two?']);
   });
+
+  it('decodes hex numeric character references in question text', () => {
+    const html = '<ul><li>&#x2018;Strong&#x2019;</li></ul>';
+
+    expect(parseQuestionsFromTargetId(html)).toEqual(['\u2018Strong\u2019']);
+  });
 });
 
 describe('parseRheumIqQuizXml', () => {

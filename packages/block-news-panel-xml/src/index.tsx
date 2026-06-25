@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { XMLParser } from 'fast-xml-parser';
-import { buildTopicFilteredFeedUrl } from '@usewaypoint/rheumnow-xml-topic';
+import { buildTopicFilteredFeedUrl, decodeHtmlEntities } from '@usewaypoint/rheumnow-xml-topic';
 
 /** Fixed feed URL for this block (not editable in the inspector). */
 export const NEWS_PANEL_XML_FEED_URL = 'https://rheumnow.com/admin/daily_news_xml';
@@ -238,17 +238,6 @@ const PlayIcon = () => (
     />
   </div>
 );
-
-function decodeHtmlEntities(s: string): string {
-  return s
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/&quot;/gi, '"')
-    .replace(/&apos;/gi, "'")
-    .replace(/&#039;/gi, "'")
-    .replace(/&nbsp;/gi, '\u00a0');
-}
 
 /** CDATA / mixed XML nodes sometimes parse as string or { '#text': string }. */
 const xmlFieldToString = (value: unknown): string => {
