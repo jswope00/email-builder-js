@@ -114,6 +114,10 @@ export default defineConfig({
         replacement: path.resolve(__dirname, '../block-email-survey-xml/src/index.tsx'),
       },
       {
+        find: '@usewaypoint/block-gems-xml',
+        replacement: path.resolve(__dirname, '../block-gems-xml/src/index.tsx'),
+      },
+      {
         find: '@usewaypoint/rheumnow-xml-topic',
         replacement: path.resolve(__dirname, '../rheumnow-xml-topic/src/index.ts'),
       },
@@ -144,6 +148,7 @@ export default defineConfig({
       '@usewaypoint/block-conference-advertisement-300-250-xml',
       '@usewaypoint/block-daily-download-xml',
       '@usewaypoint/block-email-survey-xml',
+      '@usewaypoint/block-gems-xml',
       '@usewaypoint/rheumnow-xml-topic',
     ],
   },

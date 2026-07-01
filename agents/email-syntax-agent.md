@@ -92,6 +92,7 @@ The agent enables developers, content creators, and AI systems to:
 | `ConferenceAdvertisement300250Xml` | `CONFERENCE_ADVERTISEMENT_300250_XML_FEED_URL` | `https://rheumnow.com/admin/conference_email_ad_300_250_xml` |
 | `DailyDownloadXml` | `DAILY_DOWNLOAD_XML_FEED_URL` | `https://rheumnow.com/admin/daily_download_xml` |
 | `EmailSurveyXml` | `EMAIL_SURVEY_XML_FEED_URL` (`block-email-survey-xml`) | `https://rheumnow.com/admin/promoted-survey-xml` |
+| `GemsXml` | `GEMS_XML_FEED_URL` (`block-gems-xml`) | `https://rheumnow.com/admin/gems-xml` |
 | `RheumIqQuizXml` | `RHEUMIQ_QUIZ_XML_FEED_URL` (`block-rheumiq-quiz-xml`) | `https://rheumnow.com/admin/rheumiq-quiz-xml` |
 | `CoverageXml` | `COVERAGE_XML_FEED_URLS` (`block-coverage-xml`) — array of 4 base URLs | Videos: `https://rheumnow.com/admin/videos-xml`; Articles: `https://rheumnow.com/admin/article-xml`; Tweets: `https://rheumnow.com/admin/tweet-xml`; Podcasts: `https://rheumnow.com/admin/podcasts_xml` |
 

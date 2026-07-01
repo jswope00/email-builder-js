@@ -7,6 +7,7 @@ import {
   CampaignOutlined,
   Crop32Outlined,
   DownloadOutlined,
+  FormatQuoteOutlined,
   HMobiledataOutlined,
   HorizontalRuleOutlined,
   HtmlOutlined,
@@ -202,6 +203,20 @@ export const BUTTONS: TButtonProps[] = [
         style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
         props: {
           numberOfItems: 3,
+        },
+      },
+    }),
+  },
+  {
+    label: 'Gems XML',
+    icon: <FormatQuoteOutlined />,
+    block: () => ({
+      type: 'GemsXml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
+          title: 'Gems',
+          numberOfItems: 1,
         },
       },
     }),

@@ -13,6 +13,7 @@ import { ButtonPropsSchema } from '@usewaypoint/block-button';
 import { CoverageXml, CoverageXmlPropsSchema } from '@usewaypoint/block-coverage-xml';
 import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
 import { EmailSurveyXml, EmailSurveyXmlPropsSchema } from '@usewaypoint/block-email-survey-xml';
+import { GemsXml, GemsXmlPropsSchema } from '@usewaypoint/block-gems-xml';
 import { Divider, DividerPropsSchema } from '@usewaypoint/block-divider';
 import { FeaturedStoryXml, FeaturedStoryXmlPropsSchema } from '@usewaypoint/block-featured-story-xml';
 import { HeadingPropsSchema } from '@usewaypoint/block-heading';
@@ -131,6 +132,10 @@ const READER_DICTIONARY = buildBlockConfigurationDictionary({
   EmailSurveyXml: {
     schema: EmailSurveyXmlPropsSchema,
     Component: EmailSurveyXml,
+  },
+  GemsXml: {
+    schema: GemsXmlPropsSchema,
+    Component: GemsXml,
   },
   RheumIqQuizXml: {
     schema: RheumIqQuizXmlPropsSchema,

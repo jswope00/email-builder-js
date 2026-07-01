@@ -13,6 +13,7 @@ import AvatarSidebarPanel from './input-panels/AvatarSidebarPanel';
 import BlogXmlSidebarPanel from './input-panels/BlogXmlSidebarPanel';
 import DailyDownloadXmlSidebarPanel from './input-panels/DailyDownloadXmlSidebarPanel';
 import EmailSurveyXmlSidebarPanel from './input-panels/EmailSurveyXmlSidebarPanel';
+import GemsXmlSidebarPanel from './input-panels/GemsXmlSidebarPanel';
 import ButtonSidebarPanel from './input-panels/ButtonSidebarPanel';
 import ColumnsContainerSidebarPanel from './input-panels/ColumnsContainerSidebarPanel';
 import ContainerSidebarPanel from './input-panels/ContainerSidebarPanel';
@@ -118,6 +119,10 @@ export default function ConfigurationPanel() {
     case 'EmailSurveyXml':
       return (
         <EmailSurveyXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
+      );
+    case 'GemsXml':
+      return (
+        <GemsXmlSidebarPanel key={selectedBlockId} data={data} setData={(data) => setBlock({ type, data })} />
       );
     case 'RheumIqQuizXml':
       return (

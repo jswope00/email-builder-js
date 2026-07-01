@@ -9,6 +9,7 @@ import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
 import { CoverageXml, CoverageXmlPropsSchema } from '@usewaypoint/block-coverage-xml';
 import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
 import { EmailSurveyXml, EmailSurveyXmlPropsSchema } from '@usewaypoint/block-email-survey-xml';
+import { GemsXml, GemsXmlPropsSchema } from '@usewaypoint/block-gems-xml';
 import { ButtonPropsSchema } from '@usewaypoint/block-button';
 import { Divider, DividerPropsSchema } from '@usewaypoint/block-divider';
 import { HeadingPropsSchema } from '@usewaypoint/block-heading';
@@ -216,6 +217,14 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     Component: (props) => (
       <EditorBlockWrapper>
         <EmailSurveyXml {...({ ...props, showEmptyStateMessage: true } as any)} />
+      </EditorBlockWrapper>
+    ),
+  },
+  GemsXml: {
+    schema: GemsXmlPropsSchema,
+    Component: (props) => (
+      <EditorBlockWrapper>
+        <GemsXml {...({ ...props, showEmptyStateMessage: true } as any)} />
       </EditorBlockWrapper>
     ),
   },
