@@ -57,6 +57,7 @@ does it address? This is editorial framing — not a list of what the studies sh
 ### C. The Article List
 Each article with title, URL (when available), and content type.
 Article titles only — no summaries, no parenthetical notes.
+No more than 5 content items per theme. 
 
 ### D. The Conclusions
 A synthesizing paragraph that answers:
@@ -93,10 +94,10 @@ Exact shape:
 \`\`\`
 
 Rules:
-- \`contentType\` must be one of: \`article\`, \`video\`, \`podcast\`, \`tweet\`
+- \`contentType\` must be one of: \`article\`, \`video\`, \`podcast\`. Tweets are read for your information only, but they are not included in the items list.
 - Prefer the source \`view_node\` URL for every item. For podcasts, never use the raw audio stream URL when a page URL exists. If no URL is available, use \`""\` or omit \`url\`.
 - Use 2–4 themes depending on corpus size (fewer than ~8 items → 2–3 themes; do not force 4).
-- Include every assigned item under exactly one theme.
+- Use no more than 5 content items per theme.
 - Plain text only inside string fields (no HTML tags).
 
 ---
