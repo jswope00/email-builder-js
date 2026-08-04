@@ -7,6 +7,7 @@ import { Advertisement72890Xml, Advertisement72890XmlPropsSchema } from '@useway
 import { Avatar, AvatarPropsSchema } from '@usewaypoint/block-avatar';
 import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
 import { CoverageXml, CoverageXmlPropsSchema } from '@usewaypoint/block-coverage-xml';
+import { SynthesisXml, SynthesisXmlPropsSchema } from '@usewaypoint/block-synthesis-xml';
 import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
 import { EmailSurveyXml, EmailSurveyXmlPropsSchema } from '@usewaypoint/block-email-survey-xml';
 import { GemsXml, GemsXmlPropsSchema } from '@usewaypoint/block-gems-xml';
@@ -241,6 +242,14 @@ const EDITOR_DICTIONARY = buildBlockConfigurationDictionary({
     Component: (props) => (
       <EditorBlockWrapper>
         <CoverageXml {...props} />
+      </EditorBlockWrapper>
+    ),
+  },
+  SynthesisXml: {
+    schema: SynthesisXmlPropsSchema,
+    Component: (props) => (
+      <EditorBlockWrapper>
+        <SynthesisXml {...props} />
       </EditorBlockWrapper>
     ),
   },

@@ -11,6 +11,7 @@ import { Avatar, AvatarPropsSchema } from '@usewaypoint/block-avatar';
 import { BlogXml, BlogXmlPropsSchema } from '@usewaypoint/block-blog-xml';
 import { ButtonPropsSchema } from '@usewaypoint/block-button';
 import { CoverageXml, CoverageXmlPropsSchema } from '@usewaypoint/block-coverage-xml';
+import { SynthesisXml, SynthesisXmlPropsSchema } from '@usewaypoint/block-synthesis-xml';
 import { DailyDownloadXml, DailyDownloadXmlPropsSchema } from '@usewaypoint/block-daily-download-xml';
 import { EmailSurveyXml, EmailSurveyXmlPropsSchema } from '@usewaypoint/block-email-survey-xml';
 import { GemsXml, GemsXmlPropsSchema } from '@usewaypoint/block-gems-xml';
@@ -144,6 +145,10 @@ const READER_DICTIONARY = buildBlockConfigurationDictionary({
   CoverageXml: {
     schema: CoverageXmlPropsSchema,
     Component: CoverageXml,
+  },
+  SynthesisXml: {
+    schema: SynthesisXmlPropsSchema,
+    Component: SynthesisXml,
   },
 });
 

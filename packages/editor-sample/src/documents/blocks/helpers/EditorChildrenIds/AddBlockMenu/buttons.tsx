@@ -3,6 +3,7 @@ import React from 'react';
 import {
   AccountCircleOutlined,
   ArticleOutlined,
+  AutoAwesomeOutlined,
   BarChartOutlined,
   CampaignOutlined,
   Crop32Outlined,
@@ -327,6 +328,22 @@ export const BUTTONS: TButtonProps[] = [
       data: {
         style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
         props: {},
+      },
+    }),
+  },
+  {
+    label: 'AI Synthesis',
+    icon: <AutoAwesomeOutlined />,
+    block: () => ({
+      type: 'SynthesisXml',
+      data: {
+        style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
+          includeVideos: true,
+          includeArticles: true,
+          includeTweets: true,
+          includePodcasts: true,
+        },
       },
     }),
   },

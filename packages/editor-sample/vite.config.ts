@@ -94,6 +94,18 @@ export default defineConfig({
         replacement: path.resolve(__dirname, '../block-blog-xml/src/index.tsx'),
       },
       {
+        find: '@usewaypoint/block-coverage-xml',
+        replacement: path.resolve(__dirname, '../block-coverage-xml/src/index.tsx'),
+      },
+      {
+        find: '@usewaypoint/block-synthesis-xml',
+        replacement: path.resolve(__dirname, '../block-synthesis-xml/src/index.tsx'),
+      },
+      {
+        find: '@usewaypoint/block-rheumiq-quiz-xml',
+        replacement: path.resolve(__dirname, '../block-rheumiq-quiz-xml/src/index.tsx'),
+      },
+      {
         find: '@usewaypoint/block-advertisement-728-90-xml',
         replacement: path.resolve(__dirname, '../block-advertisement-728-90-xml/src/index.tsx'),
       },
@@ -143,6 +155,9 @@ export default defineConfig({
       '@usewaypoint/block-featured-story-xml',
       '@usewaypoint/block-news-panel-xml',
       '@usewaypoint/block-blog-xml',
+      '@usewaypoint/block-coverage-xml',
+      '@usewaypoint/block-synthesis-xml',
+      '@usewaypoint/block-rheumiq-quiz-xml',
       '@usewaypoint/block-advertisement-728-90-xml',
       '@usewaypoint/block-advertisement-300-250-xml',
       '@usewaypoint/block-conference-advertisement-300-250-xml',

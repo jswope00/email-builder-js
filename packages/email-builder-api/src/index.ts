@@ -9,6 +9,7 @@ import authRouter from './routes/auth';
 import { requireAuth } from './middleware/auth';
 import mailchimpRouter from './routes/mailchimp';
 import sendsRouter from './routes/sends';
+import synthesisRouter from './routes/synthesis';
 import { startSendScheduler } from './scheduler/sendScheduler';
 
 dotenv.config();
@@ -37,6 +38,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/templates', requireAuth, templatesRouter);
 app.use('/api/mailchimp', requireAuth, mailchimpRouter);
 app.use('/api/sends', requireAuth, sendsRouter);
+app.use('/api/synthesis', requireAuth, synthesisRouter);
 
 // Root endpoint
 app.get('/', (req: Request, res: Response) => {
@@ -48,6 +50,7 @@ app.get('/', (req: Request, res: Response) => {
       templates: '/api/templates',
       mailchimp: '/api/mailchimp',
       sends: '/api/sends',
+      synthesis: '/api/synthesis',
     },
   });
 });
@@ -81,6 +84,7 @@ async function startServer() {
       console.log(`📧 Templates API: http://localhost:${PORT}/api/templates`);
       console.log(`📬 Mailchimp API: http://localhost:${PORT}/api/mailchimp`);
       console.log(`📅 Sends API: http://localhost:${PORT}/api/sends`);
+      console.log(`✨ Synthesis API: http://localhost:${PORT}/api/synthesis`);
       startSendScheduler();
     });
   } catch (error) {
