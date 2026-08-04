@@ -1,6 +1,16 @@
 -- Email Builder Database Schema
 -- PostgreSQL database schema for storing email templates
 
+-- Folders for organizing templates
+CREATE TABLE IF NOT EXISTS template_folders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_template_folders_name ON template_folders(name);
+
 -- Email templates table
 CREATE TABLE IF NOT EXISTS email_templates (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -8,6 +18,7 @@ CREATE TABLE IF NOT EXISTS email_templates (
   slug VARCHAR(255) UNIQUE NOT NULL, -- URL-friendly identifier (e.g., "rheumnow-daily")
   description TEXT,
   configuration JSONB NOT NULL, -- The full TEditorConfiguration JSON
+  folder_id UUID REFERENCES template_folders(id) ON DELETE RESTRICT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   created_by VARCHAR(255), -- Optional: user identifier (for future multi-user support)
@@ -20,6 +31,8 @@ CREATE TABLE IF NOT EXISTS email_templates (
 CREATE INDEX IF NOT EXISTS idx_email_templates_slug ON email_templates(slug);
 CREATE INDEX IF NOT EXISTS idx_email_templates_active ON email_templates(is_active) WHERE is_active = true;
 CREATE INDEX IF NOT EXISTS idx_email_templates_created_at ON email_templates(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_email_templates_folder_id ON email_templates(folder_id)
+  WHERE folder_id IS NOT NULL;
 
 -- Function to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -35,6 +48,12 @@ CREATE TRIGGER update_email_templates_updated_at
     BEFORE UPDATE ON email_templates 
     FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_template_folders_updated_at ON template_folders;
+CREATE TRIGGER update_template_folders_updated_at
+  BEFORE UPDATE ON template_folders
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
 
 -- Template versions table (optional, for history/rollback)
 -- Uncomment if you want versioning support

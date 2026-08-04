@@ -17,6 +17,7 @@ export interface EmailTemplateRow {
   slug: string;
   description: string | null;
   configuration: TemplateConfiguration;
+  folder_id: string | null;
   created_at: Date;
   updated_at: Date;
   created_by: string | null;
@@ -43,6 +44,7 @@ export const UpdateTemplateSchema = z.object({
     { message: 'Configuration must have a root block' }
   ).optional(),
   is_active: z.boolean().optional(),
+  folder_id: z.string().uuid().nullable().optional(),
 });
 
 export type CreateTemplateRequest = z.infer<typeof CreateTemplateSchema>;
@@ -54,6 +56,7 @@ export interface TemplateListItem {
   name: string;
   slug: string;
   description: string | null;
+  folder_id: string | null;
   created_at: string;
   updated_at: string;
   created_by: string | null;

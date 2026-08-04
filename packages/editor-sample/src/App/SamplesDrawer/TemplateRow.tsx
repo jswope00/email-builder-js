@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { MoreVert, Delete, ContentCopy, Edit } from '@mui/icons-material';
+import { MoreVert, Delete, ContentCopy, Edit, DragIndicator } from '@mui/icons-material';
 import { Button, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Box } from '@mui/material';
 
 import { loadTemplateFromHash, setCurrentView } from '../../documents/editor/EditorContext';
@@ -9,6 +9,7 @@ import type { TemplateListItem } from '../../api/templates';
 import DuplicateTemplateDialog from './DuplicateTemplateDialog';
 import DeleteTemplateDialog from './DeleteTemplateDialog';
 import SaveTemplateDialog from '../TemplatePanel/SaveTemplate/SaveTemplateDialog';
+import { setTemplateDragData } from './templateDrag';
 
 interface TemplateRowProps {
   template: TemplateListItem;
@@ -29,6 +30,7 @@ export default function TemplateRow({
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
@@ -77,9 +79,24 @@ export default function TemplateRow({
     onTemplateDeleted();
   };
 
+  const handleDragStart = (event: React.DragEvent) => {
+    setTemplateDragData(event.dataTransfer, {
+      slug: template.slug,
+      folderId: template.folder_id ?? null,
+    });
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
   return (
     <>
       <Box
+        draggable
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -87,11 +104,25 @@ export default function TemplateRow({
           maxWidth: '100%',
           minWidth: 0,
           borderRadius: 1,
+          cursor: 'grab',
+          opacity: isDragging ? 0.5 : 1,
           '&:hover': {
             backgroundColor: 'action.hover',
           },
+          '&:active': {
+            cursor: 'grabbing',
+          },
         }}
       >
+        <DragIndicator
+          sx={{
+            fontSize: 16,
+            color: 'text.disabled',
+            flexShrink: 0,
+            ml: 0.25,
+            mr: 0.25,
+          }}
+        />
         <Button
           size="small"
           onClick={handleTemplateClick}
@@ -101,7 +132,7 @@ export default function TemplateRow({
             textTransform: 'none',
             textAlign: 'left',
             minWidth: 0,
-            maxWidth: 'calc(100% - 40px)',
+            maxWidth: 'calc(100% - 56px)',
             pr: 0.5,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -113,7 +144,7 @@ export default function TemplateRow({
         <IconButton
           size="small"
           onClick={handleMenuClick}
-          sx={{ 
+          sx={{
             flexShrink: 0,
             width: 32,
             height: 32,

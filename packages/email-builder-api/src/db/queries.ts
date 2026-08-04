@@ -1,28 +1,40 @@
 import { pool } from './connection';
 import type { EmailTemplateRow, TemplateListItem, TemplateResponse } from '../types/template';
 
+function mapListItem(row: EmailTemplateRow): TemplateListItem {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    description: row.description,
+    folder_id: row.folder_id,
+    created_at: row.created_at.toISOString(),
+    updated_at: row.updated_at.toISOString(),
+    created_by: row.created_by,
+    is_active: row.is_active,
+  };
+}
+
+function mapResponse(row: EmailTemplateRow): TemplateResponse {
+  return {
+    ...mapListItem(row),
+    configuration: row.configuration as TemplateResponse['configuration'],
+  };
+}
+
 /**
  * Get all templates (without full configuration)
  */
 export async function getAllTemplates(): Promise<TemplateListItem[]> {
   const result = await pool.query<EmailTemplateRow>(
     `SELECT 
-      id, name, slug, description, created_at, updated_at, created_by, is_active
+      id, name, slug, description, folder_id, created_at, updated_at, created_by, is_active
     FROM email_templates
     WHERE is_active = true
     ORDER BY created_at DESC`
   );
 
-  return result.rows.map((row) => ({
-    id: row.id,
-    name: row.name,
-    slug: row.slug,
-    description: row.description,
-    created_at: row.created_at.toISOString(),
-    updated_at: row.updated_at.toISOString(),
-    created_by: row.created_by,
-    is_active: row.is_active,
-  }));
+  return result.rows.map(mapListItem);
 }
 
 /**
@@ -38,18 +50,7 @@ export async function getTemplateBySlug(slug: string): Promise<TemplateResponse 
     return null;
   }
 
-  const row = result.rows[0];
-  return {
-    id: row.id,
-    name: row.name,
-    slug: row.slug,
-    description: row.description,
-    configuration: row.configuration as any,
-    created_at: row.created_at.toISOString(),
-    updated_at: row.updated_at.toISOString(),
-    created_by: row.created_by,
-    is_active: row.is_active,
-  };
+  return mapResponse(result.rows[0]);
 }
 
 /**
@@ -65,18 +66,7 @@ export async function getTemplateById(id: string): Promise<TemplateResponse | nu
     return null;
   }
 
-  const row = result.rows[0];
-  return {
-    id: row.id,
-    name: row.name,
-    slug: row.slug,
-    description: row.description,
-    configuration: row.configuration as any,
-    created_at: row.created_at.toISOString(),
-    updated_at: row.updated_at.toISOString(),
-    created_by: row.created_by,
-    is_active: row.is_active,
-  };
+  return mapResponse(result.rows[0]);
 }
 
 /**
@@ -95,18 +85,7 @@ export async function createTemplate(
     [name, slug, description || null, JSON.stringify(configuration)]
   );
 
-  const row = result.rows[0];
-  return {
-    id: row.id,
-    name: row.name,
-    slug: row.slug,
-    description: row.description,
-    configuration: row.configuration as any,
-    created_at: row.created_at.toISOString(),
-    updated_at: row.updated_at.toISOString(),
-    created_by: row.created_by,
-    is_active: row.is_active,
-  };
+  return mapResponse(result.rows[0]);
 }
 
 /**
@@ -120,6 +99,7 @@ export async function updateTemplate(
     description?: string | null;
     configuration?: any;
     is_active?: boolean;
+    folder_id?: string | null;
   }
 ): Promise<TemplateResponse | null> {
   const updatesList: string[] = [];
@@ -151,6 +131,11 @@ export async function updateTemplate(
     values.push(updates.is_active);
   }
 
+  if (updates.folder_id !== undefined) {
+    updatesList.push(`folder_id = $${paramCount++}`);
+    values.push(updates.folder_id);
+  }
+
   if (updatesList.length === 0) {
     // No updates, just return the existing template
     return getTemplateBySlug(slug);
@@ -169,18 +154,7 @@ export async function updateTemplate(
     return null;
   }
 
-  const row = result.rows[0];
-  return {
-    id: row.id,
-    name: row.name,
-    slug: row.slug,
-    description: row.description,
-    configuration: row.configuration as any,
-    created_at: row.created_at.toISOString(),
-    updated_at: row.updated_at.toISOString(),
-    created_by: row.created_by,
-    is_active: row.is_active,
-  };
+  return mapResponse(result.rows[0]);
 }
 
 /**

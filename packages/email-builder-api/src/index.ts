@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { testConnection, closePool } from './db/connection';
 import { errorHandler } from './utils/errors';
 import templatesRouter from './routes/templates';
+import foldersRouter from './routes/folders';
 import healthRouter from './routes/health';
 import authRouter from './routes/auth';
 import { requireAuth } from './middleware/auth';
@@ -36,6 +37,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/templates', requireAuth, templatesRouter);
+app.use('/api/folders', requireAuth, foldersRouter);
 app.use('/api/mailchimp', requireAuth, mailchimpRouter);
 app.use('/api/sends', requireAuth, sendsRouter);
 app.use('/api/synthesis', requireAuth, synthesisRouter);
@@ -48,6 +50,7 @@ app.get('/', (req: Request, res: Response) => {
     endpoints: {
       health: '/api/health',
       templates: '/api/templates',
+      folders: '/api/folders',
       mailchimp: '/api/mailchimp',
       sends: '/api/sends',
       synthesis: '/api/synthesis',

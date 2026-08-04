@@ -7,6 +7,7 @@ export interface TemplateListItem {
   name: string;
   slug: string;
   description: string | null;
+  folder_id: string | null;
   created_at: string;
   updated_at: string;
   is_active: boolean;
@@ -29,18 +30,21 @@ export interface UpdateTemplateRequest {
   description?: string | null;
   configuration?: TEditorConfiguration;
   is_active?: boolean;
+  folder_id?: string | null;
 }
 
 /**
  * Fetch all templates (without full configuration)
  */
 export async function fetchTemplates(): Promise<TemplateListItem[]> {
-  const response = await fetch(`${API_URL}/templates`);
-  
+  const response = await fetch(`${API_URL}/templates`, {
+    credentials: 'include',
+  });
+
   if (!response.ok) {
     throw new Error(`Failed to fetch templates: ${response.statusText}`);
   }
-  
+
   return response.json();
 }
 
@@ -48,15 +52,17 @@ export async function fetchTemplates(): Promise<TemplateListItem[]> {
  * Fetch a single template by slug (with full configuration)
  */
 export async function fetchTemplate(slug: string): Promise<TemplateResponse> {
-  const response = await fetch(`${API_URL}/templates/${slug}`);
-  
+  const response = await fetch(`${API_URL}/templates/${slug}`, {
+    credentials: 'include',
+  });
+
   if (!response.ok) {
     if (response.status === 404) {
       throw new Error(`Template "${slug}" not found`);
     }
     throw new Error(`Failed to fetch template: ${response.statusText}`);
   }
-  
+
   return response.json();
 }
 
@@ -66,17 +72,18 @@ export async function fetchTemplate(slug: string): Promise<TemplateResponse> {
 export async function createTemplate(data: CreateTemplateRequest): Promise<TemplateResponse> {
   const response = await fetch(`${API_URL}/templates`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
   });
-  
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: response.statusText }));
     throw new Error(error.error || `Failed to create template: ${response.statusText}`);
   }
-  
+
   return response.json();
 }
 
@@ -89,17 +96,18 @@ export async function updateTemplate(
 ): Promise<TemplateResponse> {
   const response = await fetch(`${API_URL}/templates/${slug}`, {
     method: 'PUT',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
   });
-  
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: response.statusText }));
     throw new Error(error.error || `Failed to update template: ${response.statusText}`);
   }
-  
+
   return response.json();
 }
 
@@ -109,9 +117,20 @@ export async function updateTemplate(
 export async function deleteTemplate(slug: string): Promise<void> {
   const response = await fetch(`${API_URL}/templates/${slug}`, {
     method: 'DELETE',
+    credentials: 'include',
   });
-  
+
   if (!response.ok) {
     throw new Error(`Failed to delete template: ${response.statusText}`);
   }
+}
+
+/**
+ * Move a template into a folder, or to root when folderId is null
+ */
+export async function moveTemplate(
+  slug: string,
+  folderId: string | null
+): Promise<TemplateResponse> {
+  return updateTemplate(slug, { folder_id: folderId });
 }

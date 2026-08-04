@@ -4,6 +4,7 @@ import { Drawer } from '@mui/material';
 
 import { closeSamplesDrawer, openSamplesDrawer, useSamplesDrawerOpen } from '../../documents/editor/EditorContext';
 import { fetchTemplates, type TemplateListItem } from '../../api/templates';
+import { fetchFolders, type TemplateFolder } from '../../api/folders';
 
 import SamplesDrawerContent, { SAMPLES_DRAWER_WIDTH } from './SamplesDrawerContent';
 import { useIsMobileNav } from './useMobileNav';
@@ -23,18 +24,35 @@ export default function SamplesDrawer() {
   }, [isMobileNav]);
 
   const [templates, setTemplates] = useState<TemplateListItem[]>([]);
+  const [folders, setFolders] = useState<TemplateFolder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const loadTemplates = async () => {
-    setIsLoading(true);
-    setError(null);
     try {
       const data = await fetchTemplates();
       setTemplates(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load templates');
       console.error('Failed to load templates:', err);
+    }
+  };
+
+  const loadFolders = async () => {
+    try {
+      const data = await fetchFolders();
+      setFolders(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load folders');
+      console.error('Failed to load folders:', err);
+    }
+  };
+
+  const loadAll = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await Promise.all([loadTemplates(), loadFolders()]);
     } finally {
       setIsLoading(false);
     }
@@ -42,7 +60,7 @@ export default function SamplesDrawer() {
 
   useEffect(() => {
     if (samplesDrawerOpen) {
-      loadTemplates();
+      void loadAll();
     }
   }, [samplesDrawerOpen]);
 
@@ -74,9 +92,11 @@ export default function SamplesDrawer() {
     >
       <SamplesDrawerContent
         templates={templates}
+        folders={folders}
         isLoading={isLoading}
         error={error}
-        onTemplateListChange={loadTemplates}
+        onTemplateListChange={() => void loadTemplates()}
+        onFolderListChange={() => void loadFolders()}
       />
     </Drawer>
   );

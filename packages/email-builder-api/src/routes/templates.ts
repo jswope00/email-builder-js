@@ -8,6 +8,7 @@ import {
   deleteTemplate,
   slugExists,
 } from '../db/queries';
+import { getFolderById } from '../db/folderQueries';
 import { NotFoundError, ConflictError } from '../utils/errors';
 import { validateBody, validateParams } from '../middleware/validation';
 import { CreateTemplateSchema, UpdateTemplateSchema } from '../types/template';
@@ -102,6 +103,13 @@ router.put(
       if (updates.slug && updates.slug !== slug) {
         if (await slugExists(updates.slug, existing.id)) {
           throw new ConflictError(`Template with slug "${updates.slug}" already exists`);
+        }
+      }
+
+      if (updates.folder_id) {
+        const folder = await getFolderById(updates.folder_id);
+        if (!folder) {
+          throw new NotFoundError('Folder', `id "${updates.folder_id}"`);
         }
       }
 
