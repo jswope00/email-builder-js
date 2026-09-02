@@ -164,7 +164,7 @@ function parseTherapeuticUpdateXml(
       let authorAttribution = '';
       if (item.field_author_attribution) {
         const text = item.field_author_attribution.replace(/<[^>]*>?/gm, '');
-        authorAttribution = text.trim();
+        authorAttribution = decodeHtmlEntities(text.trim());
       }
 
       const typeStr = String(item.type ?? '').trim();
@@ -174,7 +174,7 @@ function parseTherapeuticUpdateXml(
       const isVideoType = fromXml || typeStr.toLowerCase() === 'video';
 
       return {
-        title: item.title || '',
+        title: decodeHtmlEntities(item.title || ''),
         createdDate,
         createdDateTime,
         authorAttribution: authorAttribution,
