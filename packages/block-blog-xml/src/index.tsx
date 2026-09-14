@@ -120,7 +120,7 @@ const getBrandingImageUrl = (articleType: string): string | null => {
     return 'https://rheumnow.com/sites/default/files/advanced_practice_rheum_logo.jpg';
   }
   if (articleType === 'RheumThought') {
-    return 'http://localhost:9001/sites/default/files/2023-02/Rheumthoughts%20final.png';
+    return 'https://rheumnow.com/sites/default/files/2023-02/Rheumthoughts%20final.png';
   }
   return null;
 };
