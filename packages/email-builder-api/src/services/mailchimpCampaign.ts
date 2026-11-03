@@ -125,8 +125,21 @@ export interface CreateAndSendCampaignParams {
   fromEmail: string;
   replyTo: string;
   listId: string;
+  /** Decimal string of a saved segment id from GET /lists/{list_id}/segments. */
   segmentId?: string;
   htmlContent: string;
+}
+
+/** Campaign create accepts saved_segment_id only as an integer. */
+function toSavedSegmentId(segmentId: string): number {
+  if (!/^\d+$/.test(segmentId)) {
+    throw new AppError(
+      400,
+      'This segment cannot be used for a campaign. Re-select the segment and save the send.',
+      'INVALID_SEGMENT_ID'
+    );
+  }
+  return Number(segmentId);
 }
 
 export async function createAndSendCampaign(params: CreateAndSendCampaignParams) {
@@ -136,7 +149,9 @@ export async function createAndSendCampaign(params: CreateAndSendCampaignParams)
     type: 'regular',
     recipients: {
       list_id: listId,
-      ...(segmentId != null ? { segment_opts: { saved_segment_id: segmentId } } : {}),
+      ...(segmentId != null && segmentId !== ''
+        ? { segment_opts: { saved_segment_id: toSavedSegmentId(segmentId) } }
+        : {}),
     },
     settings: {
       subject_line: subject,
