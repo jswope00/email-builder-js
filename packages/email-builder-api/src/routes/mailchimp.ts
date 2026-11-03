@@ -45,8 +45,7 @@ router.get('/audiences', async (req: Request, res: Response, next: NextFunction)
 
 /**
  * GET /api/mailchimp/audiences/:id/segments
- * Saved segments from GET /3.0/lists/{list_id}/segments.
- * Campaign create requires these integer ids.
+ * Advanced segments from GET /3.0/segments (cursor-paginated).
  */
 router.get(
   '/audiences/:id/segments',
@@ -55,25 +54,32 @@ router.get(
     try {
       const { id } = req.params;
       const count = 1000;
-      let offset = 0;
+      let cursor: string | undefined;
       let allSegments: any[] = [];
-      let hasMore = true;
 
-      while (hasMore) {
-        const data = await mailchimpGetRequest(`/lists/${id}/segments?count=${count}&offset=${offset}`);
+      while (true) {
+        const params = new URLSearchParams({
+          list_id: id,
+          count: String(count),
+        });
+        if (cursor) {
+          params.set('cursor', cursor);
+        }
+        const data = await mailchimpGetRequest(`/segments?${params.toString()}`);
         const segments = data.segments || [];
         allSegments = allSegments.concat(segments);
 
-        const totalItems = data.total_items || 0;
-        offset += segments.length;
-        hasMore = offset < totalItems && segments.length > 0;
+        if (!data.next_cursor) {
+          break;
+        }
+        cursor = data.next_cursor;
       }
 
       const simplifiedSegments = allSegments.map((segment: any) => ({
-        id: String(segment.id),
+        id: segment.id,
         name: segment.name,
         created_at: segment.created_at,
-        read_only: false,
+        read_only: segment.read_only ?? false,
       }));
 
       res.json(simplifiedSegments);
@@ -119,10 +125,7 @@ const CreateCampaignSchema = z.object({
   fromEmail: z.string().email(),
   replyTo: z.string().email(),
   listId: z.string().min(1),
-  segmentId: z
-    .string()
-    .regex(/^\d+$/, 'Segment id must be a numeric Mailchimp saved segment id')
-    .optional(),
+  segmentId: z.string().min(1).optional(),
   htmlContent: z.string().min(1),
 });
 

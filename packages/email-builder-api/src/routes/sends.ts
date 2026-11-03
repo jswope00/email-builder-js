@@ -51,21 +51,13 @@ const SendPayloadSchema = z.object({
   templateId: z.string().uuid(),
   subject: z.string().min(1),
   listId: z.string().min(1),
-  segmentId: z
-    .string()
-    .regex(/^\d+$/, 'Segment id must be a numeric Mailchimp saved segment id')
-    .optional()
-    .nullable(),
+  segmentId: z.string().min(1).optional().nullable(),
   fromName: z.string().min(1),
   fromEmail: z.string().email(),
   replyTo: z.string().email(),
   testSubject: z.string().optional().nullable(),
   testListId: z.string().optional().nullable(),
-  testSegmentId: z
-    .string()
-    .regex(/^\d+$/, 'Segment id must be a numeric Mailchimp saved segment id')
-    .optional()
-    .nullable(),
+  testSegmentId: z.string().min(1).optional().nullable(),
   schedules: z.array(ScheduleSchema).optional().default([]),
 });
 
