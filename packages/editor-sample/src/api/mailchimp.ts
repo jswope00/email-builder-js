@@ -9,10 +9,12 @@ export interface Audience {
 }
 
 export interface Segment {
-  id: string;
+  id: number;
   name: string;
+  member_count: number;
+  type: string;
   created_at: string;
-  read_only: boolean;
+  updated_at: string;
 }
 
 export interface Campaign {
@@ -85,7 +87,7 @@ export interface SendCampaignRequest {
   fromEmail: string;
   replyTo: string;
   listId: string;
-  segmentId?: string;
+  segmentId?: number;
   htmlContent: string;
 }
 

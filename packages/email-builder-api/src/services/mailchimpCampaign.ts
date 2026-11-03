@@ -125,7 +125,7 @@ export interface CreateAndSendCampaignParams {
   fromEmail: string;
   replyTo: string;
   listId: string;
-  segmentId?: string;
+  segmentId?: number;
   htmlContent: string;
 }
 

@@ -45,7 +45,6 @@ router.get('/audiences', async (req: Request, res: Response, next: NextFunction)
 
 /**
  * GET /api/mailchimp/audiences/:id/segments
- * Advanced segments from GET /3.0/segments (cursor-paginated).
  */
 router.get(
   '/audiences/:id/segments',
@@ -54,32 +53,27 @@ router.get(
     try {
       const { id } = req.params;
       const count = 1000;
-      let cursor: string | undefined;
+      let offset = 0;
       let allSegments: any[] = [];
+      let hasMore = true;
 
-      while (true) {
-        const params = new URLSearchParams({
-          list_id: id,
-          count: String(count),
-        });
-        if (cursor) {
-          params.set('cursor', cursor);
-        }
-        const data = await mailchimpGetRequest(`/segments?${params.toString()}`);
+      while (hasMore) {
+        const data = await mailchimpGetRequest(`/lists/${id}/segments?count=${count}&offset=${offset}`);
         const segments = data.segments || [];
         allSegments = allSegments.concat(segments);
 
-        if (!data.next_cursor) {
-          break;
-        }
-        cursor = data.next_cursor;
+        const totalItems = data.total_items || 0;
+        offset += segments.length;
+        hasMore = offset < totalItems && segments.length > 0;
       }
 
       const simplifiedSegments = allSegments.map((segment: any) => ({
         id: segment.id,
         name: segment.name,
+        member_count: segment.member_count,
+        type: segment.type,
         created_at: segment.created_at,
-        read_only: segment.read_only ?? false,
+        updated_at: segment.updated_at,
       }));
 
       res.json(simplifiedSegments);
@@ -125,7 +119,7 @@ const CreateCampaignSchema = z.object({
   fromEmail: z.string().email(),
   replyTo: z.string().email(),
   listId: z.string().min(1),
-  segmentId: z.string().min(1).optional(),
+  segmentId: z.number().optional(),
   htmlContent: z.string().min(1),
 });
 

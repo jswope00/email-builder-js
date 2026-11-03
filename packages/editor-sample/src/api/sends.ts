@@ -24,13 +24,13 @@ export interface EmailSendListItem {
   templateSlug: string;
   subject: string;
   listId: string;
-  segmentId: string | null;
+  segmentId: number | null;
   fromName: string;
   fromEmail: string;
   replyTo: string;
   testSubject: string | null;
   testListId: string | null;
-  testSegmentId: string | null;
+  testSegmentId: number | null;
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
@@ -62,13 +62,13 @@ export interface SendPayload {
   templateId: string;
   subject: string;
   listId: string;
-  segmentId?: string | null;
+  segmentId?: number | null;
   fromName: string;
   fromEmail: string;
   replyTo: string;
   testSubject?: string | null;
   testListId?: string | null;
-  testSegmentId?: string | null;
+  testSegmentId?: number | null;
   schedules: SchedulePayload[];
 }
 

@@ -42,13 +42,13 @@ function mapSendRow(row: {
   template_slug: string;
   subject: string;
   list_id: string;
-  segment_id: string | null;
+  segment_id: number | null;
   from_name: string;
   from_email: string;
   reply_to: string;
   test_subject: string | null;
   test_list_id: string | null;
-  test_segment_id: string | null;
+  test_segment_id: number | null;
   created_at: Date;
   updated_at: Date;
   is_active: boolean;
@@ -412,13 +412,13 @@ export interface DueScheduleBundle {
     template_id: string;
     subject: string;
     list_id: string;
-    segment_id: string | null;
+    segment_id: number | null;
     from_name: string;
     from_email: string;
     reply_to: string;
     test_subject: string | null;
     test_list_id: string | null;
-    test_segment_id: string | null;
+    test_segment_id: number | null;
   };
 }
 
@@ -447,13 +447,13 @@ function mapDueScheduleRow(row: Record<string, unknown>): DueScheduleBundle {
       template_id: row.send_template_id as string,
       subject: row.send_subject as string,
       list_id: row.send_list_id as string,
-      segment_id: row.send_segment_id as string | null,
+      segment_id: row.send_segment_id as number | null,
       from_name: row.send_from_name as string,
       from_email: row.send_from_email as string,
       reply_to: row.send_reply_to as string,
       test_subject: row.send_test_subject as string | null,
       test_list_id: row.send_test_list_id as string | null,
-      test_segment_id: row.send_test_segment_id as string | null,
+      test_segment_id: row.send_test_segment_id as number | null,
     },
   };
 }
