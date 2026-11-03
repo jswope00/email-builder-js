@@ -25,6 +25,7 @@ export const VideoPosterXmlPropsSchema = z.object({
     .object({
       title: z.string().optional().nullable(),
       numberOfItems: z.number().min(1).max(10).optional().nullable(),
+      skipFirstItems: z.number().int().min(0).optional().nullable(),
       topicTid: z.number().int().positive().optional().nullable(),
       dashboardTagTid: z.number().int().positive().optional().nullable(),
       createdStartDate: z.string().optional().nullable(),
@@ -40,6 +41,7 @@ export type VideoPosterXmlProps = z.infer<typeof VideoPosterXmlPropsSchema>;
 export const VideoPosterXmlPropsDefaults = {
   title: '',
   numberOfItems: 1,
+  skipFirstItems: 0,
   createdStartDate: null,
   createdEndDate: null,
   createdRelativeDays: null,
@@ -140,7 +142,8 @@ function filterItemsByCreatedDate(
 function parseVideoPosterXml(
   xmlText: string,
   numberOfItems: number,
-  dateFilters: DateFilterOptions = {}
+  dateFilters: DateFilterOptions = {},
+  skipFirstItems = 0
 ): PosterItem[] {
   try {
     const parser = new XMLParser({
@@ -209,7 +212,8 @@ function parseVideoPosterXml(
     });
 
     const filteredItems = filterItemsByCreatedDate(mappedItems, dateFilters);
-    return filteredItems.slice(0, numberOfItems);
+    const skip = Math.max(0, skipFirstItems);
+    return filteredItems.slice(skip, skip + numberOfItems);
   } catch (err) {
     console.error('Failed to parse video poster XML:', err);
     return [];
@@ -228,6 +232,7 @@ export function VideoPosterXml({
   );
   const title = props?.title ?? VideoPosterXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? VideoPosterXmlPropsDefaults.numberOfItems;
+  const skipFirstItems = props?.skipFirstItems ?? VideoPosterXmlPropsDefaults.skipFirstItems;
   const dateFilters: DateFilterOptions = {
     createdStartDate: props?.createdStartDate,
     createdEndDate: props?.createdEndDate,
@@ -249,7 +254,7 @@ export function VideoPosterXml({
   }
 
   const preFetchedItems = preFetchedXmlText
-    ? parseVideoPosterXml(preFetchedXmlText, numberOfItems, dateFilters)
+    ? parseVideoPosterXml(preFetchedXmlText, numberOfItems, dateFilters, skipFirstItems)
     : null;
 
   const [items, setItems] = useState<PosterItem[]>(preFetchedItems || []);
@@ -272,7 +277,7 @@ export function VideoPosterXml({
         }
         const text = await response.text();
 
-        const parsedItems = parseVideoPosterXml(text, numberOfItems, dateFilters);
+        const parsedItems = parseVideoPosterXml(text, numberOfItems, dateFilters, skipFirstItems);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -283,7 +288,7 @@ export function VideoPosterXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
+  }, [url, numberOfItems, skipFirstItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   const padding = style?.padding;
   const wrapperStyle = {

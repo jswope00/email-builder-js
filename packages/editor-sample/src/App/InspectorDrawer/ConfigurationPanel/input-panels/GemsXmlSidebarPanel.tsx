@@ -35,6 +35,7 @@ export default function GemsXmlSidebarPanel({ data, setData }: GemsXmlSidebarPan
 
   const title = data.props?.title ?? GemsXmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? GemsXmlPropsDefaults.numberOfItems;
+  const skipFirstItems = data.props?.skipFirstItems ?? GemsXmlPropsDefaults.skipFirstItems;
 
   return (
     <BaseSidebarPanel title="Gems XML Block" subtitle={GEMS_XML_FEED_URL}>
@@ -68,6 +69,23 @@ export default function GemsXmlSidebarPanel({ data, setData }: GemsXmlSidebarPan
             const num = parseInt(raw, 10);
             if (num >= 1) {
               updateData({ ...data, props: { ...data.props, numberOfItems: num } });
+            }
+          }
+        }}
+      />
+      <TextField
+        fullWidth
+        size="small"
+        type="number"
+        label="Skip First # Items"
+        value={skipFirstItems}
+        InputProps={{ inputProps: { min: 0, step: 1 } }}
+        onChange={(ev) => {
+          const raw = ev.target.value.trim();
+          if (/^\d+$/.test(raw)) {
+            const num = parseInt(raw, 10);
+            if (num >= 0) {
+              updateData({ ...data, props: { ...data.props, skipFirstItems: num } });
             }
           }
         }}

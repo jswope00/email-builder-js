@@ -40,6 +40,7 @@ export default function VideoPosterXmlSidebarPanel({ data, setData }: VideoPoste
 
   const title = data.props?.title ?? VideoPosterXmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? VideoPosterXmlPropsDefaults.numberOfItems;
+  const skipFirstItems = data.props?.skipFirstItems ?? VideoPosterXmlPropsDefaults.skipFirstItems;
   const dateFilterProps = (data.props ?? {}) as DateFilterFields;
   const createdStartDate = dateFilterProps.createdStartDate ?? '';
   const createdEndDate = dateFilterProps.createdEndDate ?? '';
@@ -77,6 +78,23 @@ export default function VideoPosterXmlSidebarPanel({ data, setData }: VideoPoste
             const num = parseInt(raw, 10);
             if (num >= 1) {
               updateData({ ...data, props: { ...data.props, numberOfItems: num } });
+            }
+          }
+        }}
+      />
+      <TextField
+        fullWidth
+        size="small"
+        type="number"
+        label="Skip First # Items"
+        value={skipFirstItems}
+        InputProps={{ inputProps: { min: 0, step: 1 } }}
+        onChange={(ev) => {
+          const raw = ev.target.value.trim();
+          if (/^\d+$/.test(raw)) {
+            const num = parseInt(raw, 10);
+            if (num >= 0) {
+              updateData({ ...data, props: { ...data.props, skipFirstItems: num } });
             }
           }
         }}

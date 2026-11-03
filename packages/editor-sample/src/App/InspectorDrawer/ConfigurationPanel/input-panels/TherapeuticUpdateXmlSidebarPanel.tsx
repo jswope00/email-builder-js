@@ -40,6 +40,7 @@ export default function TherapeuticUpdateXmlSidebarPanel({ data, setData }: Ther
 
   const title = data.props?.title ?? TherapeuticUpdateXmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? TherapeuticUpdateXmlPropsDefaults.numberOfItems;
+  const skipFirstItems = data.props?.skipFirstItems ?? TherapeuticUpdateXmlPropsDefaults.skipFirstItems;
   const dateFilterProps = (data.props ?? {}) as DateFilterFields;
   const createdStartDate = dateFilterProps.createdStartDate ?? '';
   const createdEndDate = dateFilterProps.createdEndDate ?? '';
@@ -77,6 +78,23 @@ export default function TherapeuticUpdateXmlSidebarPanel({ data, setData }: Ther
             const num = parseInt(raw, 10);
             if (num >= 1) {
               updateData({ ...data, props: { ...data.props, numberOfItems: num } });
+            }
+          }
+        }}
+      />
+      <TextField
+        fullWidth
+        size="small"
+        type="number"
+        label="Skip First # Items"
+        value={skipFirstItems}
+        InputProps={{ inputProps: { min: 0, step: 1 } }}
+        onChange={(ev) => {
+          const raw = ev.target.value.trim();
+          if (/^\d+$/.test(raw)) {
+            const num = parseInt(raw, 10);
+            if (num >= 0) {
+              updateData({ ...data, props: { ...data.props, skipFirstItems: num } });
             }
           }
         }}

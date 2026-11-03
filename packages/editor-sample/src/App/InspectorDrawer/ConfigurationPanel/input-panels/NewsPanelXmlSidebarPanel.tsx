@@ -42,6 +42,7 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
 
   const title = data.props?.title ?? NewsPanelXmlPropsDefaults.title;
   const numberOfItems = data.props?.numberOfItems ?? NewsPanelXmlPropsDefaults.numberOfItems;
+  const skipFirstItems = data.props?.skipFirstItems ?? NewsPanelXmlPropsDefaults.skipFirstItems;
   const itemTypeFilter: NewsPanelItemTypeFilter =
     data.props?.itemTypeFilter ?? NewsPanelXmlPropsDefaults.itemTypeFilter;
   const hideImages = data.props?.hideImages ?? NewsPanelXmlPropsDefaults.hideImages;
@@ -111,6 +112,23 @@ export default function NewsPanelXmlSidebarPanel({ data, setData }: NewsPanelXml
             const num = parseInt(raw, 10);
             if (num >= 1) {
               updateData({ ...data, props: { ...data.props, numberOfItems: num } });
+            }
+          }
+        }}
+      />
+      <TextField
+        fullWidth
+        size="small"
+        type="number"
+        label="Skip First # Items"
+        value={skipFirstItems}
+        InputProps={{ inputProps: { min: 0, step: 1 } }}
+        onChange={(ev) => {
+          const raw = ev.target.value.trim();
+          if (/^\d+$/.test(raw)) {
+            const num = parseInt(raw, 10);
+            if (num >= 0) {
+              updateData({ ...data, props: { ...data.props, skipFirstItems: num } });
             }
           }
         }}

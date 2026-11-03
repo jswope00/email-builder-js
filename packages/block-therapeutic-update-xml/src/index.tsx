@@ -18,6 +18,7 @@ export const TherapeuticUpdateXmlPropsSchema = z.object({
   props: z.object({
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
+    skipFirstItems: z.number().int().min(0).optional().nullable(),
     topicTid: z.number().int().positive().optional().nullable(),
     dashboardTagTid: z.number().int().positive().optional().nullable(),
     createdStartDate: z.string().optional().nullable(),
@@ -31,6 +32,7 @@ export type TherapeuticUpdateXmlProps = z.infer<typeof TherapeuticUpdateXmlProps
 export const TherapeuticUpdateXmlPropsDefaults = {
   title: '',
   numberOfItems: 3,
+  skipFirstItems: 0,
   createdStartDate: null,
   createdEndDate: null,
   createdRelativeDays: null,
@@ -118,7 +120,8 @@ function parseXmlTruthyBool(raw: unknown): boolean {
 function parseTherapeuticUpdateXml(
   xmlText: string,
   numberOfItems: number,
-  dateFilters: DateFilterOptions = {}
+  dateFilters: DateFilterOptions = {},
+  skipFirstItems = 0
 ): UpdateItem[] {
   try {
     const parser = new XMLParser({
@@ -189,7 +192,8 @@ function parseTherapeuticUpdateXml(
     });
 
     const filteredItems = filterItemsByCreatedDate(mappedItems, dateFilters);
-    return filteredItems.slice(0, numberOfItems);
+    const skip = Math.max(0, skipFirstItems);
+    return filteredItems.slice(skip, skip + numberOfItems);
   } catch (err) {
     console.error('Failed to parse therapeutic update XML:', err);
     return [];
@@ -208,6 +212,7 @@ export function TherapeuticUpdateXml({
   );
   const title = props?.title ?? TherapeuticUpdateXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? TherapeuticUpdateXmlPropsDefaults.numberOfItems;
+  const skipFirstItems = props?.skipFirstItems ?? TherapeuticUpdateXmlPropsDefaults.skipFirstItems;
   const dateFilters: DateFilterOptions = {
     createdStartDate: props?.createdStartDate,
     createdEndDate: props?.createdEndDate,
@@ -233,7 +238,7 @@ export function TherapeuticUpdateXml({
   
   // Parse pre-fetched data synchronously if available
   const preFetchedItems = preFetchedXmlText
-    ? parseTherapeuticUpdateXml(preFetchedXmlText, numberOfItems, dateFilters)
+    ? parseTherapeuticUpdateXml(preFetchedXmlText, numberOfItems, dateFilters, skipFirstItems)
     : null;
 
   const [items, setItems] = useState<UpdateItem[]>(preFetchedItems || []);
@@ -257,7 +262,7 @@ export function TherapeuticUpdateXml({
         }
         const text = await response.text();
         
-        const parsedItems = parseTherapeuticUpdateXml(text, numberOfItems, dateFilters);
+        const parsedItems = parseTherapeuticUpdateXml(text, numberOfItems, dateFilters, skipFirstItems);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -268,7 +273,7 @@ export function TherapeuticUpdateXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
+  }, [url, numberOfItems, skipFirstItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   const padding = style?.padding;
   const wrapperStyle = {

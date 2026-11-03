@@ -18,6 +18,7 @@ export const FeaturedStoryXmlPropsSchema = z.object({
   props: z.object({
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
+    skipFirstItems: z.number().int().min(0).optional().nullable(),
     topicTid: z.number().int().positive().optional().nullable(),
     dashboardTagTid: z.number().int().positive().optional().nullable(),
     createdStartDate: z.string().optional().nullable(),
@@ -31,6 +32,7 @@ export type FeaturedStoryXmlProps = z.infer<typeof FeaturedStoryXmlPropsSchema>;
 export const FeaturedStoryXmlPropsDefaults = {
   title: '',
   numberOfItems: 3,
+  skipFirstItems: 0,
   createdStartDate: null,
   createdEndDate: null,
   createdRelativeDays: null,
@@ -152,7 +154,8 @@ const PlayIcon = () => (
 export function parseFeaturedStoryXml(
   xmlText: string,
   numberOfItems: number,
-  dateFilters: DateFilterOptions = {}
+  dateFilters: DateFilterOptions = {},
+  skipFirstItems = 0
 ): FeaturedStoryItem[] {
   try {
     const parser = new XMLParser({
@@ -222,7 +225,8 @@ export function parseFeaturedStoryXml(
     });
 
     const filteredItems = filterItemsByCreatedDate(mappedItems, dateFilters);
-    return filteredItems.slice(0, numberOfItems);
+    const skip = Math.max(0, skipFirstItems);
+    return filteredItems.slice(skip, skip + numberOfItems);
   } catch (err) {
     console.error('Failed to parse featured story XML:', err);
     return [];
@@ -251,6 +255,7 @@ export function FeaturedStoryXml({
   const url = buildFeaturedStoryFeedUrl(props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? FeaturedStoryXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? FeaturedStoryXmlPropsDefaults.numberOfItems;
+  const skipFirstItems = props?.skipFirstItems ?? FeaturedStoryXmlPropsDefaults.skipFirstItems;
   const dateFilters: DateFilterOptions = {
     createdStartDate: props?.createdStartDate,
     createdEndDate: props?.createdEndDate,
@@ -276,7 +281,7 @@ export function FeaturedStoryXml({
   
   // Parse pre-fetched data synchronously if available
   const preFetchedItems = preFetchedXmlText
-    ? parseFeaturedStoryXml(preFetchedXmlText, numberOfItems, dateFilters)
+    ? parseFeaturedStoryXml(preFetchedXmlText, numberOfItems, dateFilters, skipFirstItems)
     : null;
 
   const [items, setItems] = useState<FeaturedStoryItem[]>(preFetchedItems || []);
@@ -300,7 +305,7 @@ export function FeaturedStoryXml({
         }
         const text = await response.text();
         
-        const parsedItems = parseFeaturedStoryXml(text, numberOfItems, dateFilters);
+        const parsedItems = parseFeaturedStoryXml(text, numberOfItems, dateFilters, skipFirstItems);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -311,7 +316,7 @@ export function FeaturedStoryXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
+  }, [url, numberOfItems, skipFirstItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   const padding = style?.padding;
   const wrapperStyle = {

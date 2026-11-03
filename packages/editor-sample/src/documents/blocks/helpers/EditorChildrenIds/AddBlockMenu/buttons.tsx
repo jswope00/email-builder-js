@@ -150,6 +150,7 @@ export const BUTTONS: TButtonProps[] = [
         props: {
           url: '',
           numberOfItems: 3,
+          skipFirstItems: 0,
         },
       },
     }),
@@ -164,6 +165,7 @@ export const BUTTONS: TButtonProps[] = [
         props: {
           url: '',
           numberOfItems: 3,
+          skipFirstItems: 0,
         },
       },
     }),
@@ -177,6 +179,7 @@ export const BUTTONS: TButtonProps[] = [
         style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
         props: {
           numberOfItems: 1,
+          skipFirstItems: 0,
         },
       },
     }),
@@ -191,6 +194,7 @@ export const BUTTONS: TButtonProps[] = [
         props: {
           url: '',
           numberOfItems: 3,
+          skipFirstItems: 0,
         },
       },
     }),
@@ -218,6 +222,7 @@ export const BUTTONS: TButtonProps[] = [
         props: {
           title: 'Gems',
           numberOfItems: 1,
+          skipFirstItems: 0,
         },
       },
     }),
@@ -247,6 +252,9 @@ export const BUTTONS: TButtonProps[] = [
       type: 'NewsPanelXml',
       data: {
         style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
+        props: {
+          skipFirstItems: 0,
+        },
       },
     }),
   },
@@ -260,6 +268,7 @@ export const BUTTONS: TButtonProps[] = [
         props: {
           url: '',
           numberOfItems: 3,
+          skipFirstItems: 0,
         },
       },
     }),
@@ -316,6 +325,7 @@ export const BUTTONS: TButtonProps[] = [
         props: {
           url: '',
           numberOfItems: 3,
+          skipFirstItems: 0,
         },
       },
     }),

@@ -25,6 +25,7 @@ export const GemsXmlPropsSchema = z.object({
     .object({
       title: z.string().optional().nullable(),
       numberOfItems: z.number().min(1).max(10).optional().nullable(),
+      skipFirstItems: z.number().int().min(0).optional().nullable(),
       topicTid: z.number().int().positive().optional().nullable(),
       dashboardTagTid: z.number().int().positive().optional().nullable(),
     })
@@ -37,6 +38,7 @@ export type GemsXmlProps = z.infer<typeof GemsXmlPropsSchema>;
 export const GemsXmlPropsDefaults = {
   title: 'Gems',
   numberOfItems: 1,
+  skipFirstItems: 0,
 } as const;
 
 const BRAND_BLUE = '#1585fe';
@@ -140,7 +142,7 @@ function collectGemItemNodes(parsed: unknown): any[] {
   return foundItems;
 }
 
-export function parseGemsXml(xmlText: string, numberOfItems: number): GemsItem[] {
+export function parseGemsXml(xmlText: string, numberOfItems: number, skipFirstItems = 0): GemsItem[] {
   try {
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -153,7 +155,8 @@ export function parseGemsXml(xmlText: string, numberOfItems: number): GemsItem[]
       .map((item: any) => parseGemQuote(item.body, item.field_author_attribution))
       .filter((item) => item.quote.length > 0);
 
-    return mapped.slice(0, numberOfItems);
+    const skip = Math.max(0, skipFirstItems);
+    return mapped.slice(skip, skip + numberOfItems);
   } catch (err) {
     console.error('Failed to parse gems XML:', err);
     return [];
@@ -285,6 +288,7 @@ export function GemsXml({
   const url = buildGemsFeedUrl(props?.topicTid, props?.dashboardTagTid);
   const sectionTitle = props?.title ?? GemsXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? GemsXmlPropsDefaults.numberOfItems;
+  const skipFirstItems = props?.skipFirstItems ?? GemsXmlPropsDefaults.skipFirstItems;
 
   let preFetchedXmlText: string | null = null;
   try {
@@ -300,7 +304,7 @@ export function GemsXml({
     // fall through to client fetch
   }
 
-  const preFetchedItems = preFetchedXmlText ? parseGemsXml(preFetchedXmlText, numberOfItems) : null;
+  const preFetchedItems = preFetchedXmlText ? parseGemsXml(preFetchedXmlText, numberOfItems, skipFirstItems) : null;
 
   const [items, setItems] = useState<GemsItem[]>(preFetchedItems || []);
   const [loading, setLoading] = useState(false);
@@ -321,7 +325,7 @@ export function GemsXml({
           throw new Error(`Status: ${response.status}`);
         }
         const text = await response.text();
-        setItems(parseGemsXml(text, numberOfItems));
+        setItems(parseGemsXml(text, numberOfItems, skipFirstItems));
       } catch (err) {
         setError('Failed to load data');
         console.error(err);
@@ -331,7 +335,7 @@ export function GemsXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems]);
+  }, [url, numberOfItems, skipFirstItems, preFetchedItems]);
 
   const padding = style?.padding;
   const wrapperStyle: React.CSSProperties = {

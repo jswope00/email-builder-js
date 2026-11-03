@@ -18,6 +18,7 @@ export const BlogXmlPropsSchema = z.object({
   props: z.object({
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
+    skipFirstItems: z.number().int().min(0).optional().nullable(),
     topicTid: z.number().int().positive().optional().nullable(),
     dashboardTagTid: z.number().int().positive().optional().nullable(),
     createdStartDate: z.string().optional().nullable(),
@@ -31,6 +32,7 @@ export type BlogXmlProps = z.infer<typeof BlogXmlPropsSchema>;
 export const BlogXmlPropsDefaults = {
   title: '',
   numberOfItems: 3,
+  skipFirstItems: 0,
   createdStartDate: null,
   createdEndDate: null,
   createdRelativeDays: null,
@@ -129,7 +131,8 @@ const getBrandingImageUrl = (articleType: string): string | null => {
 function parseBlogXml(
   xmlText: string,
   numberOfItems: number,
-  dateFilters: DateFilterOptions = {}
+  dateFilters: DateFilterOptions = {},
+  skipFirstItems = 0
 ): BlogItem[] {
   try {
     const parser = new XMLParser({
@@ -196,7 +199,8 @@ function parseBlogXml(
     });
 
     const filteredItems = filterItemsByCreatedDate(mappedItems, dateFilters);
-    return filteredItems.slice(0, numberOfItems);
+    const skip = Math.max(0, skipFirstItems);
+    return filteredItems.slice(skip, skip + numberOfItems);
   } catch (err) {
     console.error('Error parsing blog XML:', err);
     return [];
@@ -211,6 +215,7 @@ export function BlogXml({
   const url = buildTopicFilteredFeedUrl(BLOG_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? BlogXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? BlogXmlPropsDefaults.numberOfItems;
+  const skipFirstItems = props?.skipFirstItems ?? BlogXmlPropsDefaults.skipFirstItems;
   const dateFilters: DateFilterOptions = {
     createdStartDate: props?.createdStartDate,
     createdEndDate: props?.createdEndDate,
@@ -236,7 +241,7 @@ export function BlogXml({
   
   // Parse pre-fetched data synchronously if available
   const preFetchedItems = preFetchedXmlText
-    ? parseBlogXml(preFetchedXmlText, numberOfItems, dateFilters)
+    ? parseBlogXml(preFetchedXmlText, numberOfItems, dateFilters, skipFirstItems)
     : null;
 
   const [items, setItems] = useState<BlogItem[]>(preFetchedItems || []);
@@ -260,7 +265,7 @@ export function BlogXml({
         }
         const text = await response.text();
         
-        const parsedItems = parseBlogXml(text, numberOfItems, dateFilters);
+        const parsedItems = parseBlogXml(text, numberOfItems, dateFilters, skipFirstItems);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -271,7 +276,7 @@ export function BlogXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
+  }, [url, numberOfItems, skipFirstItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   const padding = style?.padding;
   const wrapperStyle = {

@@ -18,6 +18,7 @@ export const DailyDownloadXmlPropsSchema = z.object({
   props: z.object({
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
+    skipFirstItems: z.number().int().min(0).optional().nullable(),
     topicTid: z.number().int().positive().optional().nullable(),
     dashboardTagTid: z.number().int().positive().optional().nullable(),
     createdStartDate: z.string().optional().nullable(),
@@ -31,6 +32,7 @@ export type DailyDownloadXmlProps = z.infer<typeof DailyDownloadXmlPropsSchema>;
 export const DailyDownloadXmlPropsDefaults = {
   title: '',
   numberOfItems: 3,
+  skipFirstItems: 0,
   createdStartDate: null,
   createdEndDate: null,
   createdRelativeDays: null,
@@ -103,7 +105,8 @@ function filterItemsByCreatedDate(
 function parseDailyDownloadXml(
   xmlText: string,
   numberOfItems: number,
-  dateFilters: DateFilterOptions = {}
+  dateFilters: DateFilterOptions = {},
+  skipFirstItems = 0
 ): DownloadItem[] {
   try {
     const parser = new XMLParser({
@@ -155,7 +158,8 @@ function parseDailyDownloadXml(
     });
 
     const filteredItems = filterItemsByCreatedDate(mappedItems, dateFilters);
-    return filteredItems.slice(0, numberOfItems);
+    const skip = Math.max(0, skipFirstItems);
+    return filteredItems.slice(skip, skip + numberOfItems);
   } catch (err) {
     console.error('Failed to parse daily download XML:', err);
     return [];
@@ -170,6 +174,7 @@ export function DailyDownloadXml({
   const url = buildTopicFilteredFeedUrl(DAILY_DOWNLOAD_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? DailyDownloadXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? DailyDownloadXmlPropsDefaults.numberOfItems;
+  const skipFirstItems = props?.skipFirstItems ?? DailyDownloadXmlPropsDefaults.skipFirstItems;
   const dateFilters: DateFilterOptions = {
     createdStartDate: props?.createdStartDate,
     createdEndDate: props?.createdEndDate,
@@ -195,7 +200,7 @@ export function DailyDownloadXml({
   
   // Parse pre-fetched data synchronously if available
   const preFetchedItems = preFetchedXmlText
-    ? parseDailyDownloadXml(preFetchedXmlText, numberOfItems, dateFilters)
+    ? parseDailyDownloadXml(preFetchedXmlText, numberOfItems, dateFilters, skipFirstItems)
     : null;
 
   const [items, setItems] = useState<DownloadItem[]>(preFetchedItems || []);
@@ -219,7 +224,7 @@ export function DailyDownloadXml({
         }
         const text = await response.text();
         
-        const parsedItems = parseDailyDownloadXml(text, numberOfItems, dateFilters);
+        const parsedItems = parseDailyDownloadXml(text, numberOfItems, dateFilters, skipFirstItems);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -230,7 +235,7 @@ export function DailyDownloadXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
+  }, [url, numberOfItems, skipFirstItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   const padding = style?.padding;
   const wrapperStyle = {

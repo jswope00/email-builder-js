@@ -18,6 +18,7 @@ export const VideoXmlPropsSchema = z.object({
   props: z.object({
     title: z.string().optional().nullable(),
     numberOfItems: z.number().min(1).max(10).optional().nullable(),
+    skipFirstItems: z.number().int().min(0).optional().nullable(),
     topicTid: z.number().int().positive().optional().nullable(),
     dashboardTagTid: z.number().int().positive().optional().nullable(),
     createdStartDate: z.string().optional().nullable(),
@@ -31,6 +32,7 @@ export type VideoXmlProps = z.infer<typeof VideoXmlPropsSchema>;
 export const VideoXmlPropsDefaults = {
   title: '',
   numberOfItems: 3,
+  skipFirstItems: 0,
   createdStartDate: null,
   createdEndDate: null,
   createdRelativeDays: null,
@@ -105,7 +107,8 @@ function filterItemsByCreatedDate(
 function parseVideoXml(
   xmlText: string,
   numberOfItems: number,
-  dateFilters: DateFilterOptions = {}
+  dateFilters: DateFilterOptions = {},
+  skipFirstItems = 0
 ): VideoItem[] {
   try {
     const parser = new XMLParser({
@@ -158,7 +161,8 @@ function parseVideoXml(
     });
 
     const filteredItems = filterItemsByCreatedDate(mappedItems, dateFilters);
-    return filteredItems.slice(0, numberOfItems);
+    const skip = Math.max(0, skipFirstItems);
+    return filteredItems.slice(skip, skip + numberOfItems);
   } catch (err) {
     console.error('Failed to parse video XML:', err);
     return [];
@@ -173,6 +177,7 @@ export function VideoXml({
   const url = buildTopicFilteredFeedUrl(VIDEO_XML_FEED_URL, props?.topicTid, props?.dashboardTagTid);
   const title = props?.title ?? VideoXmlPropsDefaults.title;
   const numberOfItems = props?.numberOfItems ?? VideoXmlPropsDefaults.numberOfItems;
+  const skipFirstItems = props?.skipFirstItems ?? VideoXmlPropsDefaults.skipFirstItems;
   const dateFilters: DateFilterOptions = {
     createdStartDate: props?.createdStartDate,
     createdEndDate: props?.createdEndDate,
@@ -198,7 +203,7 @@ export function VideoXml({
   
   // Parse pre-fetched data synchronously if available
   const preFetchedItems = preFetchedXmlText
-    ? parseVideoXml(preFetchedXmlText, numberOfItems, dateFilters)
+    ? parseVideoXml(preFetchedXmlText, numberOfItems, dateFilters, skipFirstItems)
     : null;
 
   const [items, setItems] = useState<VideoItem[]>(preFetchedItems || []);
@@ -221,7 +226,7 @@ export function VideoXml({
         }
         const text = await response.text();
         
-        const parsedItems = parseVideoXml(text, numberOfItems, dateFilters);
+        const parsedItems = parseVideoXml(text, numberOfItems, dateFilters, skipFirstItems);
         setItems(parsedItems);
       } catch (err) {
         setError('Failed to load data');
@@ -232,7 +237,7 @@ export function VideoXml({
     };
 
     fetchData();
-  }, [url, numberOfItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
+  }, [url, numberOfItems, skipFirstItems, preFetchedItems, dateFilters.createdStartDate, dateFilters.createdEndDate, dateFilters.createdRelativeDays]);
 
   const padding = style?.padding;
   const wrapperStyle = {
