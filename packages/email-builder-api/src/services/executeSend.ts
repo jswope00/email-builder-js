@@ -31,13 +31,13 @@ export interface SendRowForExecution {
   template_id: string;
   subject: string;
   list_id: string;
-  segment_id: number | null;
+  segment_id: string | null;
   from_name: string;
   from_email: string;
   reply_to: string;
   test_subject: string | null;
   test_list_id: string | null;
-  test_segment_id: number | null;
+  test_segment_id: string | null;
 }
 
 type XmlBlockFeedConfig = {

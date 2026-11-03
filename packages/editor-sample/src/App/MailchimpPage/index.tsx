@@ -216,7 +216,8 @@ export default function MailchimpPage() {
                                     <Box>
                                       <Typography variant="subtitle1">{segment.name}</Typography>
                                       <Typography variant="caption" color="text.secondary">
-                                        {segment.member_count.toLocaleString()} members • Type: {segment.type}
+                                        Created {formatDate(segment.created_at)}
+                                        {segment.read_only ? ' • Read-only' : ''}
                                       </Typography>
                                     </Box>
                                   </Stack>

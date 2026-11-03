@@ -1321,13 +1321,13 @@ function SendFormDialog({
   const [templateId, setTemplateId] = useState('');
   const [subject, setSubject] = useState('');
   const [listId, setListId] = useState('');
-  const [segmentId, setSegmentId] = useState<number | ''>('');
+  const [segmentId, setSegmentId] = useState('');
   const [fromName, setFromName] = useState(DEFAULT_FROM.fromName);
   const [fromEmail, setFromEmail] = useState(DEFAULT_FROM.fromEmail);
   const [replyTo, setReplyTo] = useState(DEFAULT_FROM.replyTo);
   const [testSubject, setTestSubject] = useState('');
   const [testListId, setTestListId] = useState('');
-  const [testSegmentId, setTestSegmentId] = useState<number | ''>('');
+  const [testSegmentId, setTestSegmentId] = useState('');
   const [audiences, setAudiences] = useState<Audience[]>([]);
   const [segments, setSegments] = useState<Segment[]>([]);
   const [testSegments, setTestSegments] = useState<Segment[]>([]);
@@ -1543,9 +1543,9 @@ function SendFormDialog({
             <FormControl fullWidth>
               <InputLabel>Segment</InputLabel>
               <Select
-                value={segmentId === '' ? '' : segmentId}
+                value={segmentId}
                 label="Segment"
-                onChange={(e) => setSegmentId(e.target.value === '' ? '' : Number(e.target.value))}
+                onChange={(e) => setSegmentId(e.target.value)}
               >
                 <MenuItem value="">None</MenuItem>
                 {segments.map((s) => (
@@ -1600,9 +1600,9 @@ function SendFormDialog({
             <FormControl fullWidth disabled={!testListId}>
               <InputLabel>Test segment</InputLabel>
               <Select
-                value={testSegmentId === '' ? '' : testSegmentId}
+                value={testSegmentId}
                 label="Test segment"
-                onChange={(e) => setTestSegmentId(e.target.value === '' ? '' : Number(e.target.value))}
+                onChange={(e) => setTestSegmentId(e.target.value)}
               >
                 <MenuItem value="">None</MenuItem>
                 {testSegments.map((s) => (

@@ -38,13 +38,13 @@ export interface EmailSendListItem {
   templateSlug: string;
   subject: string;
   listId: string;
-  segmentId: number | null;
+  segmentId: string | null;
   fromName: string;
   fromEmail: string;
   replyTo: string;
   testSubject: string | null;
   testListId: string | null;
-  testSegmentId: number | null;
+  testSegmentId: string | null;
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
@@ -59,13 +59,13 @@ export interface CreateSendInput {
   templateId: string;
   subject: string;
   listId: string;
-  segmentId?: number | null;
+  segmentId?: string | null;
   fromName: string;
   fromEmail: string;
   replyTo: string;
   testSubject?: string | null;
   testListId?: string | null;
-  testSegmentId?: number | null;
+  testSegmentId?: string | null;
 }
 
 export type SendExecutionTrigger = 'manual' | 'scheduled';

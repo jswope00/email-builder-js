@@ -40,7 +40,7 @@ export default function SendToMailchimpDialog({
   const [fromEmail, setFromEmail] = useState('jackcush@rheumnow.com');
   const [replyTo, setReplyTo] = useState('jackcush@rheumnow.com');
   const [selectedAudienceId, setSelectedAudienceId] = useState<string>('');
-  const [selectedSegmentId, setSelectedSegmentId] = useState<number | undefined>(undefined);
+  const [selectedSegmentId, setSelectedSegmentId] = useState<string | undefined>(undefined);
   
   const [audiences, setAudiences] = useState<Audience[]>([]);
   const [segments, setSegments] = useState<Segment[]>([]);
@@ -249,7 +249,7 @@ export default function SendToMailchimpDialog({
             <Select
               value={selectedSegmentId || ''}
               label="Segment (Optional)"
-              onChange={(e) => setSelectedSegmentId(e.target.value ? Number(e.target.value) : undefined)}
+              onChange={(e) => setSelectedSegmentId(e.target.value || undefined)}
               MenuProps={{
                 PaperProps: {
                   style: {
@@ -267,7 +267,7 @@ export default function SendToMailchimpDialog({
               ) : (
                 segments.map((segment) => (
                   <MenuItem key={segment.id} value={segment.id}>
-                    {segment.name} ({segment.member_count.toLocaleString()} members)
+                    {segment.name}
                   </MenuItem>
                 ))
               )}
