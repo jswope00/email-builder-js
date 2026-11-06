@@ -118,6 +118,15 @@ function passesDateFilter(createdDateTime: string, opts: DateFilterOptions): boo
   return true;
 }
 
+function isContentNode(node: any): boolean {
+  return Boolean(
+    node &&
+      typeof node === 'object' &&
+      !Array.isArray(node) &&
+      (node.title || node.field_media_image || node.nid || node.nid_1 || node.type || node.view_node)
+  );
+}
+
 function countItemsInXml(xmlText: string, dateFilters: DateFilterOptions): number {
   try {
     const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_' });
@@ -125,23 +134,32 @@ function countItemsInXml(xmlText: string, dateFilters: DateFilterOptions): numbe
 
     let foundItems: any[] = [];
 
+    const takeContentList = (value: unknown): any[] | null => {
+      if (Array.isArray(value)) {
+        if (value.length === 0 || isContentNode(value[0])) return value;
+        return null;
+      }
+      if (isContentNode(value)) return [value];
+      return null;
+    };
+
     const findItems = (obj: any) => {
       if (foundItems.length > 0) return;
       if (Array.isArray(obj)) {
-        const first = obj[0];
-        if (first && (first.title || first.field_media_image || first.nid || first.type || first.view_node)) {
+        if (isContentNode(obj[0])) {
           foundItems = obj;
           return;
         }
         for (const item of obj) findItems(item);
       } else if (typeof obj === 'object' && obj !== null) {
-        if (obj.item && Array.isArray(obj.item)) {
-          foundItems = obj.item;
-          return;
-        }
-        if (obj.item && typeof obj.item === 'object') {
-          foundItems = [obj.item];
-          return;
+        // fast-xml-parser keeps one <results> node as an object and two or more as an array.
+        // Feeds with a single video, tweet, or podcast were previously dropped.
+        for (const key of ['item', 'results'] as const) {
+          const list = takeContentList(obj[key]);
+          if (list) {
+            foundItems = list;
+            return;
+          }
         }
         for (const key in obj) findItems(obj[key]);
       }
